@@ -10,7 +10,7 @@ interface FilterBarProps {
   owners: string[]
 }
 
-const STATUSES = ['Demand', 'Confirmed', 'Waiting for Delivery', 'Delivered', 'SUBMITTED']
+const STATUSES = ['Demand', 'Confirmed', 'Waiting for Delivery', 'SUBMITTED', 'Delivered']
 
 export default function FilterBar({ regions, owners }: FilterBarProps) {
   const router = useRouter()
