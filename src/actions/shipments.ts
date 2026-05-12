@@ -23,8 +23,8 @@ export async function createShipment(
 
   const trackingNo = generateMockTrackingNo()
 
-  await prisma.$transaction([
-    prisma.shipment.create({
+  await prisma.$transaction(async (tx) => {
+    await tx.shipment.create({
       data: {
         trackingNo,
         carrier: 'FedEx',
@@ -32,12 +32,12 @@ export async function createShipment(
         origin: 'Incheon, Korea',
         destination: input.destination,
       },
-    }),
-    prisma.deal.update({
+    })
+    await tx.deal.update({
       where: { dmdId: input.dmdId },
       data: { status: 'SUBMITTED' },
-    }),
-  ])
+    })
+  })
 
   revalidatePath(`/deals/${input.dmdId}`)
 
