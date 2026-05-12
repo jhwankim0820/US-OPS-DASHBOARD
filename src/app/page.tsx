@@ -88,6 +88,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Se
           <DealStatusFlow
             demand={deals.filter((d) => d.status === 'Demand')}
             confirmed={deals.filter((d) => d.status === 'Confirmed')}
+            waitingForDelivery={deals.filter((d) => d.status === 'Waiting for Delivery')}
             delivered={deals.filter((d) => d.status === 'Delivered')}
           />
         </div>

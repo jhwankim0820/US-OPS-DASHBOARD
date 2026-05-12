@@ -27,7 +27,7 @@ async function main() {
       {
         dmdId: 'DMD-63',
         customer: 'KT Cloud',
-        status: 'Confirmed',
+        status: 'Waiting for Delivery',
         category: 'B2B',
         formFactor: 'Card Only',
         cards: 8,
@@ -66,7 +66,7 @@ async function main() {
       {
         dmdId: 'DMD-66',
         customer: 'ETRI',
-        status: 'Confirmed',
+        status: 'Waiting for Delivery',
         category: 'B2G',
         formFactor: 'Rack Server',
         cards: 0,

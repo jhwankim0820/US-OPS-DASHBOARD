@@ -17,6 +17,7 @@ export const dynamic = 'force-dynamic'
 const STATUS_STYLE: Record<string, string> = {
   Demand: 'bg-amber-100 text-amber-800',
   Confirmed: 'bg-blue-100 text-blue-800',
+  'Waiting for Delivery': 'bg-sky-100 text-sky-800',
   Delivered: 'bg-emerald-100 text-emerald-800',
 }
 

@@ -14,6 +14,7 @@ interface Deal {
 interface DealStatusFlowProps {
   demand: Deal[]
   confirmed: Deal[]
+  waitingForDelivery: Deal[]
   delivered: Deal[]
 }
 
@@ -33,6 +34,13 @@ const COLUMNS = [
     badge: 'bg-blue-100 text-blue-800',
   },
   {
+    key: 'waitingForDelivery' as const,
+    label: 'Waiting for Delivery',
+    bg: 'bg-sky-50',
+    border: 'border-sky-200',
+    badge: 'bg-sky-100 text-sky-800',
+  },
+  {
     key: 'delivered' as const,
     label: 'Delivered',
     bg: 'bg-emerald-50',
@@ -48,15 +56,20 @@ function qtyLabel(deal: Deal) {
   return parts.join(' · ') || '—'
 }
 
-export default function DealStatusFlow({ demand, confirmed, delivered }: DealStatusFlowProps) {
-  const groups = { demand, confirmed, delivered }
+export default function DealStatusFlow({
+  demand,
+  confirmed,
+  waitingForDelivery,
+  delivered,
+}: DealStatusFlowProps) {
+  const groups = { demand, confirmed, waitingForDelivery, delivered }
 
   return (
-    <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+    <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
       {COLUMNS.map((col) => (
         <div key={col.key} className={`rounded-xl border ${col.border} ${col.bg} p-4`}>
           <div className="mb-3 flex items-center justify-between">
-            <h3 className="font-semibold">{col.label}</h3>
+            <h3 className="text-sm font-semibold">{col.label}</h3>
             <span className={`rounded-full px-2 py-0.5 text-xs font-bold ${col.badge}`}>
               {groups[col.key].length}
             </span>
@@ -71,7 +84,7 @@ export default function DealStatusFlow({ demand, confirmed, delivered }: DealSta
                     <span className="text-sm font-semibold">{deal.revenue.toFixed(1)}억</span>
                   )}
                 </div>
-                <p className="mt-0.5 font-medium">{deal.customer}</p>
+                <p className="mt-0.5 text-sm font-medium">{deal.customer}</p>
                 <div className="mt-1 flex flex-wrap gap-1">
                   <Badge variant="outline" className="text-xs">
                     {deal.formFactor}
