@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { formatRevenue } from '@/lib/utils'
 import {
   Table,
   TableBody,
@@ -60,7 +61,7 @@ export default function DealsTable({ deals }: { deals: Deal[] }) {
           {deals.length === 0 ? (
             <TableRow>
               <TableCell colSpan={11} className="py-12 text-center text-sm text-gray-400">
-                조건에 맞는 딜이 없습니다.
+                No deals match the current filters.
               </TableCell>
             </TableRow>
           ) : (
@@ -93,12 +94,12 @@ export default function DealsTable({ deals }: { deals: Deal[] }) {
                 <TableCell className="text-sm">{deal.owner}</TableCell>
                 <TableCell className="text-sm">{deal.region}</TableCell>
                 <TableCell className="text-right text-sm font-medium">
-                  {deal.revenue > 0 ? `${deal.revenue.toFixed(1)}억` : '—'}
+                  {formatRevenue(deal.revenue)}
                 </TableCell>
                 <TableCell className="text-right text-sm">{deal.cards || '—'}</TableCell>
                 <TableCell className="text-right text-sm">{deal.servers || '—'}</TableCell>
                 <TableCell className="text-right text-sm text-gray-400">
-                  {new Date(deal.createdAt).toLocaleDateString('ko-KR', {
+                  {new Date(deal.createdAt).toLocaleDateString('en-US', {
                     year: '2-digit',
                     month: 'short',
                     day: 'numeric',

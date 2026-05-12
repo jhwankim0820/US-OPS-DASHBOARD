@@ -1,4 +1,5 @@
 import { Badge } from '@/components/ui/badge'
+import { formatRevenue } from '@/lib/utils'
 
 interface Deal {
   dmdId: string
@@ -51,8 +52,8 @@ const COLUMNS = [
 
 function qtyLabel(deal: Deal) {
   const parts = []
-  if (deal.cards > 0) parts.push(`카드 ${deal.cards}ea`)
-  if (deal.servers > 0) parts.push(`서버 ${deal.servers}ea`)
+  if (deal.cards > 0) parts.push(`Cards ${deal.cards}`)
+  if (deal.servers > 0) parts.push(`Servers ${deal.servers}`)
   return parts.join(' · ') || '—'
 }
 
@@ -81,7 +82,7 @@ export default function DealStatusFlow({
                 <div className="flex items-start justify-between">
                   <span className="font-mono text-xs text-gray-400">{deal.dmdId}</span>
                   {deal.revenue > 0 && (
-                    <span className="text-sm font-semibold">{deal.revenue.toFixed(1)}억</span>
+                    <span className="text-sm font-semibold">{formatRevenue(deal.revenue)}</span>
                   )}
                 </div>
                 <p className="mt-0.5 text-sm font-medium">{deal.customer}</p>

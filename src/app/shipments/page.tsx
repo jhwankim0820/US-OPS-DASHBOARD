@@ -24,7 +24,7 @@ export default async function ShipmentsPage() {
     <main className="p-6 sm:p-10">
       <div className="mb-6">
         <h1 className="text-2xl font-bold tracking-tight">Shipments</h1>
-        <p className="text-sm text-gray-500">Phase 5에서 FedEx 실시간 연동 예정</p>
+        <p className="text-sm text-gray-500">FedEx live integration coming in Phase 5</p>
       </div>
 
       <div className="rounded-lg border bg-white">
@@ -43,7 +43,7 @@ export default async function ShipmentsPage() {
             {shipments.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={6} className="py-10 text-center text-gray-400">
-                  배송 데이터가 없습니다.
+                  No shipments found.
                 </TableCell>
               </TableRow>
             ) : (
@@ -63,7 +63,7 @@ export default async function ShipmentsPage() {
                   <TableCell>{s.origin}</TableCell>
                   <TableCell>{s.destination}</TableCell>
                   <TableCell className="text-sm">
-                    {s.eta ? s.eta.toLocaleDateString('ko-KR') : '—'}
+                    {s.eta ? s.eta.toLocaleDateString('en-US') : '—'}
                   </TableCell>
                 </TableRow>
               ))

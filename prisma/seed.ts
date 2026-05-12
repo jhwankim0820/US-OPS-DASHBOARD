@@ -21,7 +21,7 @@ async function main() {
         servers: 4,
         revenue: 18.5,
         region: 'Korea',
-        owner: '이지은',
+        owner: 'Ji-eun Lee',
         createdAt: new Date('2025-11-05'),
       },
       {
@@ -34,7 +34,7 @@ async function main() {
         servers: 0,
         revenue: 9.2,
         region: 'Korea',
-        owner: '박준혁',
+        owner: 'Jun-hyuk Park',
         createdAt: new Date('2025-12-12'),
       },
       {
@@ -47,7 +47,7 @@ async function main() {
         servers: 0,
         revenue: 24.0,
         region: 'Korea',
-        owner: '이지은',
+        owner: 'Ji-eun Lee',
         createdAt: new Date('2026-01-08'),
       },
       {
@@ -60,7 +60,7 @@ async function main() {
         servers: 0,
         revenue: 6.8,
         region: 'Korea',
-        owner: '박준혁',
+        owner: 'Jun-hyuk Park',
         createdAt: new Date('2025-10-20'),
       },
       {
@@ -73,7 +73,7 @@ async function main() {
         servers: 8,
         revenue: 36.0,
         region: 'Korea',
-        owner: '최수연',
+        owner: 'Su-yeon Choi',
         createdAt: new Date('2026-02-03'),
       },
       {
@@ -86,7 +86,7 @@ async function main() {
         servers: 16,
         revenue: 72.0,
         region: 'Korea',
-        owner: '이지은',
+        owner: 'Ji-eun Lee',
         createdAt: new Date('2025-09-15'),
       },
       {
@@ -99,12 +99,12 @@ async function main() {
         servers: 0,
         revenue: 2.4,
         region: 'Korea',
-        owner: '박준혁',
+        owner: 'Jun-hyuk Park',
         createdAt: new Date('2026-03-22'),
       },
       {
         dmdId: 'DMD-69',
-        customer: '과학기술정보통신부',
+        customer: 'MSIT',
         status: 'Confirmed',
         category: 'B2G',
         formFactor: 'Custom System',
@@ -112,7 +112,7 @@ async function main() {
         servers: 0,
         revenue: 48.0,
         region: 'Korea',
-        owner: '최수연',
+        owner: 'Su-yeon Choi',
         createdAt: new Date('2026-01-30'),
       },
       {
@@ -125,7 +125,7 @@ async function main() {
         servers: 0,
         revenue: 0.0,
         region: 'Korea',
-        owner: '박준혁',
+        owner: 'Jun-hyuk Park',
         createdAt: new Date('2025-08-01'),
       },
       {
@@ -138,7 +138,7 @@ async function main() {
         servers: 2,
         revenue: 15.0,
         region: 'US',
-        owner: '이지은',
+        owner: 'Ji-eun Lee',
         createdAt: new Date('2026-04-10'),
       },
     ],

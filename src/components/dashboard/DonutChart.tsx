@@ -8,6 +8,7 @@ import {
   Legend,
   ResponsiveContainer,
 } from 'recharts'
+import { formatRevenue } from '@/lib/utils'
 
 const COLORS = ['#6366f1', '#f59e0b', '#10b981', '#3b82f6']
 
@@ -47,7 +48,7 @@ export default function DonutChart({ data }: DonutChartProps) {
           </Pie>
           <Tooltip
             formatter={(value, name, props) => [
-              `${value}건 · ${(props.payload as FormFactorEntry).revenue.toFixed(1)}억 KRW`,
+              `${value} deals · ${formatRevenue((props.payload as FormFactorEntry).revenue)}`,
               name,
             ]}
           />

@@ -1,4 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { formatRevenue } from '@/lib/utils'
 
 interface StatCardsProps {
   totalDeals: number
@@ -14,10 +15,10 @@ export default function StatCards({
   deliveredServers,
 }: StatCardsProps) {
   const stats = [
-    { label: 'Total Deals', value: totalDeals, unit: '' },
-    { label: 'Total Revenue', value: totalRevenue.toFixed(1), unit: '억 KRW' },
-    { label: 'Cards Delivered', value: deliveredCards, unit: 'ea' },
-    { label: 'Servers Delivered', value: deliveredServers, unit: 'ea' },
+    { label: 'Total Deals', value: String(totalDeals), unit: '' },
+    { label: 'Total Revenue', value: formatRevenue(totalRevenue), unit: '' },
+    { label: 'Cards Delivered', value: deliveredCards > 0 ? String(deliveredCards) : '—', unit: deliveredCards > 0 ? 'ea' : '' },
+    { label: 'Servers Delivered', value: deliveredServers > 0 ? String(deliveredServers) : '—', unit: deliveredServers > 0 ? 'ea' : '' },
   ]
 
   return (

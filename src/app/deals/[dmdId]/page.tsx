@@ -1,6 +1,7 @@
 import { prisma } from '@/lib/prisma'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
+import { formatRevenue } from '@/lib/utils'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import {
@@ -48,7 +49,7 @@ export default async function DealDetailPage({
     { label: 'Owner', value: deal.owner },
     {
       label: 'Deal Date',
-      value: deal.createdAt.toLocaleDateString('ko-KR', {
+      value: deal.createdAt.toLocaleDateString('en-US', {
         year: 'numeric',
         month: 'long',
         day: 'numeric',
@@ -64,7 +65,7 @@ export default async function DealDetailPage({
           href="/deals"
           className="mb-4 inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-900"
         >
-          ← Deals 목록으로
+          ← Back to Deals
         </Link>
         <div className="mt-3 flex items-start justify-between">
           <div>
@@ -87,10 +88,7 @@ export default async function DealDetailPage({
           </CardHeader>
           <CardContent>
             <p className="text-2xl font-bold">
-              {deal.revenue > 0 ? `${deal.revenue.toFixed(1)}억` : '—'}
-              {deal.revenue > 0 && (
-                <span className="ml-1 text-sm font-normal text-gray-400">KRW</span>
-              )}
+              {formatRevenue(deal.revenue)}
             </p>
           </CardContent>
         </Card>
@@ -144,7 +142,7 @@ export default async function DealDetailPage({
         <div className="mb-3 flex items-center justify-between">
           <h2 className="text-lg font-semibold">Shipment History</h2>
           <span className="rounded-full bg-blue-50 px-2 py-0.5 text-xs font-medium text-blue-600">
-            Phase 5: FedEx 연동 예정
+            Phase 5: FedEx Integration
           </span>
         </div>
         <div className="rounded-lg border bg-white">
@@ -163,7 +161,7 @@ export default async function DealDetailPage({
               {shipments.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={6} className="py-8 text-center text-sm text-gray-400">
-                    연결된 배송 이력이 없습니다. Phase 5에서 FedEx 송장번호로 자동 연동됩니다.
+                    No shipments linked. FedEx tracking will be auto-connected in Phase 5.
                   </TableCell>
                 </TableRow>
               ) : (
@@ -183,7 +181,7 @@ export default async function DealDetailPage({
                     <TableCell className="text-sm">{s.origin}</TableCell>
                     <TableCell className="text-sm">{s.destination}</TableCell>
                     <TableCell className="text-sm">
-                      {s.eta ? s.eta.toLocaleDateString('ko-KR') : '—'}
+                      {s.eta ? s.eta.toLocaleDateString('en-US') : '—'}
                     </TableCell>
                   </TableRow>
                 ))

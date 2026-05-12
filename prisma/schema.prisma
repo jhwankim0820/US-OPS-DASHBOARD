@@ -26,7 +26,7 @@ model Deal {
 model Shipment {
   id          String    @id @default(cuid())
   trackingNo  String?
-  carrier     String?   // FedEx 등
+  carrier     String?   // e.g. FedEx
   status      String    // SUBMITTED | IN_TRANSIT | DELIVERED
   origin      String
   destination String
