@@ -3,6 +3,7 @@
 import { useRouter, useSearchParams, usePathname } from 'next/navigation'
 import { XIcon } from 'lucide-react'
 import MultiSelect from '@/components/shared/MultiSelect'
+import DatePicker from '@/components/shared/DatePicker'
 
 interface FilterBarProps {
   regions: string[]
@@ -72,18 +73,16 @@ export default function FilterBar({ regions, owners }: FilterBarProps) {
 
       <div className="flex items-center gap-2">
         <span className="text-sm text-gray-400">Date</span>
-        <input
-          type="date"
+        <DatePicker
           value={from}
-          onChange={(e) => updateDateParam('from', e.target.value)}
-          className="rounded-md border border-gray-200 px-3 py-1.5 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-300"
+          onChange={(v) => updateDateParam('from', v)}
+          placeholder="From"
         />
         <span className="text-xs text-gray-300">—</span>
-        <input
-          type="date"
+        <DatePicker
           value={to}
-          onChange={(e) => updateDateParam('to', e.target.value)}
-          className="rounded-md border border-gray-200 px-3 py-1.5 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-300"
+          onChange={(v) => updateDateParam('to', v)}
+          placeholder="To"
         />
       </div>
 
