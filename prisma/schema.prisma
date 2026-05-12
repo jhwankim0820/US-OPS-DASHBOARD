@@ -1,0 +1,36 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Deal {
+  id         String   @id @default(cuid())
+  dmdId      String   @unique
+  customer   String
+  status     String   // Demand | Confirmed | Delivered
+  category   String   // B2B | B2G | Internal | Rental
+  formFactor String   // Card Only | Custom System | Rack Server | Workstation
+  cards      Int      @default(0)
+  servers    Int      @default(0)
+  revenue    Float    @default(0)
+  region     String
+  owner      String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model Shipment {
+  id          String    @id @default(cuid())
+  trackingNo  String?
+  carrier     String?   // FedEx 등
+  status      String    // SUBMITTED | IN_TRANSIT | DELIVERED
+  origin      String
+  destination String
+  eta         DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
