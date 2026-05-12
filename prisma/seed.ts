@@ -22,6 +22,7 @@ async function main() {
         revenue: 18.5,
         region: 'Korea',
         owner: '이지은',
+        createdAt: new Date('2025-11-05'),
       },
       {
         dmdId: 'DMD-63',
@@ -34,6 +35,7 @@ async function main() {
         revenue: 9.2,
         region: 'Korea',
         owner: '박준혁',
+        createdAt: new Date('2025-12-12'),
       },
       {
         dmdId: 'DMD-64',
@@ -46,6 +48,7 @@ async function main() {
         revenue: 24.0,
         region: 'Korea',
         owner: '이지은',
+        createdAt: new Date('2026-01-08'),
       },
       {
         dmdId: 'DMD-65',
@@ -58,6 +61,7 @@ async function main() {
         revenue: 6.8,
         region: 'Korea',
         owner: '박준혁',
+        createdAt: new Date('2025-10-20'),
       },
       {
         dmdId: 'DMD-66',
@@ -70,6 +74,7 @@ async function main() {
         revenue: 36.0,
         region: 'Korea',
         owner: '최수연',
+        createdAt: new Date('2026-02-03'),
       },
       {
         dmdId: 'DMD-67',
@@ -82,6 +87,7 @@ async function main() {
         revenue: 72.0,
         region: 'Korea',
         owner: '이지은',
+        createdAt: new Date('2025-09-15'),
       },
       {
         dmdId: 'DMD-68',
@@ -94,6 +100,7 @@ async function main() {
         revenue: 2.4,
         region: 'Korea',
         owner: '박준혁',
+        createdAt: new Date('2026-03-22'),
       },
       {
         dmdId: 'DMD-69',
@@ -106,6 +113,7 @@ async function main() {
         revenue: 48.0,
         region: 'Korea',
         owner: '최수연',
+        createdAt: new Date('2026-01-30'),
       },
       {
         dmdId: 'DMD-70',
@@ -118,6 +126,7 @@ async function main() {
         revenue: 0.0,
         region: 'Korea',
         owner: '박준혁',
+        createdAt: new Date('2025-08-01'),
       },
       {
         dmdId: 'DMD-71',
@@ -130,6 +139,7 @@ async function main() {
         revenue: 15.0,
         region: 'US',
         owner: '이지은',
+        createdAt: new Date('2026-04-10'),
       },
     ],
   })
@@ -142,7 +152,7 @@ async function main() {
         status: 'DELIVERED',
         origin: 'Incheon, Korea',
         destination: 'Seoul, Korea',
-        eta: new Date('2026-03-15'),
+        eta: new Date('2025-11-20'),
       },
       {
         trackingNo: '823492783401',
@@ -150,7 +160,7 @@ async function main() {
         status: 'DELIVERED',
         origin: 'Incheon, Korea',
         destination: 'Seongnam, Korea',
-        eta: new Date('2026-02-28'),
+        eta: new Date('2025-10-30'),
       },
       {
         carrier: 'FedEx',
@@ -162,7 +172,7 @@ async function main() {
     ],
   })
 
-  console.log('✅ Seed complete: 10 deals, 3 shipments')
+  console.log('✅ Seed complete: 10 deals (with varied dates), 3 shipments')
 }
 
 main()
