@@ -1,6 +1,9 @@
 export const dynamic = 'force-dynamic'
 
+import { Suspense } from 'react'
 import { prisma } from '@/lib/prisma'
+import type { Prisma } from '@/generated/prisma/client'
+import FilterBar from '@/components/shared/FilterBar'
 import StatCards from '@/components/dashboard/StatCards'
 import DealStatusFlow from '@/components/dashboard/DealStatusFlow'
 import DonutChart from '@/components/dashboard/DonutChart'
@@ -8,8 +11,41 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
 const FORM_FACTORS = ['Card Only', 'Custom System', 'Rack Server', 'Workstation']
 
-export default async function DashboardPage() {
-  const deals = await prisma.deal.findMany({ orderBy: { dmdId: 'asc' } })
+type SearchParams = Promise<{
+  status?: string
+  region?: string
+  owner?: string
+  from?: string
+  to?: string
+}>
+
+export default async function DashboardPage({ searchParams }: { searchParams: SearchParams }) {
+  const { status, region, owner, from, to } = await searchParams
+
+  const where: Prisma.DealWhereInput = {}
+  const statuses = status?.split(',').filter(Boolean) ?? []
+  const regions = region?.split(',').filter(Boolean) ?? []
+  const owners = owner?.split(',').filter(Boolean) ?? []
+
+  if (statuses.length > 0) where.status = { in: statuses }
+  if (regions.length > 0) where.region = { in: regions }
+  if (owners.length > 0) where.owner = { in: owners }
+  if (from || to) {
+    const dateFilter: { gte?: Date; lte?: Date } = {}
+    if (from) dateFilter.gte = new Date(from)
+    if (to) {
+      const toDate = new Date(to)
+      toDate.setDate(toDate.getDate() + 1)
+      dateFilter.lte = toDate
+    }
+    where.createdAt = dateFilter
+  }
+
+  const [deals, allOwners, allRegions] = await Promise.all([
+    prisma.deal.findMany({ where, orderBy: { dmdId: 'asc' } }),
+    prisma.deal.findMany({ distinct: ['owner'], select: { owner: true }, orderBy: { owner: 'asc' } }),
+    prisma.deal.findMany({ distinct: ['region'], select: { region: true }, orderBy: { region: 'asc' } }),
+  ])
 
   const totalRevenue = deals.reduce((s, d) => s + d.revenue, 0)
   const delivered = deals.filter((d) => d.status === 'Delivered')
@@ -27,12 +63,19 @@ export default async function DashboardPage() {
 
   return (
     <main className="min-h-screen bg-gray-50 p-6 sm:p-10">
-      <div className="mb-8">
+      <div className="mb-6">
         <h1 className="text-2xl font-bold tracking-tight">US Ops Dashboard</h1>
         <p className="text-sm text-gray-500">FuriosaAI · Deal Pipeline Overview</p>
       </div>
 
-      <div className="space-y-8">
+      <div className="space-y-6">
+        <Suspense>
+          <FilterBar
+            regions={allRegions.map((d) => d.region)}
+            owners={allOwners.map((d) => d.owner)}
+          />
+        </Suspense>
+
         <StatCards
           totalDeals={deals.length}
           totalRevenue={totalRevenue}
