@@ -26,6 +26,7 @@ export async function createShipment(
   await prisma.$transaction(async (tx) => {
     await tx.shipment.create({
       data: {
+        dmdId: input.dmdId,
         trackingNo,
         carrier: 'FedEx',
         status: 'SUBMITTED',

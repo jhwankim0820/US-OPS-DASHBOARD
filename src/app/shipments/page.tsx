@@ -18,7 +18,10 @@ const STATUS_STYLE: Record<string, string> = {
 }
 
 export default async function ShipmentsPage() {
-  const shipments = await prisma.shipment.findMany({ orderBy: { createdAt: 'desc' } })
+  const shipments = await prisma.shipment.findMany({
+    orderBy: { createdAt: 'desc' },
+    include: { deal: { select: { customer: true, dmdId: true } } },
+  })
 
   return (
     <main className="p-6 sm:p-10">
@@ -31,6 +34,8 @@ export default async function ShipmentsPage() {
         <Table>
           <TableHeader>
             <TableRow className="bg-gray-50">
+              <TableHead>Deal</TableHead>
+              <TableHead>Customer</TableHead>
               <TableHead>Tracking No</TableHead>
               <TableHead>Carrier</TableHead>
               <TableHead>Status</TableHead>
@@ -42,13 +47,19 @@ export default async function ShipmentsPage() {
           <TableBody>
             {shipments.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={6} className="py-10 text-center text-gray-400">
+                <TableCell colSpan={8} className="py-10 text-center text-gray-400">
                   No shipments found.
                 </TableCell>
               </TableRow>
             ) : (
               shipments.map((s) => (
                 <TableRow key={s.id}>
+                  <TableCell className="font-mono text-sm font-semibold text-gray-700">
+                    {s.deal?.dmdId ?? '—'}
+                  </TableCell>
+                  <TableCell className="text-sm font-medium">
+                    {s.deal?.customer ?? '—'}
+                  </TableCell>
                   <TableCell className="font-mono text-sm">
                     {s.trackingNo ?? '—'}
                   </TableCell>
@@ -60,8 +71,8 @@ export default async function ShipmentsPage() {
                       {s.status}
                     </span>
                   </TableCell>
-                  <TableCell>{s.origin}</TableCell>
-                  <TableCell>{s.destination}</TableCell>
+                  <TableCell className="text-sm">{s.origin}</TableCell>
+                  <TableCell className="text-sm">{s.destination}</TableCell>
                   <TableCell className="text-sm">
                     {s.eta ? s.eta.toLocaleDateString('en-US') : '—'}
                   </TableCell>

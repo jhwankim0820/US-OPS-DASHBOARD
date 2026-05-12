@@ -39,8 +39,10 @@ export default async function DealDetailPage({
   const deal = await prisma.deal.findUnique({ where: { dmdId } })
   if (!deal) notFound()
 
-  // Phase 5: will be linked via dealId FK — for now show all shipments as placeholder
-  const shipments = await prisma.shipment.findMany({ orderBy: { createdAt: 'desc' } })
+  const shipments = await prisma.shipment.findMany({
+    where: { dmdId },
+    orderBy: { createdAt: 'desc' },
+  })
 
   const specs = [
     { label: 'DMD ID', value: deal.dmdId },
@@ -166,7 +168,7 @@ export default async function DealDetailPage({
               {shipments.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={6} className="py-8 text-center text-sm text-gray-400">
-                    No shipments linked. FedEx tracking will be auto-connected in Phase 5.
+                    No shipments for this deal yet.
                   </TableCell>
                 </TableRow>
               ) : (
