@@ -29,6 +29,7 @@ const STATUS_STYLE: Record<string, string> = {
   Confirmed: 'bg-blue-100 text-blue-800',
   'Waiting for Delivery': 'bg-sky-100 text-sky-800',
   Delivered: 'bg-emerald-100 text-emerald-800',
+  SUBMITTED: 'bg-violet-100 text-violet-800',
 }
 
 const CATEGORY_STYLE: Record<string, string> = {

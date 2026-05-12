@@ -2,6 +2,7 @@ import { prisma } from '@/lib/prisma'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { formatRevenue } from '@/lib/utils'
+import ShipmentForm from '@/components/deals/ShipmentForm'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import {
@@ -20,6 +21,7 @@ const STATUS_STYLE: Record<string, string> = {
   Confirmed: 'bg-blue-100 text-blue-800',
   'Waiting for Delivery': 'bg-sky-100 text-sky-800',
   Delivered: 'bg-emerald-100 text-emerald-800',
+  SUBMITTED: 'bg-violet-100 text-violet-800',
 }
 
 const SHIPMENT_STATUS_STYLE: Record<string, string> = {
@@ -72,11 +74,14 @@ export default async function DealDetailPage({
             <h1 className="text-2xl font-bold">{deal.customer}</h1>
             <span className="font-mono text-sm text-gray-400">{deal.dmdId}</span>
           </div>
-          <span
-            className={`mt-1 inline-flex items-center rounded-full px-3 py-1 text-sm font-semibold ${STATUS_STYLE[deal.status] ?? 'bg-gray-100 text-gray-700'}`}
-          >
-            {deal.status}
-          </span>
+          <div className="flex items-center gap-3">
+            <span
+              className={`inline-flex items-center rounded-full px-3 py-1 text-sm font-semibold ${STATUS_STYLE[deal.status] ?? 'bg-gray-100 text-gray-700'}`}
+            >
+              {deal.status}
+            </span>
+            <ShipmentForm dmdId={deal.dmdId} dealStatus={deal.status} />
+          </div>
         </div>
       </div>
 

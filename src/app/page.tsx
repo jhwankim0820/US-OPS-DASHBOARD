@@ -31,12 +31,12 @@ export default async function DashboardPage({ searchParams }: { searchParams: Se
   if (regions.length > 0) where.region = { in: regions }
   if (owners.length > 0) where.owner = { in: owners }
   if (from || to) {
-    const dateFilter: { gte?: Date; lte?: Date } = {}
+    const dateFilter: { gte?: Date; lt?: Date } = {}
     if (from) dateFilter.gte = new Date(from)
     if (to) {
       const toDate = new Date(to)
       toDate.setDate(toDate.getDate() + 1)
-      dateFilter.lte = toDate
+      dateFilter.lt = toDate
     }
     where.createdAt = dateFilter
   }
