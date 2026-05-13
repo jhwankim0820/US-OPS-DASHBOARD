@@ -3,16 +3,8 @@ import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { formatRevenue } from '@/lib/utils'
 import ShipmentForm from '@/components/deals/ShipmentForm'
+import TrackingCard from '@/components/deals/TrackingCard'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table'
 
 export const dynamic = 'force-dynamic'
 
@@ -24,11 +16,6 @@ const STATUS_STYLE: Record<string, string> = {
   SUBMITTED: 'bg-violet-100 text-violet-800',
 }
 
-const SHIPMENT_STATUS_STYLE: Record<string, string> = {
-  DELIVERED: 'bg-emerald-100 text-emerald-800',
-  IN_TRANSIT: 'bg-blue-100 text-blue-800',
-  SUBMITTED: 'bg-amber-100 text-amber-800',
-}
 
 export default async function DealDetailPage({
   params,
@@ -144,58 +131,33 @@ export default async function DealDetailPage({
         </CardContent>
       </Card>
 
-      {/* Shipment History — Phase 5 preview */}
+      {/* Shipment History */}
       <div>
         <div className="mb-3 flex items-center justify-between">
           <h2 className="text-lg font-semibold">Shipment History</h2>
-          <span className="rounded-full bg-blue-50 px-2 py-0.5 text-xs font-medium text-blue-600">
-            Phase 5: FedEx Integration
+          <span className="rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-medium text-emerald-600">
+            Phase 6: Live Tracking
           </span>
         </div>
-        <div className="rounded-lg border bg-white">
-          <Table>
-            <TableHeader>
-              <TableRow className="bg-gray-50">
-                <TableHead>Tracking No</TableHead>
-                <TableHead>Carrier</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Origin</TableHead>
-                <TableHead>Destination</TableHead>
-                <TableHead>ETA</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {shipments.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={6} className="py-8 text-center text-sm text-gray-400">
-                    No shipments for this deal yet.
-                  </TableCell>
-                </TableRow>
-              ) : (
-                shipments.map((s) => (
-                  <TableRow key={s.id}>
-                    <TableCell className="font-mono text-sm">
-                      {s.trackingNo ?? '—'}
-                    </TableCell>
-                    <TableCell>{s.carrier ?? '—'}</TableCell>
-                    <TableCell>
-                      <span
-                        className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold ${SHIPMENT_STATUS_STYLE[s.status] ?? 'bg-gray-100 text-gray-700'}`}
-                      >
-                        {s.status}
-                      </span>
-                    </TableCell>
-                    <TableCell className="text-sm">{s.origin}</TableCell>
-                    <TableCell className="text-sm">{s.destination}</TableCell>
-                    <TableCell className="text-sm">
-                      {s.eta ? s.eta.toLocaleDateString('en-US') : '—'}
-                    </TableCell>
-                  </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
-        </div>
+        {shipments.length === 0 ? (
+          <div className="rounded-lg border bg-white py-8 text-center text-sm text-gray-400">
+            No shipments for this deal yet.
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {shipments.map((s) => (
+              <TrackingCard
+                key={s.id}
+                shipmentId={s.id}
+                trackingNo={s.trackingNo}
+                carrier={s.carrier}
+                status={s.status}
+                origin={s.origin}
+                destination={s.destination}
+              />
+            ))}
+          </div>
+        )}
       </div>
     </main>
   )
