@@ -183,7 +183,7 @@ export default function ShipmentTracker() {
           style={{ background: '#4D148C' }}
         >
           <span><span style={{ color: '#FF6200' }}>Fe</span>dEx</span>
-          배송하기
+          Ship
         </button>
       </div>
 
