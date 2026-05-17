@@ -5,12 +5,8 @@ import type { Prisma } from '@/generated/prisma/client'
 import FilterBar from '@/components/shared/FilterBar'
 import StatCards from '@/components/dashboard/StatCards'
 import DealStatusFlow from '@/components/dashboard/DealStatusFlow'
-import DonutChart from '@/components/dashboard/DonutChart'
 import InventorySection from '@/components/dashboard/InventorySection'
 import PocAllocationSection from '@/components/dashboard/PocAllocationSection'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-
-const FORM_FACTORS = ['Card Only', 'Custom System', 'Rack Server', 'Workstation']
 
 type SearchParams = Promise<{
   status?: string
@@ -52,15 +48,6 @@ export default async function DashboardPage({ searchParams }: { searchParams: Se
   const deliveredCards = delivered.reduce((s, d) => s + d.cards, 0)
   const deliveredServers = delivered.reduce((s, d) => s + d.servers, 0)
 
-  const formFactorData = FORM_FACTORS.map((ff) => {
-    const group = deals.filter((d) => d.formFactor === ff)
-    return {
-      name: ff,
-      value: group.length,
-      revenue: group.reduce((s, d) => s + d.revenue, 0),
-    }
-  }).filter((d) => d.value > 0)
-
   return (
     <main className="min-h-screen bg-gray-50 p-6 sm:p-10">
       <div className="mb-6">
@@ -99,14 +86,6 @@ export default async function DashboardPage({ searchParams }: { searchParams: Se
           />
         </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Form Factor Distribution</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <DonutChart data={formFactorData} />
-          </CardContent>
-        </Card>
       </div>
     </main>
   )
