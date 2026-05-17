@@ -86,6 +86,9 @@ export default async function DashboardPage({ searchParams }: { searchParams: Se
         {/* Inventory donut charts */}
         <InventorySection />
 
+        {/* POC allocation by sales rep */}
+        <PocAllocationSection />
+
         <div>
           <h2 className="mb-3 text-lg font-semibold">Deal Pipeline</h2>
           <DealStatusFlow
@@ -104,9 +107,6 @@ export default async function DashboardPage({ searchParams }: { searchParams: Se
             <DonutChart data={formFactorData} />
           </CardContent>
         </Card>
-
-        {/* POC allocation by sales rep */}
-        <PocAllocationSection />
       </div>
     </main>
   )
