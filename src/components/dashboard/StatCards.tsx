@@ -41,9 +41,9 @@ export default function StatCards({
   const serverPct = totalServers > 0 ? Math.round((deliveredServers / totalServers) * 100) : 0
 
   return (
-    <div className="grid grid-cols-5 gap-3 items-stretch">
-      {/* Pipeline by stage — spans 3 cols */}
-      <div className="col-span-3 rounded-xl border border-gray-200 bg-white p-5">
+    <div className="grid grid-cols-4 gap-4 items-stretch">
+      {/* Pipeline by stage — spans 2 cols (aligns with Inventory Cards box) */}
+      <div className="col-span-2 rounded-xl border border-gray-200 bg-white p-5">
         <p className="text-sm font-semibold text-gray-700 mb-4">Pipeline by stage</p>
         <div className="grid grid-cols-5 divide-x divide-gray-100">
           {byStage.map((s) => (
