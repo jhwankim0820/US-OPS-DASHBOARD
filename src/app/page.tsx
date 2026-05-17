@@ -44,14 +44,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Se
   ])
 
   const STAGES = ['Demand', 'Confirmed', 'Waiting for Delivery', 'Delivered', 'Cancelled/Lost']
-
-  const confirmed = deals.filter((d) => d.status === 'Confirmed')
-  const demand = deals.filter((d) => d.status === 'Demand')
   const delivered = deals.filter((d) => d.status === 'Delivered')
-
-  const thirtyDaysAgo = new Date()
-  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
-
   const byStage = STAGES.map((s) => {
     const group = deals.filter((d) => d.status === s)
     return { status: s, revenue: group.reduce((acc, d) => acc + d.revenue, 0), count: group.length }
@@ -73,15 +66,10 @@ export default async function DashboardPage({ searchParams }: { searchParams: Se
         </Suspense>
 
         <StatCards
-          confirmedRevenue={confirmed.reduce((s, d) => s + d.revenue, 0)}
-          confirmedCount={confirmed.length}
-          demandRevenue={demand.reduce((s, d) => s + d.revenue, 0)}
-          demandCount={demand.length}
           totalCards={deals.reduce((s, d) => s + d.cards, 0)}
           deliveredCards={delivered.reduce((s, d) => s + d.cards, 0)}
           totalServers={deals.reduce((s, d) => s + d.servers, 0)}
           deliveredServers={delivered.reduce((s, d) => s + d.servers, 0)}
-          staleDeals={deals.filter((d) => new Date(d.updatedAt) < thirtyDaysAgo).length}
           byStage={byStage}
         />
 

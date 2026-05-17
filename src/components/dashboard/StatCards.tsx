@@ -7,15 +7,10 @@ interface StageData {
 }
 
 interface StatCardsProps {
-  confirmedRevenue: number
-  confirmedCount: number
-  demandRevenue: number
-  demandCount: number
   totalCards: number
   deliveredCards: number
   totalServers: number
   deliveredServers: number
-  staleDeals: number
   byStage: StageData[]
 }
 
@@ -36,106 +31,19 @@ const STAGE_VALUE: Record<string, string> = {
 }
 
 export default function StatCards({
-  confirmedRevenue,
-  confirmedCount,
-  demandRevenue,
-  demandCount,
   totalCards,
   deliveredCards,
   totalServers,
   deliveredServers,
-  staleDeals,
   byStage,
 }: StatCardsProps) {
   const cardPct = totalCards > 0 ? Math.round((deliveredCards / totalCards) * 100) : 0
   const serverPct = totalServers > 0 ? Math.round((deliveredServers / totalServers) * 100) : 0
 
   return (
-    <div className="space-y-3">
-      {/* Row 1: All 5 cards in one row */}
-      <div className="grid grid-cols-5 gap-3">
-        <div className="rounded-xl border border-gray-200 bg-white p-5">
-          <p className="text-sm text-gray-500 mb-1">Confirmed revenue</p>
-          <p className="text-2xl font-bold text-gray-900">{formatRevenue(confirmedRevenue)}</p>
-          <p className="text-sm text-gray-400 mt-1">
-            {confirmedCount} deal{confirmedCount !== 1 ? 's' : ''} confirmed
-          </p>
-        </div>
-
-        <div className="rounded-xl border border-gray-200 bg-white p-5">
-          <p className="text-sm text-gray-500 mb-1">Pipeline value</p>
-          <p className="text-2xl font-bold text-gray-900">{formatRevenue(demandRevenue)}</p>
-          <div className="flex items-center gap-2 mt-1">
-            <p className="text-sm text-gray-400">In demand stage</p>
-            <span className="text-xs px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 font-medium">
-              {demandCount} deals
-            </span>
-          </div>
-        </div>
-
-        <div className="col-span-3 grid grid-cols-3 gap-3">
-        <div className="rounded-xl border border-gray-200 bg-white p-5">
-          <div className="flex items-center justify-between mb-3">
-            <p className="text-sm text-gray-500">Cards ordered vs delivered</p>
-            <span className="text-xs px-2 py-0.5 rounded-full bg-blue-100 text-blue-700 font-semibold">NEW</span>
-          </div>
-          <div className="flex items-end gap-4 mb-3">
-            <div>
-              <p className="text-2xl font-bold text-blue-600">{totalCards}</p>
-              <p className="text-xs text-gray-400">Ordered</p>
-            </div>
-            <div className="w-px h-8 bg-gray-200" />
-            <div>
-              <p className="text-2xl font-bold text-emerald-600">{deliveredCards}</p>
-              <p className="text-xs text-gray-400">Delivered</p>
-            </div>
-          </div>
-          <p className="text-xs text-gray-400 mb-1">{cardPct}% fulfillment</p>
-          <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
-            <div className="h-full bg-blue-500 rounded-full transition-all" style={{ width: `${cardPct}%` }} />
-          </div>
-        </div>
-
-        <div className="rounded-xl border border-gray-200 bg-white p-5">
-          <div className="flex items-center justify-between mb-3">
-            <p className="text-sm text-gray-500">Servers ordered vs delivered</p>
-            <span className="text-xs px-2 py-0.5 rounded-full bg-blue-100 text-blue-700 font-semibold">NEW</span>
-          </div>
-          <div className="flex items-end gap-4 mb-3">
-            <div>
-              <p className="text-2xl font-bold text-blue-600">{totalServers}</p>
-              <p className="text-xs text-gray-400">Ordered</p>
-            </div>
-            <div className="w-px h-8 bg-gray-200" />
-            <div>
-              <p className="text-2xl font-bold text-emerald-600">{deliveredServers}</p>
-              <p className="text-xs text-gray-400">Delivered</p>
-            </div>
-          </div>
-          <p className="text-xs text-gray-400 mb-1">{serverPct}% fulfillment</p>
-          <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
-            <div className="h-full bg-blue-500 rounded-full transition-all" style={{ width: `${serverPct}%` }} />
-          </div>
-        </div>
-
-        <div className="rounded-xl border border-gray-200 bg-white p-5">
-          <div className="flex items-center justify-between mb-3">
-            <p className="text-sm text-gray-500">Stale deals</p>
-            <span className="text-xs px-2 py-0.5 rounded-full bg-blue-100 text-blue-700 font-semibold">NEW</span>
-          </div>
-          <p className="text-3xl font-bold text-amber-500">{staleDeals}</p>
-          <p className="text-sm text-gray-400 mt-1">No update 30+ days</p>
-          {staleDeals > 0 && (
-            <span className="inline-block mt-2 text-xs px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 font-medium">
-              needs action
-            </span>
-          )}
-        </div>
-        </div>
-      </div>
-
-      {/* Row 2: Pipeline by stage */}
-      <div className="rounded-xl border border-gray-200 bg-white p-5">
+    <div className="grid grid-cols-5 gap-3 items-stretch">
+      {/* Pipeline by stage — spans 3 cols */}
+      <div className="col-span-3 rounded-xl border border-gray-200 bg-white p-5">
         <p className="text-sm font-semibold text-gray-700 mb-4">Pipeline by stage</p>
         <div className="grid grid-cols-5 divide-x divide-gray-100">
           {byStage.map((s) => (
@@ -150,6 +58,52 @@ export default function StatCards({
               <p className="text-xs text-gray-400">{s.count} deal{s.count !== 1 ? 's' : ''}</p>
             </div>
           ))}
+        </div>
+      </div>
+
+      {/* Cards ordered vs delivered */}
+      <div className="rounded-xl border border-gray-200 bg-white p-5">
+        <div className="flex items-center justify-between mb-3">
+          <p className="text-sm text-gray-500">Cards ordered vs delivered</p>
+          <span className="text-xs px-2 py-0.5 rounded-full bg-blue-100 text-blue-700 font-semibold">NEW</span>
+        </div>
+        <div className="flex items-end gap-4 mb-3">
+          <div>
+            <p className="text-2xl font-bold text-blue-600">{totalCards}</p>
+            <p className="text-xs text-gray-400">Ordered</p>
+          </div>
+          <div className="w-px h-8 bg-gray-200" />
+          <div>
+            <p className="text-2xl font-bold text-emerald-600">{deliveredCards}</p>
+            <p className="text-xs text-gray-400">Delivered</p>
+          </div>
+        </div>
+        <p className="text-xs text-gray-400 mb-1">{cardPct}% fulfillment</p>
+        <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
+          <div className="h-full bg-blue-500 rounded-full transition-all" style={{ width: `${cardPct}%` }} />
+        </div>
+      </div>
+
+      {/* Servers ordered vs delivered */}
+      <div className="rounded-xl border border-gray-200 bg-white p-5">
+        <div className="flex items-center justify-between mb-3">
+          <p className="text-sm text-gray-500">Servers ordered vs delivered</p>
+          <span className="text-xs px-2 py-0.5 rounded-full bg-blue-100 text-blue-700 font-semibold">NEW</span>
+        </div>
+        <div className="flex items-end gap-4 mb-3">
+          <div>
+            <p className="text-2xl font-bold text-blue-600">{totalServers}</p>
+            <p className="text-xs text-gray-400">Ordered</p>
+          </div>
+          <div className="w-px h-8 bg-gray-200" />
+          <div>
+            <p className="text-2xl font-bold text-emerald-600">{deliveredServers}</p>
+            <p className="text-xs text-gray-400">Delivered</p>
+          </div>
+        </div>
+        <p className="text-xs text-gray-400 mb-1">{serverPct}% fulfillment</p>
+        <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
+          <div className="h-full bg-blue-500 rounded-full transition-all" style={{ width: `${serverPct}%` }} />
         </div>
       </div>
     </div>
