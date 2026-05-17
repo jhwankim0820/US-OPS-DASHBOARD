@@ -52,11 +52,11 @@ export default function StatCards({
 
   return (
     <div className="space-y-3">
-      {/* Row 1: Confirmed revenue + Pipeline value */}
-      <div className="grid grid-cols-2 gap-3">
+      {/* Row 1: All 5 cards in one row */}
+      <div className="grid grid-cols-5 gap-3">
         <div className="rounded-xl border border-gray-200 bg-white p-5">
           <p className="text-sm text-gray-500 mb-1">Confirmed revenue</p>
-          <p className="text-3xl font-bold text-gray-900">{formatRevenue(confirmedRevenue)}</p>
+          <p className="text-2xl font-bold text-gray-900">{formatRevenue(confirmedRevenue)}</p>
           <p className="text-sm text-gray-400 mt-1">
             {confirmedCount} deal{confirmedCount !== 1 ? 's' : ''} confirmed
           </p>
@@ -64,7 +64,7 @@ export default function StatCards({
 
         <div className="rounded-xl border border-gray-200 bg-white p-5">
           <p className="text-sm text-gray-500 mb-1">Pipeline value</p>
-          <p className="text-3xl font-bold text-gray-900">{formatRevenue(demandRevenue)}</p>
+          <p className="text-2xl font-bold text-gray-900">{formatRevenue(demandRevenue)}</p>
           <div className="flex items-center gap-2 mt-1">
             <p className="text-sm text-gray-400">In demand stage</p>
             <span className="text-xs px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 font-medium">
@@ -72,10 +72,8 @@ export default function StatCards({
             </span>
           </div>
         </div>
-      </div>
 
-      {/* Row 2: Cards / Servers / Stale */}
-      <div className="grid grid-cols-3 gap-3">
+        <div className="col-span-3 grid grid-cols-3 gap-3">
         <div className="rounded-xl border border-gray-200 bg-white p-5">
           <div className="flex items-center justify-between mb-3">
             <p className="text-sm text-gray-500">Cards ordered vs delivered</p>
@@ -133,9 +131,10 @@ export default function StatCards({
             </span>
           )}
         </div>
+        </div>
       </div>
 
-      {/* Row 3: Pipeline by stage */}
+      {/* Row 2: Pipeline by stage */}
       <div className="rounded-xl border border-gray-200 bg-white p-5">
         <p className="text-sm font-semibold text-gray-700 mb-4">Pipeline by stage</p>
         <div className="grid grid-cols-5 divide-x divide-gray-100">
