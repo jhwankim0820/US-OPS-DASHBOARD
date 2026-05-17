@@ -1,5 +1,4 @@
 export const dynamic = 'force-dynamic'
-
 import { Suspense } from 'react'
 import { prisma } from '@/lib/prisma'
 import type { Prisma } from '@/generated/prisma/client'
@@ -7,6 +6,8 @@ import FilterBar from '@/components/shared/FilterBar'
 import StatCards from '@/components/dashboard/StatCards'
 import DealStatusFlow from '@/components/dashboard/DealStatusFlow'
 import DonutChart from '@/components/dashboard/DonutChart'
+import InventorySection from '@/components/dashboard/InventorySection'
+import PocAllocationSection from '@/components/dashboard/PocAllocationSection'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
 const FORM_FACTORS = ['Card Only', 'Custom System', 'Rack Server', 'Workstation']
@@ -26,7 +27,6 @@ export default async function DashboardPage({ searchParams }: { searchParams: Se
   const statuses = status?.split(',').filter(Boolean) ?? []
   const regions = region?.split(',').filter(Boolean) ?? []
   const owners = owner?.split(',').filter(Boolean) ?? []
-
   if (statuses.length > 0) where.status = { in: statuses }
   if (regions.length > 0) where.region = { in: regions }
   if (owners.length > 0) where.owner = { in: owners }
@@ -83,6 +83,9 @@ export default async function DashboardPage({ searchParams }: { searchParams: Se
           deliveredServers={deliveredServers}
         />
 
+        {/* Inventory donut charts */}
+        <InventorySection />
+
         <div>
           <h2 className="mb-3 text-lg font-semibold">Deal Pipeline</h2>
           <DealStatusFlow
@@ -101,6 +104,9 @@ export default async function DashboardPage({ searchParams }: { searchParams: Se
             <DonutChart data={formFactorData} />
           </CardContent>
         </Card>
+
+        {/* POC allocation by sales rep */}
+        <PocAllocationSection />
       </div>
     </main>
   )
