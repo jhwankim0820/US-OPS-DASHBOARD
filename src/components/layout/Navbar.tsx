@@ -8,6 +8,7 @@ const NAV_ITEMS = [
   { href: '/', label: 'Dashboard' },
   { href: '/deals', label: 'Deals' },
   { href: '/shipments', label: 'Shipments' },
+  { href: '/financials', label: 'Key Financials' },
 ]
 
 export default function Navbar() {
