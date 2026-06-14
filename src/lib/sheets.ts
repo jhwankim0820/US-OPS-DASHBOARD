@@ -38,11 +38,11 @@ export interface SheetDeal {
 }
 
 function getAuth() {
+  const raw = process.env.GOOGLE_SERVICE_ACCOUNT_JSON
+  if (!raw) throw new Error('GOOGLE_SERVICE_ACCOUNT_JSON is not set')
+  const credentials = JSON.parse(raw)
   return new google.auth.GoogleAuth({
-    credentials: {
-      client_email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
-      private_key: process.env.GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY?.replace(/\\n/g, '\n'),
-    },
+    credentials,
     scopes: ['https://www.googleapis.com/auth/spreadsheets.readonly'],
   })
 }
@@ -86,13 +86,25 @@ function inferStatus(po: Date | null, etd: Date | null, billing: Date | null): s
 }
 
 async function fetchDeals(): Promise<SheetDeal[]> {
-  const auth = getAuth()
+  let auth: ReturnType<typeof getAuth>
+  try {
+    auth = getAuth()
+  } catch (e) {
+    console.error('[sheets] auth init failed:', e)
+    return []
+  }
   const sheets = google.sheets({ version: 'v4', auth })
-  const res = await sheets.spreadsheets.values.get({
-    spreadsheetId: SPREADSHEET_ID,
-    range: RANGE,
-  })
-  const rows = res.data.values ?? []
+  let rows: string[][] = []
+  try {
+    const res = await sheets.spreadsheets.values.get({
+      spreadsheetId: SPREADSHEET_ID,
+      range: RANGE,
+    })
+    rows = (res.data.values ?? []) as string[][]
+  } catch (e) {
+    console.error('[sheets] spreadsheet fetch failed:', e)
+    return []
+  }
 
   return rows
     .filter((r) => {
