@@ -1,7 +1,7 @@
 import { google } from 'googleapis'
 import { unstable_cache } from 'next/cache'
 
-const SPREADSHEET_ID = process.env.GOOGLE_SPREADSHEET_ID!
+const SPREADSHEET_ID = process.env.GOOGLE_SPREADSHEET_ID!.replace(/^﻿/, '').trim()
 const RANGE = 'Sheet1!A2:R200'
 
 const US_TEAM = new Set([
