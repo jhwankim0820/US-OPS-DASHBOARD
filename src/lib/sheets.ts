@@ -40,7 +40,7 @@ export interface SheetDeal {
 function getAuth() {
   const raw = process.env.GOOGLE_SERVICE_ACCOUNT_JSON
   if (!raw) throw new Error('GOOGLE_SERVICE_ACCOUNT_JSON is not set')
-  const credentials = JSON.parse(raw)
+  const credentials = JSON.parse(raw.replace(/^﻿/, '').trim())
   return new google.auth.GoogleAuth({
     credentials,
     scopes: ['https://www.googleapis.com/auth/spreadsheets.readonly'],
