@@ -13,15 +13,18 @@ interface Deal {
   id: string
   dmdId: string
   customer: string
+  summary?: string
+  npuModel?: string
   status: string
   category: string
   formFactor: string
   owner: string
   region: string
   revenue: number
+  currency?: string
   cards: number
   servers: number
-  createdAt: Date
+  createdAt: Date | string
 }
 
 const STATUS_STYLE: Record<string, string> = {
@@ -95,7 +98,7 @@ export default function DealsTable({ deals }: { deals: Deal[] }) {
                 <TableCell className="text-sm">{deal.owner}</TableCell>
                 <TableCell className="text-sm">{deal.region}</TableCell>
                 <TableCell className="text-right text-sm font-medium">
-                  {formatRevenue(deal.revenue)}
+                  {formatRevenue(deal.revenue, deal.currency)}
                 </TableCell>
                 <TableCell className="text-right text-sm">{deal.cards || '—'}</TableCell>
                 <TableCell className="text-right text-sm">{deal.servers || '—'}</TableCell>

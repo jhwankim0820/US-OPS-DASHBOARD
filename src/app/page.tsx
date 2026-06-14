@@ -1,7 +1,6 @@
 export const dynamic = 'force-dynamic'
 import { Suspense } from 'react'
-import { prisma } from '@/lib/prisma'
-import type { Prisma } from '@/generated/prisma/client'
+import { getDeals } from '@/lib/sheets'
 import FilterBar from '@/components/shared/FilterBar'
 import StatCards from '@/components/dashboard/StatCards'
 import DealStatusFlow from '@/components/dashboard/DealStatusFlow'
@@ -19,29 +18,27 @@ type SearchParams = Promise<{
 export default async function DashboardPage({ searchParams }: { searchParams: SearchParams }) {
   const { status, region, owner, from, to } = await searchParams
 
-  const where: Prisma.DealWhereInput = {}
+  const allDeals = await getDeals()
+
   const statuses = status?.split(',').filter(Boolean) ?? []
   const regions = region?.split(',').filter(Boolean) ?? []
   const owners = owner?.split(',').filter(Boolean) ?? []
-  if (statuses.length > 0) where.status = { in: statuses }
-  if (regions.length > 0) where.region = { in: regions }
-  if (owners.length > 0) where.owner = { in: owners }
-  if (from || to) {
-    const dateFilter: { gte?: Date; lt?: Date } = {}
-    if (from) dateFilter.gte = new Date(from)
-    if (to) {
+
+  let deals = allDeals
+  if (statuses.length) deals = deals.filter((d) => statuses.includes(d.status))
+  if (regions.length) deals = deals.filter((d) => regions.includes(d.region))
+  if (owners.length) deals = deals.filter((d) => owners.includes(d.owner))
+  if (from) deals = deals.filter((d) => d.createdAt >= new Date(from))
+  if (to) {
+    deals = deals.filter((d) => {
       const toDate = new Date(to)
       toDate.setDate(toDate.getDate() + 1)
-      dateFilter.lt = toDate
-    }
-    where.createdAt = dateFilter
+      return d.createdAt < toDate
+    })
   }
 
-  const [deals, allOwners, allRegions] = await Promise.all([
-    prisma.deal.findMany({ where, orderBy: { dmdId: 'asc' } }),
-    prisma.deal.findMany({ distinct: ['owner'], select: { owner: true }, orderBy: { owner: 'asc' } }),
-    prisma.deal.findMany({ distinct: ['region'], select: { region: true }, orderBy: { region: 'asc' } }),
-  ])
+  const allOwners = [...new Set(allDeals.map((d) => d.owner).filter(Boolean))].sort()
+  const allRegions = [...new Set(allDeals.map((d) => d.region).filter(Boolean))].sort()
 
   const STAGES = ['Demand', 'Confirmed', 'Waiting for Delivery', 'Delivered', 'Cancelled/Lost']
   const delivered = deals.filter((d) => d.status === 'Delivered')
@@ -59,10 +56,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Se
 
       <div className="space-y-6">
         <Suspense>
-          <FilterBar
-            regions={allRegions.map((d) => d.region)}
-            owners={allOwners.map((d) => d.owner)}
-          />
+          <FilterBar regions={allRegions} owners={allOwners} />
         </Suspense>
 
         <StatCards
@@ -73,10 +67,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Se
           byStage={byStage}
         />
 
-        {/* Inventory donut charts */}
         <InventorySection />
-
-        {/* POC allocation by sales rep */}
         <PocAllocationSection />
 
         <div>
@@ -88,7 +79,6 @@ export default async function DashboardPage({ searchParams }: { searchParams: Se
             delivered={deals.filter((d) => d.status === 'Delivered')}
           />
         </div>
-
       </div>
     </main>
   )

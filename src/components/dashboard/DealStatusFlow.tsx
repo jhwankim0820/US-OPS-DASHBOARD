@@ -6,6 +6,7 @@ interface Deal {
   customer: string
   formFactor: string
   revenue: number
+  currency: string
   cards: number
   servers: number
   owner: string
@@ -82,7 +83,7 @@ export default function DealStatusFlow({
                 <div className="flex items-start justify-between">
                   <span className="font-mono text-xs text-gray-400">{deal.dmdId}</span>
                   {deal.revenue > 0 && (
-                    <span className="text-sm font-semibold">{formatRevenue(deal.revenue)}</span>
+                    <span className="text-sm font-semibold">{formatRevenue(deal.revenue, deal.currency)}</span>
                   )}
                 </div>
                 <p className="mt-0.5 text-sm font-medium">{deal.customer}</p>
