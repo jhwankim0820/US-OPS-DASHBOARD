@@ -94,7 +94,7 @@ export default function ShipmentTracker() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 
         {/* Inbound */}
-        <div className="rounded-xl border border-[#2A2A2A] bg-[#1A1A1A] p-5">
+        <div className="rounded-xl border border-[#333333] bg-[#252525] p-5">
           <div className="flex items-center justify-between mb-4">
             <div>
               <p className="text-xs font-semibold uppercase tracking-wide text-[#666666]">Inbound</p>
@@ -131,7 +131,7 @@ export default function ShipmentTracker() {
         </div>
 
         {/* Outbound */}
-        <div className="rounded-xl border border-[#2A2A2A] bg-[#1A1A1A] p-5">
+        <div className="rounded-xl border border-[#333333] bg-[#252525] p-5">
           <div className="flex items-center justify-between mb-4">
             <div>
               <p className="text-xs font-semibold uppercase tracking-wide text-[#666666]">Outbound</p>
@@ -164,7 +164,7 @@ export default function ShipmentTracker() {
                 </div>
               </div>
             ))}
-            <p className="text-xs text-[#666666] text-center pt-2 border-t border-[#2A2A2A]">
+            <p className="text-xs text-[#666666] text-center pt-2 border-t border-[#333333]">
               ✓ 2 shipments delivered this month
             </p>
           </div>
@@ -172,7 +172,7 @@ export default function ShipmentTracker() {
       </div>
 
       {/* FedEx Dispatch */}
-      <div className="rounded-xl border border-[#2A2A2A] bg-[#1A1A1A] p-5 flex items-center justify-between gap-4 flex-wrap">
+      <div className="rounded-xl border border-[#333333] bg-[#252525] p-5 flex items-center justify-between gap-4 flex-wrap">
         <div>
           <p className="text-sm font-semibold text-[#E0E0E0]">Ship hardware via FedEx</p>
           <p className="text-xs text-[#666666] mt-0.5">Create a new outbound shipment. A transfer pricing contract will be generated automatically.</p>
@@ -189,7 +189,7 @@ export default function ShipmentTracker() {
 
       {/* Confirmed toast */}
       {confirmed && (
-        <div className="fixed bottom-6 right-6 z-50 bg-[#1A1A1A] border border-[#2A2A2A] text-white text-sm font-medium px-4 py-3 rounded-xl shadow-lg">
+        <div className="fixed bottom-6 right-6 z-50 bg-[#252525] border border-[#333333] text-white text-sm font-medium px-4 py-3 rounded-xl shadow-lg">
           ✓ Shipment confirmed & logged!
         </div>
       )}
@@ -197,8 +197,8 @@ export default function ShipmentTracker() {
       {/* FedEx Modal */}
       {fedexOpen && (
         <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/70">
-          <div className="bg-[#1A1A1A] border border-[#2A2A2A] rounded-2xl shadow-xl w-full max-w-lg mx-4">
-            <div className="flex items-center justify-between p-5 border-b border-[#2A2A2A]">
+          <div className="bg-[#252525] border border-[#333333] rounded-2xl shadow-xl w-full max-w-lg mx-4">
+            <div className="flex items-center justify-between p-5 border-b border-[#333333]">
               <div>
                 <p className="font-semibold text-white">New FedEx shipment</p>
                 <p className="text-xs text-[#666666] mt-0.5">US Office → Client</p>
@@ -209,7 +209,7 @@ export default function ShipmentTracker() {
               <div>
                 <label className="block text-xs text-[#888888] mb-1">Recipient company</label>
                 <input
-                  className="w-full border border-[#2A2A2A] bg-[#111111] text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#E21500]/50"
+                  className="w-full border border-[#333333] bg-[#111111] text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#E21500]/50"
                   placeholder="e.g. AWS, Google Cloud…"
                   value={form.recipient}
                   onChange={(e) => setForm({ ...form, recipient: e.target.value })}
@@ -219,7 +219,7 @@ export default function ShipmentTracker() {
                 <div>
                   <label className="block text-xs text-[#888888] mb-1">Hardware type</label>
                   <select
-                    className="w-full border border-[#2A2A2A] bg-[#111111] text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#E21500]/50"
+                    className="w-full border border-[#333333] bg-[#111111] text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#E21500]/50"
                     value={form.hwType}
                     onChange={(e) => setForm({ ...form, hwType: e.target.value as HardwareType })}
                   >
@@ -233,7 +233,7 @@ export default function ShipmentTracker() {
                   <input
                     type="number"
                     min={1}
-                    className="w-full border border-[#2A2A2A] bg-[#111111] text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#E21500]/50"
+                    className="w-full border border-[#333333] bg-[#111111] text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#E21500]/50"
                     value={form.qty}
                     onChange={(e) => setForm({ ...form, qty: parseInt(e.target.value) || 1 })}
                   />
@@ -242,7 +242,7 @@ export default function ShipmentTracker() {
               <div>
                 <label className="block text-xs text-[#888888] mb-1">Delivery address</label>
                 <input
-                  className="w-full border border-[#2A2A2A] bg-[#111111] text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#E21500]/50"
+                  className="w-full border border-[#333333] bg-[#111111] text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#E21500]/50"
                   placeholder="Street, City, State, ZIP"
                   value={form.address}
                   onChange={(e) => setForm({ ...form, address: e.target.value })}
@@ -252,7 +252,7 @@ export default function ShipmentTracker() {
                 <div>
                   <label className="block text-xs text-[#888888] mb-1">FedEx service</label>
                   <select
-                    className="w-full border border-[#2A2A2A] bg-[#111111] text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#E21500]/50"
+                    className="w-full border border-[#333333] bg-[#111111] text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#E21500]/50"
                     value={form.service}
                     onChange={(e) => setForm({ ...form, service: e.target.value as FedExService })}
                   >
@@ -266,7 +266,7 @@ export default function ShipmentTracker() {
                   <label className="block text-xs text-[#888888] mb-1">Requested delivery</label>
                   <input
                     type="date"
-                    className="w-full border border-[#2A2A2A] bg-[#111111] text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#E21500]/50"
+                    className="w-full border border-[#333333] bg-[#111111] text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#E21500]/50"
                     value={form.delivDate}
                     onChange={(e) => setForm({ ...form, delivDate: e.target.value })}
                   />
@@ -290,8 +290,8 @@ export default function ShipmentTracker() {
       {/* Contract Modal */}
       {contractOpen && (
         <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/70">
-          <div className="bg-[#1A1A1A] border border-[#2A2A2A] rounded-2xl shadow-xl w-full max-w-xl mx-4 max-h-[90vh] overflow-y-auto">
-            <div className="p-5 border-b border-[#2A2A2A] text-center">
+          <div className="bg-[#252525] border border-[#333333] rounded-2xl shadow-xl w-full max-w-xl mx-4 max-h-[90vh] overflow-y-auto">
+            <div className="p-5 border-b border-[#333333] text-center">
               <p className="text-xs uppercase tracking-widest text-[#666666] mb-1">FuriosaAI, Inc.</p>
               <p className="font-semibold text-white text-lg">Intercompany Transfer Pricing Agreement</p>
               <p className="text-sm text-[#888888] mt-0.5">Hardware Transfer — US Operations</p>
@@ -315,7 +315,7 @@ export default function ShipmentTracker() {
                     ['Transferee / Client', form.recipient || '—'],
                     ['Agreement date', new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })],
                   ].map(([label, value]) => (
-                    <div key={label} className="flex justify-between py-1.5 border-b border-[#2A2A2A]">
+                    <div key={label} className="flex justify-between py-1.5 border-b border-[#333333]">
                       <span className="text-[#888888]">{label}</span>
                       <span className="font-medium text-white text-right max-w-xs">{value}</span>
                     </div>
@@ -334,7 +334,7 @@ export default function ShipmentTracker() {
                     ['Total value', `$${totalPrice.toLocaleString()} USD`],
                     ['Pricing method', 'Comparable Uncontrolled Price (CUP)'],
                   ].map(([label, value]) => (
-                    <div key={label} className="flex justify-between py-1.5 border-b border-[#2A2A2A]">
+                    <div key={label} className="flex justify-between py-1.5 border-b border-[#333333]">
                       <span className="text-[#888888]">{label}</span>
                       <span className="font-medium text-white">{value}</span>
                     </div>
@@ -351,7 +351,7 @@ export default function ShipmentTracker() {
                     ['Delivery address', form.address || '—'],
                     ['Risk transfer (Incoterms)', 'DAP — Delivered at Place'],
                   ].map(([label, value]) => (
-                    <div key={label} className="flex justify-between py-1.5 border-b border-[#2A2A2A]">
+                    <div key={label} className="flex justify-between py-1.5 border-b border-[#333333]">
                       <span className="text-[#888888]">{label}</span>
                       <span className="font-medium text-white text-right max-w-xs">{value}</span>
                     </div>

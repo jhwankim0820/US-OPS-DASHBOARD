@@ -58,27 +58,27 @@ export default function FinancialsPage() {
   return (
     <main className="min-h-screen bg-[#0D0D0D]">
       {/* KPI Strip */}
-      <div className="bg-[#111111] border-b border-[#2A2A2A] px-6 py-8 sm:px-10">
+      <div className="bg-[#111111] border-b border-[#333333] px-6 py-8 sm:px-10">
         <p className="mb-5 text-[11px] font-semibold uppercase tracking-[0.08em] text-[#666666]">
           Key Profitability Metrics
         </p>
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-          <div className="rounded-xl border border-[#2A2A2A] bg-[#1E1E1E] p-5">
+          <div className="rounded-xl border border-[#333333] bg-[#252525] p-5">
             <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[#666666]">Revenue (Cumulative)</p>
             <p className="mt-2 text-[36px] font-semibold leading-tight text-white">$9,000</p>
             <p className="mt-1 text-xs text-[#666666]">Service sales only</p>
           </div>
-          <div className="rounded-xl border border-[#2A2A2A] bg-[#1E1E1E] p-5">
+          <div className="rounded-xl border border-[#333333] bg-[#252525] p-5">
             <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[#666666]">Operating Loss (Q4)</p>
             <p className="mt-2 text-[36px] font-semibold leading-tight text-[#E21500]">−$4.76M</p>
             <p className="mt-1 text-xs text-[#666666]">vs Q3 −$3.62M</p>
           </div>
-          <div className="rounded-xl border border-[#2A2A2A] bg-[#1E1E1E] p-5">
+          <div className="rounded-xl border border-[#333333] bg-[#252525] p-5">
             <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[#666666]">Net Loss (Q4)</p>
             <p className="mt-2 text-[36px] font-semibold leading-tight text-[#E21500]">−$4.74M</p>
             <p className="mt-1 text-xs text-[#666666]">Cumulative −$13.3M</p>
           </div>
-          <div className="rounded-xl border border-[#2A2A2A] bg-[#1E1E1E] p-5">
+          <div className="rounded-xl border border-[#333333] bg-[#252525] p-5">
             <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[#666666]">Cash Balance</p>
             <p className="mt-2 text-[36px] font-semibold leading-tight text-white">$973K</p>
             <p className="mt-1 text-xs text-[#666666]">↓ from $1.11M in Q3</p>
@@ -88,7 +88,7 @@ export default function FinancialsPage() {
 
       <div className="space-y-8 p-6 sm:p-10">
         {/* Quarterly P&L Trend */}
-        <div className="rounded-xl border border-[#2A2A2A] bg-[#1E1E1E] p-6">
+        <div className="rounded-xl border border-[#333333] bg-[#252525] p-6">
           <p className="mb-1 text-[11px] font-semibold uppercase tracking-[0.08em] text-[#666666]">
             Quarterly P&amp;L Trend
           </p>
@@ -176,8 +176,8 @@ export default function FinancialsPage() {
         </div>
 
         {/* Cost Breakdown */}
-        <div className="overflow-hidden rounded-xl border border-[#2A2A2A] bg-[#1E1E1E]">
-          <div className="border-b border-[#2A2A2A] px-6 py-4">
+        <div className="overflow-hidden rounded-xl border border-[#333333] bg-[#252525]">
+          <div className="border-b border-[#333333] px-6 py-4">
             <div className="flex items-center justify-between">
               <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[#666666]">
                 Cost Breakdown — All Quarters (USD, by Q4 size)
@@ -188,7 +188,7 @@ export default function FinancialsPage() {
           <div className="overflow-x-auto">
             <table className="w-full min-w-[640px]">
               <thead>
-                <tr className="border-b border-[#2A2A2A] bg-[#161616] text-left">
+                <tr className="border-b border-[#333333] bg-[#1A1A1A] text-left">
                   <th className="w-10 py-3 pl-6 text-xs font-medium text-[#666666]"></th>
                   <th className="px-4 py-3 text-xs font-medium text-[#888888]">Item</th>
                   <th className="px-3 py-3 text-right text-xs font-medium text-[#666666]">Q1</th>
@@ -204,7 +204,7 @@ export default function FinancialsPage() {
                   return (
                     <tr
                       key={String(c.rank)}
-                      className="border-b border-[#222222] last:border-0 hover:bg-[#222222]"
+                      className="border-b border-[#2E2E2E] last:border-0 hover:bg-[#2E2E2E]"
                     >
                       <td className="py-3.5 pl-6 text-sm text-[#666666]">{c.rank}</td>
                       <td className="px-4 py-3.5">
@@ -257,22 +257,22 @@ export default function FinancialsPage() {
             Liquidity &amp; Financial Health
           </p>
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-            <div className="rounded-xl border border-[#2A2A2A] bg-[#1E1E1E] p-5">
+            <div className="rounded-xl border border-[#333333] bg-[#252525] p-5">
               <p className="text-xs text-[#888888]">Total Assets</p>
               <p className="mt-2 text-2xl font-bold text-white">$1.12M</p>
               <p className="mt-1 text-xs text-[#666666]">↓ from $1.18M in Q3</p>
             </div>
-            <div className="rounded-xl border border-[#2A2A2A] bg-[#1E1E1E] p-5">
+            <div className="rounded-xl border border-[#333333] bg-[#252525] p-5">
               <p className="text-xs text-[#888888]">Total Liabilities</p>
               <p className="mt-2 text-2xl font-bold text-white">$100K</p>
               <p className="mt-1 text-xs text-[#666666]">Mainly lease liabilities</p>
             </div>
-            <div className="rounded-xl border border-[#2A2A2A] bg-[#1E1E1E] p-5">
+            <div className="rounded-xl border border-[#333333] bg-[#252525] p-5">
               <p className="text-xs text-[#888888]">Total Equity</p>
               <p className="mt-2 text-2xl font-bold text-white">$1.02M</p>
               <p className="mt-1 text-xs text-[#666666]">Retained deficit ongoing</p>
             </div>
-            <div className="rounded-xl border border-[#2A2A2A] bg-[#1E1E1E] p-5">
+            <div className="rounded-xl border border-[#333333] bg-[#252525] p-5">
               <p className="text-xs text-[#888888]">Current Ratio</p>
               <p className="mt-2 text-2xl font-bold text-emerald-400">1,214%</p>
               <p className="mt-1 text-xs text-[#666666]">Short-term solvency solid</p>

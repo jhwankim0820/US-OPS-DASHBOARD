@@ -51,7 +51,7 @@ export default function FilterBar({ regions, owners }: FilterBarProps) {
   }
 
   return (
-    <div className="flex flex-wrap items-center gap-3 rounded-xl border border-[#2A2A2A] bg-[#1A1A1A] px-4 py-3">
+    <div className="flex flex-wrap items-center gap-3 rounded-xl border border-[#333333] bg-[#252525] px-4 py-3">
       <MultiSelect
         label="Status"
         options={STATUSES}

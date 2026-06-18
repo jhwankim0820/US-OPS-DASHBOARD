@@ -36,7 +36,7 @@ interface DonutProps {
 
 function InventoryDonut({ data, total, label, colors, schedule }: DonutProps) {
   return (
-    <div className="rounded-xl border border-[#2A2A2A] bg-[#1E1E1E] p-5">
+    <div className="rounded-xl border border-[#333333] bg-[#252525] p-5">
       <p className="mb-4 text-[11px] font-semibold uppercase tracking-[0.08em] text-[#666666]">{label}</p>
       <div className="flex items-center gap-5">
         <div className="relative w-28 h-28 flex-shrink-0">
@@ -80,7 +80,7 @@ function InventoryDonut({ data, total, label, colors, schedule }: DonutProps) {
             ))}
           </div>
 
-          <div className="pt-2 border-t border-[#2A2A2A]">
+          <div className="pt-2 border-t border-[#333333]">
             <p className="text-xs text-[#666666] mb-1.5">Upcoming POC</p>
             <div className="flex flex-wrap gap-1.5">
               {schedule.map((s) => (

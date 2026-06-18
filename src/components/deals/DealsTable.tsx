@@ -44,10 +44,10 @@ const CATEGORY_STYLE: Record<string, string> = {
 
 export default function DealsTable({ deals }: { deals: Deal[] }) {
   return (
-    <div className="rounded-xl border border-[#2A2A2A] bg-[#1A1A1A] shadow-sm">
+    <div className="rounded-xl border border-[#333333] bg-[#252525] shadow-sm">
       <Table>
         <TableHeader>
-          <TableRow className="bg-[#161616] border-[#2A2A2A]">
+          <TableRow className="bg-[#1A1A1A] border-[#333333]">
             <TableHead className="w-24 text-[#888888]">DMD ID</TableHead>
             <TableHead className="text-[#888888]">Customer</TableHead>
             <TableHead className="text-[#888888]">Status</TableHead>
@@ -70,7 +70,7 @@ export default function DealsTable({ deals }: { deals: Deal[] }) {
             </TableRow>
           ) : (
             deals.map((deal) => (
-              <TableRow key={deal.id} className="border-[#2A2A2A] hover:bg-[#222222]">
+              <TableRow key={deal.id} className="border-[#333333] hover:bg-[#2E2E2E]">
                 <TableCell>
                   <Link
                     href={`/deals/${deal.dmdId}`}

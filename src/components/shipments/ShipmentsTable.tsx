@@ -38,10 +38,10 @@ export default function ShipmentsTable({ shipments }: { shipments: ShipmentRow[]
   const router = useRouter()
 
   return (
-    <div className="rounded-lg border border-[#2A2A2A] bg-[#1A1A1A]">
+    <div className="rounded-lg border border-[#333333] bg-[#252525]">
       <Table>
         <TableHeader>
-          <TableRow className="bg-[#161616] border-[#2A2A2A]">
+          <TableRow className="bg-[#1A1A1A] border-[#333333]">
             <TableHead className="text-[#888888]">Tracking ID</TableHead>
             <TableHead className="text-[#888888]">Customer (Deal)</TableHead>
             <TableHead className="text-[#888888]">Status</TableHead>
@@ -61,7 +61,7 @@ export default function ShipmentsTable({ shipments }: { shipments: ShipmentRow[]
             shipments.map((s) => (
               <TableRow
                 key={s.id}
-                className="border-[#2A2A2A] cursor-pointer hover:bg-[#222222]"
+                className="border-[#333333] cursor-pointer hover:bg-[#2E2E2E]"
                 onClick={() => s.deal?.dmdId && router.push(`/deals/${s.deal.dmdId}`)}
               >
                 <TableCell className="font-mono text-sm font-semibold text-[#A0A0A0]">
