@@ -12,8 +12,8 @@ const serverData = [
   { name: 'Available', value: 6 },
 ]
 
-const CARD_COLORS = ['#E21500', '#2A2A2A']
-const SERVER_COLORS = ['rgb(124,77,255)', '#2A2A2A']
+const CARD_COLORS = ['#E21500', '#35353f']
+const SERVER_COLORS = ['rgb(124,77,255)', '#35353f']
 
 const pocSchedule = {
   cards: [
@@ -36,7 +36,7 @@ interface DonutProps {
 
 function InventoryDonut({ data, total, label, colors, schedule }: DonutProps) {
   return (
-    <div className="rounded-xl border border-[#333333] bg-[#252525] p-5">
+    <div className="rounded-xl border border-[#3a3a48] bg-[#2a2a35] p-5">
       <p className="mb-4 text-[11px] font-semibold uppercase tracking-[0.08em] text-[#888888]">{label}</p>
       <div className="flex items-center gap-5">
         <div className="relative w-28 h-28 flex-shrink-0">
@@ -57,7 +57,7 @@ function InventoryDonut({ data, total, label, colors, schedule }: DonutProps) {
               </Pie>
               <Tooltip
                 formatter={(v) => [`${v} units`, '']}
-                contentStyle={{ background: '#1E1E1E', border: '1px solid #2A2A2A', borderRadius: 8, color: '#E0E0E0', fontSize: 12 }}
+                contentStyle={{ background: '#232330', border: '1px solid #35353f', borderRadius: 8, color: '#E0E0E0', fontSize: 12 }}
               />
             </PieChart>
           </ResponsiveContainer>
@@ -80,7 +80,7 @@ function InventoryDonut({ data, total, label, colors, schedule }: DonutProps) {
             ))}
           </div>
 
-          <div className="pt-2 border-t border-[#333333]">
+          <div className="pt-2 border-t border-[#3a3a48]">
             <p className="text-xs text-[#888888] mb-1.5">Upcoming POC</p>
             <div className="flex flex-wrap gap-1.5">
               {schedule.map((s) => (
@@ -89,7 +89,7 @@ function InventoryDonut({ data, total, label, colors, schedule }: DonutProps) {
                   className="text-xs font-medium px-2 py-0.5 rounded-full"
                   style={s.active
                     ? { background: `${colors[0]}33`, color: colors[0] }
-                    : { background: '#2A2A2A', color: '#888888' }
+                    : { background: '#35353f', color: '#888888' }
                   }
                 >
                   {s.label} · {s.qty} · {s.month}

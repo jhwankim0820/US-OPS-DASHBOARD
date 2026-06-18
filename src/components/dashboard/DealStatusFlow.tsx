@@ -79,7 +79,7 @@ export default function DealStatusFlow({
 
           <div className="space-y-2">
             {groups[col.key].map((deal) => (
-              <div key={deal.dmdId} className="rounded-lg bg-[#1E1E1E] p-3 shadow-sm">
+              <div key={deal.dmdId} className="rounded-lg bg-[#232330] p-3 shadow-sm">
                 <div className="flex items-start justify-between">
                   <span className="font-mono text-xs text-[#888888]">{deal.dmdId}</span>
                   {deal.revenue > 0 && (

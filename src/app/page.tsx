@@ -48,7 +48,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Se
   })
 
   return (
-    <main className="min-h-screen bg-[#0D0D0D] p-6 sm:p-10">
+    <main className="min-h-screen bg-[#1c1c22] p-6 sm:p-10">
       <div className="mb-6">
         <h1 className="text-2xl font-bold tracking-tight text-white">US Ops Dashboard</h1>
         <p className="text-sm text-[#AAAAAA]">FuriosaAI · Deal Pipeline Overview</p>

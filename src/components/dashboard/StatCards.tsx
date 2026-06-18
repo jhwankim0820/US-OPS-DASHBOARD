@@ -43,9 +43,9 @@ export default function StatCards({
   return (
     <div className="grid grid-cols-4 gap-4 items-stretch">
       {/* Pipeline by stage */}
-      <div className="col-span-2 rounded-xl border border-[#333333] bg-[#252525] p-5">
+      <div className="col-span-2 rounded-xl border border-[#3a3a48] bg-[#2a2a35] p-5">
         <p className="mb-4 text-[11px] font-semibold uppercase tracking-[0.08em] text-[#888888]">Pipeline by stage</p>
-        <div className="grid grid-cols-5 divide-x divide-[#333333]">
+        <div className="grid grid-cols-5 divide-x divide-[#3a3a48]">
           {byStage.map((s) => (
             <div key={s.status} className="px-4 first:pl-0 last:pr-0">
               <div className="flex items-center gap-1.5 mb-1">
@@ -62,7 +62,7 @@ export default function StatCards({
       </div>
 
       {/* Cards ordered vs delivered */}
-      <div className="rounded-xl border border-[#333333] bg-[#252525] p-5">
+      <div className="rounded-xl border border-[#3a3a48] bg-[#2a2a35] p-5">
         <div className="flex items-center justify-between mb-3">
           <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[#888888]">Cards ordered vs delivered</p>
           <span className="text-xs px-2 py-0.5 rounded-full bg-[#E21500]/20 text-[#E21500] font-semibold">NEW</span>
@@ -72,20 +72,20 @@ export default function StatCards({
             <p className="text-[36px] font-semibold leading-tight text-white">{totalCards}</p>
             <p className="text-xs text-[#888888]">Ordered</p>
           </div>
-          <div className="w-px h-8 bg-[#333333] mb-1" />
+          <div className="w-px h-8 bg-[#3a3a48] mb-1" />
           <div>
             <p className="text-[36px] font-semibold leading-tight text-emerald-400">{deliveredCards}</p>
             <p className="text-xs text-[#888888]">Delivered</p>
           </div>
         </div>
         <p className="text-xs text-[#888888] mb-1">{cardPct}% fulfillment</p>
-        <div className="h-1.5 bg-[#1E1E1E] rounded-full overflow-hidden">
+        <div className="h-1.5 bg-[#232330] rounded-full overflow-hidden">
           <div className="h-full bg-[#E21500] rounded-full transition-all" style={{ width: `${cardPct}%` }} />
         </div>
       </div>
 
       {/* Servers ordered vs delivered */}
-      <div className="rounded-xl border border-[#333333] bg-[#252525] p-5">
+      <div className="rounded-xl border border-[#3a3a48] bg-[#2a2a35] p-5">
         <div className="flex items-center justify-between mb-3">
           <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[#888888]">Servers ordered vs delivered</p>
           <span className="text-xs px-2 py-0.5 rounded-full bg-[#E21500]/20 text-[#E21500] font-semibold">NEW</span>
@@ -95,14 +95,14 @@ export default function StatCards({
             <p className="text-[36px] font-semibold leading-tight text-white">{totalServers}</p>
             <p className="text-xs text-[#888888]">Ordered</p>
           </div>
-          <div className="w-px h-8 bg-[#333333] mb-1" />
+          <div className="w-px h-8 bg-[#3a3a48] mb-1" />
           <div>
             <p className="text-[36px] font-semibold leading-tight text-emerald-400">{deliveredServers}</p>
             <p className="text-xs text-[#888888]">Delivered</p>
           </div>
         </div>
         <p className="text-xs text-[#888888] mb-1">{serverPct}% fulfillment</p>
-        <div className="h-1.5 bg-[#1E1E1E] rounded-full overflow-hidden">
+        <div className="h-1.5 bg-[#232330] rounded-full overflow-hidden">
           <div className="h-full bg-[#E21500] rounded-full transition-all" style={{ width: `${serverPct}%` }} />
         </div>
       </div>

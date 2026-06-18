@@ -16,7 +16,7 @@ export default function Navbar() {
   const pathname = usePathname()
 
   return (
-    <header className="sticky top-0 z-50 border-b border-[#2A2A2A] bg-[#111111]">
+    <header className="sticky top-0 z-50 border-b border-[#35353f] bg-[#16161c]">
       <div className="flex h-14 items-center gap-8 px-6">
         <span className="text-sm font-bold tracking-tight text-white">
           FuriosaAI · US Ops
@@ -35,7 +35,7 @@ export default function Navbar() {
                   'rounded-md px-3 py-1.5 text-sm font-medium transition-colors',
                   isActive
                     ? 'bg-[#E21500] text-white'
-                    : 'text-[#AAAAAA] hover:bg-[#1E1E1E] hover:text-white'
+                    : 'text-[#AAAAAA] hover:bg-[#232330] hover:text-white'
                 )}
               >
                 {item.label}

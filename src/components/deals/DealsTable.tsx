@@ -38,16 +38,16 @@ const STATUS_STYLE: Record<string, string> = {
 const CATEGORY_STYLE: Record<string, string> = {
   B2B: 'bg-violet-900/40 text-violet-400',
   B2G: 'bg-indigo-900/40 text-indigo-400',
-  Internal: 'bg-[#2A2A2A] text-[#AAAAAA]',
+  Internal: 'bg-[#35353f] text-[#AAAAAA]',
   Rental: 'bg-orange-900/40 text-orange-400',
 }
 
 export default function DealsTable({ deals }: { deals: Deal[] }) {
   return (
-    <div className="rounded-xl border border-[#333333] bg-[#252525] shadow-sm">
+    <div className="rounded-xl border border-[#3a3a48] bg-[#2a2a35] shadow-sm">
       <Table>
         <TableHeader>
-          <TableRow className="bg-[#1A1A1A] border-[#333333]">
+          <TableRow className="bg-[#20202c] border-[#3a3a48]">
             <TableHead className="w-24 text-[#AAAAAA]">DMD ID</TableHead>
             <TableHead className="text-[#AAAAAA]">Customer</TableHead>
             <TableHead className="text-[#AAAAAA]">Status</TableHead>
@@ -70,7 +70,7 @@ export default function DealsTable({ deals }: { deals: Deal[] }) {
             </TableRow>
           ) : (
             deals.map((deal) => (
-              <TableRow key={deal.id} className="border-[#333333] hover:bg-[#2E2E2E]">
+              <TableRow key={deal.id} className="border-[#3a3a48] hover:bg-[#35353f]">
                 <TableCell>
                   <Link
                     href={`/deals/${deal.dmdId}`}
@@ -82,14 +82,14 @@ export default function DealsTable({ deals }: { deals: Deal[] }) {
                 <TableCell className="font-medium text-white">{deal.customer}</TableCell>
                 <TableCell>
                   <span
-                    className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold ${STATUS_STYLE[deal.status] ?? 'bg-[#2A2A2A] text-[#AAAAAA]'}`}
+                    className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold ${STATUS_STYLE[deal.status] ?? 'bg-[#35353f] text-[#AAAAAA]'}`}
                   >
                     {deal.status}
                   </span>
                 </TableCell>
                 <TableCell>
                   <span
-                    className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold ${CATEGORY_STYLE[deal.category] ?? 'bg-[#2A2A2A] text-[#AAAAAA]'}`}
+                    className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold ${CATEGORY_STYLE[deal.category] ?? 'bg-[#35353f] text-[#AAAAAA]'}`}
                   >
                     {deal.category}
                   </span>
