@@ -33,7 +33,7 @@ export default async function ShipmentsPage() {
 
       {/* Existing shipments table */}
       <div className="mt-10">
-        <h2 className="text-lg font-semibold mb-3 text-white">All Shipment Records</h2>
+        <h2 className="mb-3 text-[11px] font-semibold uppercase tracking-[0.08em] text-[#666666]">All Shipment Records</h2>
         <ShipmentsTable shipments={rows} />
       </div>
     </main>

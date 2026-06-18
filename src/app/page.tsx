@@ -71,7 +71,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Se
         <PocAllocationSection />
 
         <div>
-          <h2 className="mb-3 text-lg font-semibold text-white">Deal Pipeline</h2>
+          <h2 className="mb-3 text-[11px] font-semibold uppercase tracking-[0.08em] text-[#666666]">Deal Pipeline</h2>
           <DealStatusFlow
             demand={deals.filter((d) => d.status === 'Demand')}
             confirmed={deals.filter((d) => d.status === 'Confirmed')}

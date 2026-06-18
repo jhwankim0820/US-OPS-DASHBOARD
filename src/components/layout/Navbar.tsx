@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils'
 
@@ -42,6 +43,16 @@ export default function Navbar() {
             )
           })}
         </nav>
+        <div className="ml-auto">
+          <Image
+            src="/furiosa_logo.png"
+            alt="FuriosaAI"
+            height={28}
+            width={120}
+            style={{ height: 28, width: 'auto' }}
+            priority
+          />
+        </div>
       </div>
     </header>
   )

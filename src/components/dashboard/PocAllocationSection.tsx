@@ -82,7 +82,7 @@ const reps = [
 ]
 
 const typeColors: Record<string, string> = {
-  Sales: 'bg-blue-900/40 text-[#B3C6E7]',
+  Sales: 'bg-[#E21500]/20 text-[#E21500]',
   Internal: 'bg-[#2A2A2A] text-[#888888]',
   Rental: 'bg-purple-900/40 text-purple-400',
 }
@@ -94,7 +94,7 @@ const totalCards = reps.reduce((s, r) => s + r.cards, 0)
 const totalServers = reps.reduce((s, r) => s + r.servers, 0)
 
 const tooltipStyle = {
-  background: '#1A1A1A',
+  background: '#1E1E1E',
   border: '1px solid #2A2A2A',
   borderRadius: 8,
   color: '#E0E0E0',
@@ -104,7 +104,7 @@ const tooltipStyle = {
 export default function PocAllocationSection() {
   return (
     <div>
-      <h2 className="mb-3 text-lg font-semibold text-white">POC Allocation by Sales Rep</h2>
+      <h2 className="mb-3 text-[11px] font-semibold uppercase tracking-[0.08em] text-[#666666]">POC Allocation by Sales Rep</h2>
 
       {/* Summary */}
       <div className="grid grid-cols-3 gap-3 mb-4">
@@ -113,15 +113,15 @@ export default function PocAllocationSection() {
           { label: 'Total servers', value: totalServers },
           { label: 'Active deals', value: reps.reduce((s, r) => s + r.deals.length, 0) },
         ].map((m) => (
-          <div key={m.label} className="bg-[#1E1E1E] rounded-xl px-4 py-3">
-            <p className="text-xs text-[#888888] mb-1">{m.label}</p>
-            <p className="text-xl font-semibold text-white">{m.value}</p>
+          <div key={m.label} className="bg-[#141414] rounded-xl px-4 py-3 border border-[#2A2A2A]">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[#666666] mb-1">{m.label}</p>
+            <p className="text-[32px] font-semibold leading-tight text-white">{m.value}</p>
           </div>
         ))}
       </div>
 
       {/* Rep rows */}
-      <div className="rounded-xl border border-[#2A2A2A] bg-[#1A1A1A] divide-y divide-[#2A2A2A] mb-4">
+      <div className="rounded-xl border border-[#2A2A2A] bg-[#1E1E1E] divide-y divide-[#2A2A2A] mb-4">
         {reps.map((r) => {
           const cardPct = totalCards > 0 ? Math.round((r.cards / totalCards) * 100) : 0
           const svrPct = totalServers > 0 ? Math.round((r.servers / totalServers) * 100) : 0
@@ -144,18 +144,18 @@ export default function PocAllocationSection() {
                   <>
                     <div className="flex items-center gap-2">
                       <span className="text-xs text-[#888888] w-11">Cards</span>
-                      <div className="flex-1 h-1.5 bg-[#2A2A2A] rounded-full overflow-hidden">
-                        <div className="h-full bg-[#378ADD] rounded-full" style={{ width: `${cardPct}%` }} />
+                      <div className="flex-1 h-1.5 bg-[#141414] rounded-full overflow-hidden">
+                        <div className="h-full bg-[#E21500] rounded-full" style={{ width: `${cardPct}%` }} />
                       </div>
-                      <span className="text-xs font-medium text-[#E0E0E0] w-5 text-right">{r.cards}</span>
+                      <span className="text-xs font-semibold text-[#E0E0E0] w-5 text-right">{r.cards}</span>
                       <span className="text-xs text-[#666666] w-8">{cardPct}%</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <span className="text-xs text-[#888888] w-11">Servers</span>
-                      <div className="flex-1 h-1.5 bg-[#2A2A2A] rounded-full overflow-hidden">
-                        <div className="h-full bg-[#1D9E75] rounded-full" style={{ width: `${svrPct}%` }} />
+                      <div className="flex-1 h-1.5 bg-[#141414] rounded-full overflow-hidden">
+                        <div className="h-full bg-[#E21500] rounded-full" style={{ width: `${svrPct}%` }} />
                       </div>
-                      <span className="text-xs font-medium text-[#E0E0E0] w-5 text-right">{r.servers}</span>
+                      <span className="text-xs font-semibold text-[#E0E0E0] w-5 text-right">{r.servers}</span>
                       <span className="text-xs text-[#666666] w-8">{svrPct > 0 ? `${svrPct}%` : '—'}</span>
                     </div>
                     <div className="flex flex-wrap gap-1 pt-1">
@@ -176,10 +176,10 @@ export default function PocAllocationSection() {
       {/* Charts */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* Cards chart */}
-        <div className="rounded-xl border border-[#2A2A2A] bg-[#1A1A1A] p-5">
+        <div className="rounded-xl border border-[#2A2A2A] bg-[#1E1E1E] p-5">
           <div className="flex items-center gap-2 mb-4">
-            <span className="w-3 h-3 rounded-sm bg-[#378ADD] inline-block" />
-            <p className="text-sm font-medium text-[#A0A0A0]">Cards per rep</p>
+            <span className="w-3 h-3 rounded-sm bg-[#E21500] inline-block" />
+            <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[#666666]">Cards per rep</p>
           </div>
           <ResponsiveContainer width="100%" height={220}>
             <BarChart data={cardChartData} layout="vertical" margin={{ left: 0, right: 40 }}>
@@ -188,13 +188,13 @@ export default function PocAllocationSection() {
               <Tooltip formatter={(v) => [`${v} units`, 'Cards']} contentStyle={tooltipStyle} />
               <Bar dataKey="value" radius={[0, 3, 3, 0]} barSize={14}>
                 {cardChartData.map((d, i) => (
-                  <Cell key={i} fill={d.value > 0 ? '#378ADD' : '#2A2A2A'} />
+                  <Cell key={i} fill={d.value > 0 ? '#E21500' : '#2A2A2A'} />
                 ))}
                 <LabelList
                   dataKey="value"
                   position="right"
                   formatter={(v) => (Number(v) > 0 ? String(v) : '')}
-                  style={{ fill: '#378ADD', fontSize: 11, fontWeight: 600 }}
+                  style={{ fill: '#E21500', fontSize: 11, fontWeight: 600 }}
                 />
               </Bar>
             </BarChart>
@@ -202,10 +202,10 @@ export default function PocAllocationSection() {
         </div>
 
         {/* Servers chart */}
-        <div className="rounded-xl border border-[#2A2A2A] bg-[#1A1A1A] p-5">
+        <div className="rounded-xl border border-[#2A2A2A] bg-[#1E1E1E] p-5">
           <div className="flex items-center gap-2 mb-4">
-            <span className="w-3 h-3 rounded-sm bg-[#1D9E75] inline-block" />
-            <p className="text-sm font-medium text-[#A0A0A0]">Servers per rep</p>
+            <span className="w-3 h-3 rounded-sm bg-[#E21500] inline-block" />
+            <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[#666666]">Servers per rep</p>
           </div>
           <ResponsiveContainer width="100%" height={220}>
             <BarChart data={serverChartData} layout="vertical" margin={{ left: 0, right: 40 }}>
@@ -214,13 +214,13 @@ export default function PocAllocationSection() {
               <Tooltip formatter={(v) => [`${v} units`, 'Servers']} contentStyle={tooltipStyle} />
               <Bar dataKey="value" radius={[0, 3, 3, 0]} barSize={14}>
                 {serverChartData.map((d, i) => (
-                  <Cell key={i} fill={d.value > 0 ? '#1D9E75' : '#2A2A2A'} />
+                  <Cell key={i} fill={d.value > 0 ? '#E21500' : '#2A2A2A'} />
                 ))}
                 <LabelList
                   dataKey="value"
                   position="right"
                   formatter={(v) => (Number(v) > 0 ? String(v) : '')}
-                  style={{ fill: '#1D9E75', fontSize: 11, fontWeight: 600 }}
+                  style={{ fill: '#E21500', fontSize: 11, fontWeight: 600 }}
                 />
               </Bar>
             </BarChart>

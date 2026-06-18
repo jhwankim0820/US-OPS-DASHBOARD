@@ -71,7 +71,7 @@ export default function DealStatusFlow({
       {COLUMNS.map((col) => (
         <div key={col.key} className={`rounded-xl border ${col.border} ${col.bg} p-4`}>
           <div className="mb-3 flex items-center justify-between">
-            <h3 className="text-sm font-semibold text-[#E0E0E0]">{col.label}</h3>
+            <h3 className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[#666666]">{col.label}</h3>
             <span className={`rounded-full px-2 py-0.5 text-xs font-bold ${col.badge}`}>
               {groups[col.key].length}
             </span>
@@ -79,7 +79,7 @@ export default function DealStatusFlow({
 
           <div className="space-y-2">
             {groups[col.key].map((deal) => (
-              <div key={deal.dmdId} className="rounded-lg bg-[#222222] p-3 shadow-sm">
+              <div key={deal.dmdId} className="rounded-lg bg-[#141414] p-3 shadow-sm">
                 <div className="flex items-start justify-between">
                   <span className="font-mono text-xs text-[#666666]">{deal.dmdId}</span>
                   {deal.revenue > 0 && (
