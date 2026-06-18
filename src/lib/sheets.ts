@@ -153,4 +153,4 @@ async function fetchDeals(): Promise<SheetDeal[]> {
     })
 }
 
-export const getDeals = unstable_cache(fetchDeals, ['sheets-deals'], { revalidate: 60 })
+export const getDeals = unstable_cache(fetchDeals, ['sheets-deals'], { revalidate: 15 })

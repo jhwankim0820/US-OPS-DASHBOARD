@@ -8,6 +8,7 @@ import {
   Tooltip,
   ResponsiveContainer,
   Cell,
+  LabelList,
 } from 'recharts'
 
 const reps = [
@@ -173,7 +174,7 @@ export default function PocAllocationSection() {
             <p className="text-sm font-medium text-gray-700">Cards per rep</p>
           </div>
           <ResponsiveContainer width="100%" height={220}>
-            <BarChart data={cardChartData} layout="vertical" margin={{ left: 0, right: 16 }}>
+            <BarChart data={cardChartData} layout="vertical" margin={{ left: 0, right: 40 }}>
               <XAxis type="number" tick={{ fontSize: 11 }} axisLine={false} tickLine={false} />
               <YAxis type="category" dataKey="name" tick={{ fontSize: 11 }} width={60} axisLine={false} tickLine={false} />
               <Tooltip formatter={(v) => [`${v} units`, 'Cards']} />
@@ -181,6 +182,12 @@ export default function PocAllocationSection() {
                 {cardChartData.map((d, i) => (
                   <Cell key={i} fill={d.value > 0 ? '#378ADD' : '#D3D1C7'} />
                 ))}
+                <LabelList
+                  dataKey="value"
+                  position="right"
+                  formatter={(v: number) => (v > 0 ? v : '')}
+                  style={{ fill: '#378ADD', fontSize: 11, fontWeight: 600 }}
+                />
               </Bar>
             </BarChart>
           </ResponsiveContainer>
@@ -193,7 +200,7 @@ export default function PocAllocationSection() {
             <p className="text-sm font-medium text-gray-700">Servers per rep</p>
           </div>
           <ResponsiveContainer width="100%" height={220}>
-            <BarChart data={serverChartData} layout="vertical" margin={{ left: 0, right: 16 }}>
+            <BarChart data={serverChartData} layout="vertical" margin={{ left: 0, right: 40 }}>
               <XAxis type="number" tick={{ fontSize: 11 }} axisLine={false} tickLine={false} />
               <YAxis type="category" dataKey="name" tick={{ fontSize: 11 }} width={60} axisLine={false} tickLine={false} />
               <Tooltip formatter={(v) => [`${v} units`, 'Servers']} />
@@ -201,6 +208,12 @@ export default function PocAllocationSection() {
                 {serverChartData.map((d, i) => (
                   <Cell key={i} fill={d.value > 0 ? '#1D9E75' : '#D3D1C7'} />
                 ))}
+                <LabelList
+                  dataKey="value"
+                  position="right"
+                  formatter={(v: number) => (v > 0 ? v : '')}
+                  style={{ fill: '#378ADD', fontSize: 11, fontWeight: 600 }}
+                />
               </Bar>
             </BarChart>
           </ResponsiveContainer>
