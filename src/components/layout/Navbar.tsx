@@ -35,7 +35,7 @@ export default function Navbar() {
                   'rounded-md px-3 py-1.5 text-sm font-medium transition-colors',
                   isActive
                     ? 'bg-[#E21500] text-white'
-                    : 'text-[#888888] hover:bg-[#1E1E1E] hover:text-white'
+                    : 'text-[#AAAAAA] hover:bg-[#1E1E1E] hover:text-white'
                 )}
               >
                 {item.label}

@@ -71,7 +71,7 @@ export default function DealStatusFlow({
       {COLUMNS.map((col) => (
         <div key={col.key} className={`rounded-xl border ${col.border} ${col.bg} p-4`}>
           <div className="mb-3 flex items-center justify-between">
-            <h3 className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[#666666]">{col.label}</h3>
+            <h3 className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[#888888]">{col.label}</h3>
             <span className={`rounded-full px-2 py-0.5 text-xs font-bold ${col.badge}`}>
               {groups[col.key].length}
             </span>
@@ -81,12 +81,12 @@ export default function DealStatusFlow({
             {groups[col.key].map((deal) => (
               <div key={deal.dmdId} className="rounded-lg bg-[#1E1E1E] p-3 shadow-sm">
                 <div className="flex items-start justify-between">
-                  <span className="font-mono text-xs text-[#666666]">{deal.dmdId}</span>
+                  <span className="font-mono text-xs text-[#888888]">{deal.dmdId}</span>
                   {deal.revenue > 0 && (
-                    <span className="text-sm font-semibold text-[#E0E0E0]">{formatRevenue(deal.revenue, deal.currency)}</span>
+                    <span className="text-sm font-semibold text-white">{formatRevenue(deal.revenue, deal.currency)}</span>
                   )}
                 </div>
-                <p className="mt-0.5 text-sm font-medium text-[#E0E0E0]">{deal.customer}</p>
+                <p className="mt-0.5 text-sm font-medium text-white">{deal.customer}</p>
                 <div className="mt-1 flex flex-wrap gap-1">
                   <Badge variant="outline" className="text-xs border-[#3A3A3A] text-[#A0A0A0]">
                     {deal.formFactor}
@@ -95,7 +95,7 @@ export default function DealStatusFlow({
                     {deal.category}
                   </Badge>
                 </div>
-                <p className="mt-1 text-xs text-[#666666]">
+                <p className="mt-1 text-xs text-[#888888]">
                   {qtyLabel(deal)} · {deal.owner}
                 </p>
               </div>

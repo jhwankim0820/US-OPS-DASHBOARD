@@ -37,7 +37,7 @@ interface DonutProps {
 function InventoryDonut({ data, total, label, colors, schedule }: DonutProps) {
   return (
     <div className="rounded-xl border border-[#333333] bg-[#252525] p-5">
-      <p className="mb-4 text-[11px] font-semibold uppercase tracking-[0.08em] text-[#666666]">{label}</p>
+      <p className="mb-4 text-[11px] font-semibold uppercase tracking-[0.08em] text-[#888888]">{label}</p>
       <div className="flex items-center gap-5">
         <div className="relative w-28 h-28 flex-shrink-0">
           <ResponsiveContainer width="100%" height="100%">
@@ -63,7 +63,7 @@ function InventoryDonut({ data, total, label, colors, schedule }: DonutProps) {
           </ResponsiveContainer>
           <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
             <span className="text-[28px] font-semibold leading-tight text-white">{total}</span>
-            <span className="text-xs text-[#666666]">total</span>
+            <span className="text-xs text-[#888888]">total</span>
           </div>
         </div>
 
@@ -73,15 +73,15 @@ function InventoryDonut({ data, total, label, colors, schedule }: DonutProps) {
               <div key={d.name} className="flex justify-between items-center">
                 <div className="flex items-center gap-2">
                   <span className="w-2.5 h-2.5 rounded-sm inline-block" style={{ background: colors[i] }} />
-                  <span className="text-xs text-[#888888]">{d.name}</span>
+                  <span className="text-xs text-[#AAAAAA]">{d.name}</span>
                 </div>
-                <span className="text-xs font-semibold text-[#E0E0E0]">{d.value}</span>
+                <span className="text-xs font-semibold text-white">{d.value}</span>
               </div>
             ))}
           </div>
 
           <div className="pt-2 border-t border-[#333333]">
-            <p className="text-xs text-[#666666] mb-1.5">Upcoming POC</p>
+            <p className="text-xs text-[#888888] mb-1.5">Upcoming POC</p>
             <div className="flex flex-wrap gap-1.5">
               {schedule.map((s) => (
                 <span
@@ -106,7 +106,7 @@ function InventoryDonut({ data, total, label, colors, schedule }: DonutProps) {
 export default function InventorySection() {
   return (
     <div>
-      <h2 className="mb-3 text-[11px] font-semibold uppercase tracking-[0.08em] text-[#666666]">US Office Inventory</h2>
+      <h2 className="mb-3 text-[11px] font-semibold uppercase tracking-[0.08em] text-[#888888]">US Office Inventory</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <InventoryDonut
           data={cardData}

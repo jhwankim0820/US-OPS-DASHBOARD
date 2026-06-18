@@ -42,12 +42,12 @@ export default function ShipmentsTable({ shipments }: { shipments: ShipmentRow[]
       <Table>
         <TableHeader>
           <TableRow className="bg-[#1A1A1A] border-[#333333]">
-            <TableHead className="text-[#888888]">Tracking ID</TableHead>
-            <TableHead className="text-[#888888]">Customer (Deal)</TableHead>
-            <TableHead className="text-[#888888]">Status</TableHead>
-            <TableHead className="text-[#888888]">Origin</TableHead>
-            <TableHead className="text-[#888888]">Destination</TableHead>
-            <TableHead className="text-[#888888]">Created At</TableHead>
+            <TableHead className="text-[#AAAAAA]">Tracking ID</TableHead>
+            <TableHead className="text-[#AAAAAA]">Customer (Deal)</TableHead>
+            <TableHead className="text-[#AAAAAA]">Status</TableHead>
+            <TableHead className="text-[#AAAAAA]">Origin</TableHead>
+            <TableHead className="text-[#AAAAAA]">Destination</TableHead>
+            <TableHead className="text-[#AAAAAA]">Created At</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -64,7 +64,7 @@ export default function ShipmentsTable({ shipments }: { shipments: ShipmentRow[]
                 className="border-[#333333] cursor-pointer hover:bg-[#2E2E2E]"
                 onClick={() => s.deal?.dmdId && router.push(`/deals/${s.deal.dmdId}`)}
               >
-                <TableCell className="font-mono text-sm font-semibold text-[#A0A0A0]">
+                <TableCell className="font-mono text-sm font-semibold text-[#C0C0C0]">
                   {s.trackingNo ?? '—'}
                 </TableCell>
                 <TableCell>
@@ -77,13 +77,13 @@ export default function ShipmentsTable({ shipments }: { shipments: ShipmentRow[]
                 </TableCell>
                 <TableCell>
                   <span
-                    className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold ${STATUS_STYLE[s.status] ?? 'bg-[#2A2A2A] text-[#888888]'}`}
+                    className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold ${STATUS_STYLE[s.status] ?? 'bg-[#2A2A2A] text-[#AAAAAA]'}`}
                   >
                     {STATUS_LABEL[s.status] ?? s.status}
                   </span>
                 </TableCell>
-                <TableCell className="text-sm text-[#A0A0A0]">{s.origin}</TableCell>
-                <TableCell className="text-sm text-[#A0A0A0]">{s.destination}</TableCell>
+                <TableCell className="text-sm text-[#C0C0C0]">{s.origin}</TableCell>
+                <TableCell className="text-sm text-[#C0C0C0]">{s.destination}</TableCell>
                 <TableCell className="text-sm text-[#666666]">
                   {new Date(s.createdAt).toLocaleDateString('en-US', {
                     year: '2-digit',

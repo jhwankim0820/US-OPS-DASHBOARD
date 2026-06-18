@@ -51,9 +51,9 @@
 /* FuriosaAI dark theme — always on */
 :root {
   --background: #0D0D0D;
-  --foreground: #E0E0E0;
+  --foreground: #F0F0F0;
   --card: #252525;
-  --card-foreground: #E0E0E0;
+  --card-foreground: #F0F0F0;
   --popover: #252525;
   --popover-foreground: #E0E0E0;
   --primary: #E21500;
@@ -61,7 +61,7 @@
   --secondary: #252525;
   --secondary-foreground: #E0E0E0;
   --muted: #252525;
-  --muted-foreground: #888888;
+  --muted-foreground: #AAAAAA;
   --accent: #252525;
   --accent-foreground: #E0E0E0;
   --destructive: #E21500;

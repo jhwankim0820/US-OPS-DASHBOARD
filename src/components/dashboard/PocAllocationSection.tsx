@@ -83,7 +83,7 @@ const reps = [
 
 const typeColors: Record<string, string> = {
   Sales: 'bg-[#E21500]/20 text-[#E21500]',
-  Internal: 'bg-[#2A2A2A] text-[#888888]',
+  Internal: 'bg-[#2A2A2A] text-[#AAAAAA]',
   Rental: 'bg-purple-900/40 text-purple-400',
 }
 
@@ -104,7 +104,7 @@ const tooltipStyle = {
 export default function PocAllocationSection() {
   return (
     <div>
-      <h2 className="mb-3 text-[11px] font-semibold uppercase tracking-[0.08em] text-[#666666]">POC Allocation by Sales Rep</h2>
+      <h2 className="mb-3 text-[11px] font-semibold uppercase tracking-[0.08em] text-[#888888]">POC Allocation by Sales Rep</h2>
 
       {/* Summary */}
       <div className="grid grid-cols-3 gap-3 mb-4">
@@ -114,7 +114,7 @@ export default function PocAllocationSection() {
           { label: 'Active deals', value: reps.reduce((s, r) => s + r.deals.length, 0) },
         ].map((m) => (
           <div key={m.label} className="bg-[#1E1E1E] rounded-xl px-4 py-3 border border-[#333333]">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[#666666] mb-1">{m.label}</p>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[#888888] mb-1">{m.label}</p>
             <p className="text-[32px] font-semibold leading-tight text-white">{m.value}</p>
           </div>
         ))}
@@ -135,28 +135,28 @@ export default function PocAllocationSection() {
               </div>
               <div className="w-28 flex-shrink-0">
                 <p className="text-sm font-medium text-white">{r.name}</p>
-                <p className="text-xs text-[#666666]">Sales Professional</p>
+                <p className="text-xs text-[#888888]">Sales Professional</p>
               </div>
               <div className="flex-1 space-y-1.5">
                 {r.cards === 0 && r.servers === 0 ? (
-                  <p className="text-xs text-[#666666] py-1">No deals assigned</p>
+                  <p className="text-xs text-[#888888] py-1">No deals assigned</p>
                 ) : (
                   <>
                     <div className="flex items-center gap-2">
-                      <span className="text-xs text-[#888888] w-11">Cards</span>
+                      <span className="text-xs text-[#AAAAAA] w-11">Cards</span>
                       <div className="flex-1 h-1.5 bg-[#1E1E1E] rounded-full overflow-hidden">
                         <div className="h-full bg-[#E21500] rounded-full" style={{ width: `${cardPct}%` }} />
                       </div>
-                      <span className="text-xs font-semibold text-[#E0E0E0] w-5 text-right">{r.cards}</span>
-                      <span className="text-xs text-[#666666] w-8">{cardPct}%</span>
+                      <span className="text-xs font-semibold text-white w-5 text-right">{r.cards}</span>
+                      <span className="text-xs text-[#888888] w-8">{cardPct}%</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <span className="text-xs text-[#888888] w-11">Servers</span>
+                      <span className="text-xs text-[#AAAAAA] w-11">Servers</span>
                       <div className="flex-1 h-1.5 bg-[#1E1E1E] rounded-full overflow-hidden">
                         <div className="h-full rounded-full" style={{ width: `${svrPct}%`, background: 'rgb(124,77,255)' }} />
                       </div>
-                      <span className="text-xs font-semibold text-[#E0E0E0] w-5 text-right">{r.servers}</span>
-                      <span className="text-xs text-[#666666] w-8">{svrPct > 0 ? `${svrPct}%` : '—'}</span>
+                      <span className="text-xs font-semibold text-white w-5 text-right">{r.servers}</span>
+                      <span className="text-xs text-[#888888] w-8">{svrPct > 0 ? `${svrPct}%` : '—'}</span>
                     </div>
                     <div className="flex flex-wrap gap-1 pt-1">
                       {r.deals.map((d) => (
@@ -179,7 +179,7 @@ export default function PocAllocationSection() {
         <div className="rounded-xl border border-[#333333] bg-[#252525] p-5">
           <div className="flex items-center gap-2 mb-4">
             <span className="w-3 h-3 rounded-sm bg-[#E21500] inline-block" />
-            <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[#666666]">Cards per rep</p>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[#888888]">Cards per rep</p>
           </div>
           <ResponsiveContainer width="100%" height={220}>
             <BarChart data={cardChartData} layout="vertical" margin={{ left: 0, right: 40 }}>
@@ -205,7 +205,7 @@ export default function PocAllocationSection() {
         <div className="rounded-xl border border-[#333333] bg-[#252525] p-5">
           <div className="flex items-center gap-2 mb-4">
             <span className="w-3 h-3 rounded-sm inline-block" style={{ background: 'rgb(124,77,255)' }} />
-            <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[#666666]">Servers per rep</p>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[#888888]">Servers per rep</p>
           </div>
           <ResponsiveContainer width="100%" height={220}>
             <BarChart data={serverChartData} layout="vertical" margin={{ left: 0, right: 40 }}>

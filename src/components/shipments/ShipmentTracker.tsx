@@ -97,8 +97,8 @@ export default function ShipmentTracker() {
         <div className="rounded-xl border border-[#333333] bg-[#252525] p-5">
           <div className="flex items-center justify-between mb-4">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-wide text-[#666666]">Inbound</p>
-              <p className="text-sm font-medium text-[#A0A0A0]">Korea HQ → US Office</p>
+              <p className="text-xs font-semibold uppercase tracking-wide text-[#888888]">Inbound</p>
+              <p className="text-sm font-medium text-[#C0C0C0]">Korea HQ → US Office</p>
             </div>
             <span className="text-xs font-medium bg-blue-900/40 text-[#B3C6E7] px-2 py-1 rounded-full">
               {inbound.length} active
@@ -111,16 +111,16 @@ export default function ShipmentTracker() {
                   {s.type === 'card' ? '▣' : '⬛'}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-[#E0E0E0] truncate">{s.title}</p>
-                  <p className="text-xs text-[#666666] mt-0.5">{s.sub}</p>
+                  <p className="text-sm font-medium text-white truncate">{s.title}</p>
+                  <p className="text-xs text-[#888888] mt-0.5">{s.sub}</p>
                   <div className="mt-1.5 h-1.5 bg-[#2A2A2A] rounded-full overflow-hidden">
                     <div className={`h-full rounded-full ${s.progressColor}`} style={{ width: `${s.progress}%` }} />
                   </div>
-                  <p className="text-xs text-[#666666] mt-1">{s.route}</p>
+                  <p className="text-xs text-[#888888] mt-1">{s.route}</p>
                 </div>
                 <div className="text-right flex-shrink-0">
-                  <p className="text-xs font-medium text-[#E0E0E0]">{s.qty}</p>
-                  <p className="text-xs text-[#666666]">{s.eta}</p>
+                  <p className="text-xs font-medium text-white">{s.qty}</p>
+                  <p className="text-xs text-[#888888]">{s.eta}</p>
                   <span className={`mt-1 inline-block text-xs font-medium px-1.5 py-0.5 rounded ${s.statusColor}`}>
                     {s.status}
                   </span>
@@ -134,8 +134,8 @@ export default function ShipmentTracker() {
         <div className="rounded-xl border border-[#333333] bg-[#252525] p-5">
           <div className="flex items-center justify-between mb-4">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-wide text-[#666666]">Outbound</p>
-              <p className="text-sm font-medium text-[#A0A0A0]">US Office → Clients</p>
+              <p className="text-xs font-semibold uppercase tracking-wide text-[#888888]">Outbound</p>
+              <p className="text-sm font-medium text-[#C0C0C0]">US Office → Clients</p>
             </div>
             <span className="text-xs font-medium bg-emerald-900/40 text-emerald-400 px-2 py-1 rounded-full">
               {outbound.length} active
@@ -148,23 +148,23 @@ export default function ShipmentTracker() {
                   {s.type === 'card' ? '▣' : '⬛'}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-[#E0E0E0] truncate">{s.title}</p>
-                  <p className="text-xs text-[#666666] mt-0.5">{s.sub}</p>
+                  <p className="text-sm font-medium text-white truncate">{s.title}</p>
+                  <p className="text-xs text-[#888888] mt-0.5">{s.sub}</p>
                   <div className="mt-1.5 h-1.5 bg-[#2A2A2A] rounded-full overflow-hidden">
                     <div className={`h-full rounded-full ${s.progressColor}`} style={{ width: `${s.progress}%` }} />
                   </div>
-                  <p className="text-xs text-[#666666] mt-1">{s.route}</p>
+                  <p className="text-xs text-[#888888] mt-1">{s.route}</p>
                 </div>
                 <div className="text-right flex-shrink-0">
-                  <p className="text-xs font-medium text-[#E0E0E0]">{s.qty}</p>
-                  <p className="text-xs text-[#666666]">{s.eta}</p>
+                  <p className="text-xs font-medium text-white">{s.qty}</p>
+                  <p className="text-xs text-[#888888]">{s.eta}</p>
                   <span className={`mt-1 inline-block text-xs font-medium px-1.5 py-0.5 rounded ${s.statusColor}`}>
                     {s.status}
                   </span>
                 </div>
               </div>
             ))}
-            <p className="text-xs text-[#666666] text-center pt-2 border-t border-[#333333]">
+            <p className="text-xs text-[#888888] text-center pt-2 border-t border-[#333333]">
               ✓ 2 shipments delivered this month
             </p>
           </div>
@@ -174,8 +174,8 @@ export default function ShipmentTracker() {
       {/* FedEx Dispatch */}
       <div className="rounded-xl border border-[#333333] bg-[#252525] p-5 flex items-center justify-between gap-4 flex-wrap">
         <div>
-          <p className="text-sm font-semibold text-[#E0E0E0]">Ship hardware via FedEx</p>
-          <p className="text-xs text-[#666666] mt-0.5">Create a new outbound shipment. A transfer pricing contract will be generated automatically.</p>
+          <p className="text-sm font-semibold text-white">Ship hardware via FedEx</p>
+          <p className="text-xs text-[#888888] mt-0.5">Create a new outbound shipment. A transfer pricing contract will be generated automatically.</p>
         </div>
         <button
           onClick={() => setFedexOpen(true)}
@@ -201,13 +201,13 @@ export default function ShipmentTracker() {
             <div className="flex items-center justify-between p-5 border-b border-[#333333]">
               <div>
                 <p className="font-semibold text-white">New FedEx shipment</p>
-                <p className="text-xs text-[#666666] mt-0.5">US Office → Client</p>
+                <p className="text-xs text-[#888888] mt-0.5">US Office → Client</p>
               </div>
-              <button onClick={() => setFedexOpen(false)} className="text-[#666666] hover:text-white text-xl leading-none">×</button>
+              <button onClick={() => setFedexOpen(false)} className="text-[#888888] hover:text-white text-xl leading-none">×</button>
             </div>
             <div className="p-5 space-y-4">
               <div>
-                <label className="block text-xs text-[#888888] mb-1">Recipient company</label>
+                <label className="block text-xs text-[#AAAAAA] mb-1">Recipient company</label>
                 <input
                   className="w-full border border-[#333333] bg-[#111111] text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#E21500]/50"
                   placeholder="e.g. AWS, Google Cloud…"
@@ -217,7 +217,7 @@ export default function ShipmentTracker() {
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs text-[#888888] mb-1">Hardware type</label>
+                  <label className="block text-xs text-[#AAAAAA] mb-1">Hardware type</label>
                   <select
                     className="w-full border border-[#333333] bg-[#111111] text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#E21500]/50"
                     value={form.hwType}
@@ -229,7 +229,7 @@ export default function ShipmentTracker() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs text-[#888888] mb-1">Quantity</label>
+                  <label className="block text-xs text-[#AAAAAA] mb-1">Quantity</label>
                   <input
                     type="number"
                     min={1}
@@ -240,7 +240,7 @@ export default function ShipmentTracker() {
                 </div>
               </div>
               <div>
-                <label className="block text-xs text-[#888888] mb-1">Delivery address</label>
+                <label className="block text-xs text-[#AAAAAA] mb-1">Delivery address</label>
                 <input
                   className="w-full border border-[#333333] bg-[#111111] text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#E21500]/50"
                   placeholder="Street, City, State, ZIP"
@@ -250,7 +250,7 @@ export default function ShipmentTracker() {
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs text-[#888888] mb-1">FedEx service</label>
+                  <label className="block text-xs text-[#AAAAAA] mb-1">FedEx service</label>
                   <select
                     className="w-full border border-[#333333] bg-[#111111] text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#E21500]/50"
                     value={form.service}
@@ -263,7 +263,7 @@ export default function ShipmentTracker() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs text-[#888888] mb-1">Requested delivery</label>
+                  <label className="block text-xs text-[#AAAAAA] mb-1">Requested delivery</label>
                   <input
                     type="date"
                     className="w-full border border-[#333333] bg-[#111111] text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#E21500]/50"
@@ -274,7 +274,7 @@ export default function ShipmentTracker() {
               </div>
             </div>
             <div className="flex justify-end gap-2 px-5 pb-5">
-              <button onClick={() => setFedexOpen(false)} className="px-4 py-2 text-sm rounded-lg border border-[#333333] text-[#888888] hover:bg-[#222222]">Cancel</button>
+              <button onClick={() => setFedexOpen(false)} className="px-4 py-2 text-sm rounded-lg border border-[#333333] text-[#AAAAAA] hover:bg-[#222222]">Cancel</button>
               <button
                 onClick={() => { setFedexOpen(false); setContractOpen(true) }}
                 className="px-4 py-2 text-sm rounded-lg text-white font-medium hover:opacity-90"
@@ -292,9 +292,9 @@ export default function ShipmentTracker() {
         <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/70">
           <div className="bg-[#252525] border border-[#333333] rounded-2xl shadow-xl w-full max-w-xl mx-4 max-h-[90vh] overflow-y-auto">
             <div className="p-5 border-b border-[#333333] text-center">
-              <p className="text-xs uppercase tracking-widest text-[#666666] mb-1">FuriosaAI, Inc.</p>
+              <p className="text-xs uppercase tracking-widest text-[#888888] mb-1">FuriosaAI, Inc.</p>
               <p className="font-semibold text-white text-lg">Intercompany Transfer Pricing Agreement</p>
-              <p className="text-sm text-[#888888] mt-0.5">Hardware Transfer — US Operations</p>
+              <p className="text-sm text-[#AAAAAA] mt-0.5">Hardware Transfer — US Operations</p>
               <span className="mt-2 inline-block text-xs font-medium bg-amber-900/40 text-amber-400 px-2 py-1 rounded-full">
                 ⚠ Draft — For illustration only
               </span>
@@ -308,7 +308,7 @@ export default function ShipmentTracker() {
 
               {/* Parties */}
               <div>
-                <p className="text-xs uppercase tracking-wide text-[#666666] mb-2">Parties</p>
+                <p className="text-xs uppercase tracking-wide text-[#888888] mb-2">Parties</p>
                 <div className="space-y-1.5 text-sm">
                   {[
                     ['Transferor', 'FuriosaAI Inc. — US Operations (San Jose, CA)'],
@@ -316,7 +316,7 @@ export default function ShipmentTracker() {
                     ['Agreement date', new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })],
                   ].map(([label, value]) => (
                     <div key={label} className="flex justify-between py-1.5 border-b border-[#333333]">
-                      <span className="text-[#888888]">{label}</span>
+                      <span className="text-[#AAAAAA]">{label}</span>
                       <span className="font-medium text-white text-right max-w-xs">{value}</span>
                     </div>
                   ))}
@@ -325,7 +325,7 @@ export default function ShipmentTracker() {
 
               {/* Hardware */}
               <div>
-                <p className="text-xs uppercase tracking-wide text-[#666666] mb-2">Hardware details</p>
+                <p className="text-xs uppercase tracking-wide text-[#888888] mb-2">Hardware details</p>
                 <div className="space-y-1.5 text-sm">
                   {[
                     ['Item', `FuriosaAI ${form.hwType}`],
@@ -335,7 +335,7 @@ export default function ShipmentTracker() {
                     ['Pricing method', 'Comparable Uncontrolled Price (CUP)'],
                   ].map(([label, value]) => (
                     <div key={label} className="flex justify-between py-1.5 border-b border-[#333333]">
-                      <span className="text-[#888888]">{label}</span>
+                      <span className="text-[#AAAAAA]">{label}</span>
                       <span className="font-medium text-white">{value}</span>
                     </div>
                   ))}
@@ -344,7 +344,7 @@ export default function ShipmentTracker() {
 
               {/* Shipping */}
               <div>
-                <p className="text-xs uppercase tracking-wide text-[#666666] mb-2">Shipping & logistics</p>
+                <p className="text-xs uppercase tracking-wide text-[#888888] mb-2">Shipping & logistics</p>
                 <div className="space-y-1.5 text-sm">
                   {[
                     ['Carrier', form.service],
@@ -352,7 +352,7 @@ export default function ShipmentTracker() {
                     ['Risk transfer (Incoterms)', 'DAP — Delivered at Place'],
                   ].map(([label, value]) => (
                     <div key={label} className="flex justify-between py-1.5 border-b border-[#333333]">
-                      <span className="text-[#888888]">{label}</span>
+                      <span className="text-[#AAAAAA]">{label}</span>
                       <span className="font-medium text-white text-right max-w-xs">{value}</span>
                     </div>
                   ))}
@@ -361,11 +361,11 @@ export default function ShipmentTracker() {
 
               {/* Signatures */}
               <div>
-                <p className="text-xs uppercase tracking-wide text-[#666666] mb-2">Signatures</p>
+                <p className="text-xs uppercase tracking-wide text-[#888888] mb-2">Signatures</p>
                 <div className="grid grid-cols-2 gap-3">
                   {['Transferor — FuriosaAI US Ops', 'Transferee'].map((label) => (
                     <div key={label}>
-                      <p className="text-xs text-[#666666] mb-2">{label}</p>
+                      <p className="text-xs text-[#888888] mb-2">{label}</p>
                       <div className="border border-dashed border-[#333333] rounded-lg p-4 text-center text-xs text-[#555555]">
                         ✍ Sign here
                       </div>
@@ -376,8 +376,8 @@ export default function ShipmentTracker() {
             </div>
 
             <div className="flex justify-end gap-2 px-5 pb-5">
-              <button onClick={() => { setContractOpen(false); setFedexOpen(true) }} className="px-4 py-2 text-sm rounded-lg border border-[#333333] text-[#888888] hover:bg-[#222222]">← Back</button>
-              <button onClick={() => setContractOpen(false)} className="px-4 py-2 text-sm rounded-lg border border-[#333333] text-[#888888] hover:bg-[#222222]">Cancel</button>
+              <button onClick={() => { setContractOpen(false); setFedexOpen(true) }} className="px-4 py-2 text-sm rounded-lg border border-[#333333] text-[#AAAAAA] hover:bg-[#222222]">← Back</button>
+              <button onClick={() => setContractOpen(false)} className="px-4 py-2 text-sm rounded-lg border border-[#333333] text-[#AAAAAA] hover:bg-[#222222]">Cancel</button>
               <button
                 onClick={handleConfirm}
                 className="px-4 py-2 text-sm rounded-lg bg-[#E21500] text-white font-medium hover:bg-[#C01200]"
