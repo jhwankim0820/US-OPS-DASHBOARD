@@ -12,16 +12,17 @@ const serverData = [
   { name: 'Available', value: 6 },
 ]
 
-const COLORS = ['#E21500', '#2A2A2A']
+const CARD_COLORS = ['#E21500', '#2A2A2A']
+const SERVER_COLORS = ['rgb(124,77,255)', '#2A2A2A']
 
 const pocSchedule = {
   cards: [
-    { label: 'AWS', qty: '8 cards', month: 'Jun', color: 'bg-[#E21500]/20 text-[#E21500]' },
-    { label: 'Meta', qty: '8 cards', month: 'Jul', color: 'bg-[#2A2A2A] text-[#888888]' },
+    { label: 'AWS', qty: '8 cards', month: 'Jun', active: true },
+    { label: 'Meta', qty: '8 cards', month: 'Jul', active: false },
   ],
   servers: [
-    { label: 'Google', qty: '4 svr', month: 'Jun', color: 'bg-[#E21500]/20 text-[#E21500]' },
-    { label: 'Microsoft', qty: '2 svr', month: 'Jul', color: 'bg-[#2A2A2A] text-[#888888]' },
+    { label: 'Google', qty: '4 svr', month: 'Jun', active: true },
+    { label: 'Microsoft', qty: '2 svr', month: 'Jul', active: false },
   ],
 }
 
@@ -29,10 +30,11 @@ interface DonutProps {
   data: { name: string; value: number }[]
   total: number
   label: string
-  schedule: { label: string; qty: string; month: string; color: string }[]
+  colors: string[]
+  schedule: { label: string; qty: string; month: string; active: boolean }[]
 }
 
-function InventoryDonut({ data, total, label, schedule }: DonutProps) {
+function InventoryDonut({ data, total, label, colors, schedule }: DonutProps) {
   return (
     <div className="rounded-xl border border-[#2A2A2A] bg-[#1E1E1E] p-5">
       <p className="mb-4 text-[11px] font-semibold uppercase tracking-[0.08em] text-[#666666]">{label}</p>
@@ -50,7 +52,7 @@ function InventoryDonut({ data, total, label, schedule }: DonutProps) {
                 strokeWidth={0}
               >
                 {data.map((_, i) => (
-                  <Cell key={i} fill={COLORS[i]} />
+                  <Cell key={i} fill={colors[i]} />
                 ))}
               </Pie>
               <Tooltip
@@ -70,7 +72,7 @@ function InventoryDonut({ data, total, label, schedule }: DonutProps) {
             {data.map((d, i) => (
               <div key={d.name} className="flex justify-between items-center">
                 <div className="flex items-center gap-2">
-                  <span className="w-2.5 h-2.5 rounded-sm inline-block" style={{ background: COLORS[i] }} />
+                  <span className="w-2.5 h-2.5 rounded-sm inline-block" style={{ background: colors[i] }} />
                   <span className="text-xs text-[#888888]">{d.name}</span>
                 </div>
                 <span className="text-xs font-semibold text-[#E0E0E0]">{d.value}</span>
@@ -82,7 +84,14 @@ function InventoryDonut({ data, total, label, schedule }: DonutProps) {
             <p className="text-xs text-[#666666] mb-1.5">Upcoming POC</p>
             <div className="flex flex-wrap gap-1.5">
               {schedule.map((s) => (
-                <span key={s.label} className={`text-xs font-medium px-2 py-0.5 rounded-full ${s.color}`}>
+                <span
+                  key={s.label}
+                  className="text-xs font-medium px-2 py-0.5 rounded-full"
+                  style={s.active
+                    ? { background: `${colors[0]}33`, color: colors[0] }
+                    : { background: '#2A2A2A', color: '#888888' }
+                  }
+                >
                   {s.label} · {s.qty} · {s.month}
                 </span>
               ))}
@@ -103,12 +112,14 @@ export default function InventorySection() {
           data={cardData}
           total={40}
           label="Cards"
+          colors={CARD_COLORS}
           schedule={pocSchedule.cards}
         />
         <InventoryDonut
           data={serverData}
           total={16}
           label="Servers"
+          colors={SERVER_COLORS}
           schedule={pocSchedule.servers}
         />
       </div>

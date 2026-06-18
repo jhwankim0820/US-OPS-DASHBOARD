@@ -153,7 +153,7 @@ export default function PocAllocationSection() {
                     <div className="flex items-center gap-2">
                       <span className="text-xs text-[#888888] w-11">Servers</span>
                       <div className="flex-1 h-1.5 bg-[#141414] rounded-full overflow-hidden">
-                        <div className="h-full bg-[#E21500] rounded-full" style={{ width: `${svrPct}%` }} />
+                        <div className="h-full rounded-full" style={{ width: `${svrPct}%`, background: 'rgb(124,77,255)' }} />
                       </div>
                       <span className="text-xs font-semibold text-[#E0E0E0] w-5 text-right">{r.servers}</span>
                       <span className="text-xs text-[#666666] w-8">{svrPct > 0 ? `${svrPct}%` : '—'}</span>
