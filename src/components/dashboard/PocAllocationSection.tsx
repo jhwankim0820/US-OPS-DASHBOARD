@@ -185,7 +185,7 @@ export default function PocAllocationSection() {
                 <LabelList
                   dataKey="value"
                   position="right"
-                  formatter={(v: unknown) => (Number(v) > 0 ? v : '')}
+                  formatter={(v: string | number) => (Number(v) > 0 ? String(v) : '')}
                   style={{ fill: '#378ADD', fontSize: 11, fontWeight: 600 }}
                 />
               </Bar>
@@ -211,7 +211,7 @@ export default function PocAllocationSection() {
                 <LabelList
                   dataKey="value"
                   position="right"
-                  formatter={(v: unknown) => (Number(v) > 0 ? v : '')}
+                  formatter={(v: string | number) => (Number(v) > 0 ? String(v) : '')}
                   style={{ fill: '#378ADD', fontSize: 11, fontWeight: 600 }}
                 />
               </Bar>
