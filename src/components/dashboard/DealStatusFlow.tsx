@@ -24,30 +24,30 @@ const COLUMNS = [
   {
     key: 'demand' as const,
     label: 'Demand',
-    bg: 'bg-amber-50',
-    border: 'border-amber-200',
-    badge: 'bg-amber-100 text-amber-800',
+    bg: 'bg-[#1A0F00]',
+    border: 'border-[#3D2600]',
+    badge: 'bg-[#3D2600] text-amber-400',
   },
   {
     key: 'confirmed' as const,
     label: 'Confirmed',
-    bg: 'bg-blue-50',
-    border: 'border-blue-200',
-    badge: 'bg-blue-100 text-blue-800',
+    bg: 'bg-[#001228]',
+    border: 'border-[#002855]',
+    badge: 'bg-[#002855] text-[#B3C6E7]',
   },
   {
     key: 'waitingForDelivery' as const,
     label: 'Waiting for Delivery',
-    bg: 'bg-sky-50',
-    border: 'border-sky-200',
-    badge: 'bg-sky-100 text-sky-800',
+    bg: 'bg-[#001520]',
+    border: 'border-[#003344]',
+    badge: 'bg-[#003344] text-sky-400',
   },
   {
     key: 'delivered' as const,
     label: 'Delivered',
-    bg: 'bg-emerald-50',
-    border: 'border-emerald-200',
-    badge: 'bg-emerald-100 text-emerald-800',
+    bg: 'bg-[#001509]',
+    border: 'border-[#003320]',
+    badge: 'bg-[#003320] text-emerald-400',
   },
 ]
 
@@ -71,7 +71,7 @@ export default function DealStatusFlow({
       {COLUMNS.map((col) => (
         <div key={col.key} className={`rounded-xl border ${col.border} ${col.bg} p-4`}>
           <div className="mb-3 flex items-center justify-between">
-            <h3 className="text-sm font-semibold">{col.label}</h3>
+            <h3 className="text-sm font-semibold text-[#E0E0E0]">{col.label}</h3>
             <span className={`rounded-full px-2 py-0.5 text-xs font-bold ${col.badge}`}>
               {groups[col.key].length}
             </span>
@@ -79,23 +79,23 @@ export default function DealStatusFlow({
 
           <div className="space-y-2">
             {groups[col.key].map((deal) => (
-              <div key={deal.dmdId} className="rounded-lg bg-white p-3 shadow-sm">
+              <div key={deal.dmdId} className="rounded-lg bg-[#222222] p-3 shadow-sm">
                 <div className="flex items-start justify-between">
-                  <span className="font-mono text-xs text-gray-400">{deal.dmdId}</span>
+                  <span className="font-mono text-xs text-[#666666]">{deal.dmdId}</span>
                   {deal.revenue > 0 && (
-                    <span className="text-sm font-semibold">{formatRevenue(deal.revenue, deal.currency)}</span>
+                    <span className="text-sm font-semibold text-[#E0E0E0]">{formatRevenue(deal.revenue, deal.currency)}</span>
                   )}
                 </div>
-                <p className="mt-0.5 text-sm font-medium">{deal.customer}</p>
+                <p className="mt-0.5 text-sm font-medium text-[#E0E0E0]">{deal.customer}</p>
                 <div className="mt-1 flex flex-wrap gap-1">
-                  <Badge variant="outline" className="text-xs">
+                  <Badge variant="outline" className="text-xs border-[#3A3A3A] text-[#A0A0A0]">
                     {deal.formFactor}
                   </Badge>
-                  <Badge variant="outline" className="text-xs">
+                  <Badge variant="outline" className="text-xs border-[#3A3A3A] text-[#A0A0A0]">
                     {deal.category}
                   </Badge>
                 </div>
-                <p className="mt-1 text-xs text-gray-400">
+                <p className="mt-1 text-xs text-[#666666]">
                   {qtyLabel(deal)} · {deal.owner}
                 </p>
               </div>

@@ -15,8 +15,8 @@ const reps = [
   {
     name: 'Alex Liu',
     initials: 'AL',
-    avatarBg: '#E6F1FB',
-    avatarColor: '#0C447C',
+    avatarBg: '#1A2A3A',
+    avatarColor: '#B3C6E7',
     cards: 76,
     servers: 17,
     deals: [
@@ -30,8 +30,8 @@ const reps = [
   {
     name: 'Addison Chi',
     initials: 'AC',
-    avatarBg: '#E1F5EE',
-    avatarColor: '#085041',
+    avatarBg: '#0D2218',
+    avatarColor: '#1D9E75',
     cards: 62,
     servers: 7,
     deals: [
@@ -44,8 +44,8 @@ const reps = [
   {
     name: 'Tom Gallivan',
     initials: 'TG',
-    avatarBg: '#FAECE7',
-    avatarColor: '#712B13',
+    avatarBg: '#2A1008',
+    avatarColor: '#F26B43',
     cards: 64,
     servers: 0,
     deals: [
@@ -55,8 +55,8 @@ const reps = [
   {
     name: 'Auro Tripathy',
     initials: 'AT',
-    avatarBg: '#EEEDFE',
-    avatarColor: '#3C3489',
+    avatarBg: '#1A1830',
+    avatarColor: '#9090D0',
     cards: 0,
     servers: 0,
     deals: [],
@@ -64,8 +64,8 @@ const reps = [
   {
     name: 'Bill Leszinske',
     initials: 'BL',
-    avatarBg: '#FAEEDA',
-    avatarColor: '#633806',
+    avatarBg: '#221508',
+    avatarColor: '#C08040',
     cards: 0,
     servers: 0,
     deals: [],
@@ -73,8 +73,8 @@ const reps = [
   {
     name: 'Sean Berner',
     initials: 'SB',
-    avatarBg: '#F1EFE8',
-    avatarColor: '#444441',
+    avatarBg: '#1E1E1E',
+    avatarColor: '#A0A0A0',
     cards: 0,
     servers: 0,
     deals: [],
@@ -82,9 +82,9 @@ const reps = [
 ]
 
 const typeColors: Record<string, string> = {
-  Sales: 'bg-blue-100 text-blue-800',
-  Internal: 'bg-gray-100 text-gray-700',
-  Rental: 'bg-purple-100 text-purple-800',
+  Sales: 'bg-blue-900/40 text-[#B3C6E7]',
+  Internal: 'bg-[#2A2A2A] text-[#888888]',
+  Rental: 'bg-purple-900/40 text-purple-400',
 }
 
 const cardChartData = reps.map((r) => ({ name: r.name.split(' ')[0], value: r.cards }))
@@ -93,10 +93,18 @@ const serverChartData = reps.map((r) => ({ name: r.name.split(' ')[0], value: r.
 const totalCards = reps.reduce((s, r) => s + r.cards, 0)
 const totalServers = reps.reduce((s, r) => s + r.servers, 0)
 
+const tooltipStyle = {
+  background: '#1A1A1A',
+  border: '1px solid #2A2A2A',
+  borderRadius: 8,
+  color: '#E0E0E0',
+  fontSize: 12,
+}
+
 export default function PocAllocationSection() {
   return (
     <div>
-      <h2 className="mb-3 text-lg font-semibold">POC Allocation by Sales Rep</h2>
+      <h2 className="mb-3 text-lg font-semibold text-white">POC Allocation by Sales Rep</h2>
 
       {/* Summary */}
       <div className="grid grid-cols-3 gap-3 mb-4">
@@ -105,15 +113,15 @@ export default function PocAllocationSection() {
           { label: 'Total servers', value: totalServers },
           { label: 'Active deals', value: reps.reduce((s, r) => s + r.deals.length, 0) },
         ].map((m) => (
-          <div key={m.label} className="bg-gray-100 rounded-xl px-4 py-3">
-            <p className="text-xs text-gray-500 mb-1">{m.label}</p>
-            <p className="text-xl font-semibold text-gray-900">{m.value}</p>
+          <div key={m.label} className="bg-[#1E1E1E] rounded-xl px-4 py-3">
+            <p className="text-xs text-[#888888] mb-1">{m.label}</p>
+            <p className="text-xl font-semibold text-white">{m.value}</p>
           </div>
         ))}
       </div>
 
       {/* Rep rows */}
-      <div className="rounded-xl border border-gray-200 bg-white divide-y divide-gray-100 mb-4">
+      <div className="rounded-xl border border-[#2A2A2A] bg-[#1A1A1A] divide-y divide-[#2A2A2A] mb-4">
         {reps.map((r) => {
           const cardPct = totalCards > 0 ? Math.round((r.cards / totalCards) * 100) : 0
           const svrPct = totalServers > 0 ? Math.round((r.servers / totalServers) * 100) : 0
@@ -126,29 +134,29 @@ export default function PocAllocationSection() {
                 {r.initials}
               </div>
               <div className="w-28 flex-shrink-0">
-                <p className="text-sm font-medium text-gray-900">{r.name}</p>
-                <p className="text-xs text-gray-400">Sales Professional</p>
+                <p className="text-sm font-medium text-white">{r.name}</p>
+                <p className="text-xs text-[#666666]">Sales Professional</p>
               </div>
               <div className="flex-1 space-y-1.5">
                 {r.cards === 0 && r.servers === 0 ? (
-                  <p className="text-xs text-gray-400 py-1">No deals assigned</p>
+                  <p className="text-xs text-[#666666] py-1">No deals assigned</p>
                 ) : (
                   <>
                     <div className="flex items-center gap-2">
-                      <span className="text-xs text-gray-500 w-11">Cards</span>
-                      <div className="flex-1 h-1.5 bg-gray-100 rounded-full overflow-hidden">
-                        <div className="h-full bg-blue-500 rounded-full" style={{ width: `${cardPct}%` }} />
+                      <span className="text-xs text-[#888888] w-11">Cards</span>
+                      <div className="flex-1 h-1.5 bg-[#2A2A2A] rounded-full overflow-hidden">
+                        <div className="h-full bg-[#378ADD] rounded-full" style={{ width: `${cardPct}%` }} />
                       </div>
-                      <span className="text-xs font-medium text-gray-900 w-5 text-right">{r.cards}</span>
-                      <span className="text-xs text-gray-400 w-8">{cardPct}%</span>
+                      <span className="text-xs font-medium text-[#E0E0E0] w-5 text-right">{r.cards}</span>
+                      <span className="text-xs text-[#666666] w-8">{cardPct}%</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <span className="text-xs text-gray-500 w-11">Servers</span>
-                      <div className="flex-1 h-1.5 bg-gray-100 rounded-full overflow-hidden">
-                        <div className="h-full bg-teal-500 rounded-full" style={{ width: `${svrPct}%` }} />
+                      <span className="text-xs text-[#888888] w-11">Servers</span>
+                      <div className="flex-1 h-1.5 bg-[#2A2A2A] rounded-full overflow-hidden">
+                        <div className="h-full bg-[#1D9E75] rounded-full" style={{ width: `${svrPct}%` }} />
                       </div>
-                      <span className="text-xs font-medium text-gray-900 w-5 text-right">{r.servers}</span>
-                      <span className="text-xs text-gray-400 w-8">{svrPct > 0 ? `${svrPct}%` : '—'}</span>
+                      <span className="text-xs font-medium text-[#E0E0E0] w-5 text-right">{r.servers}</span>
+                      <span className="text-xs text-[#666666] w-8">{svrPct > 0 ? `${svrPct}%` : '—'}</span>
                     </div>
                     <div className="flex flex-wrap gap-1 pt-1">
                       {r.deals.map((d) => (
@@ -168,19 +176,19 @@ export default function PocAllocationSection() {
       {/* Charts */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* Cards chart */}
-        <div className="rounded-xl border border-gray-200 bg-white p-5">
+        <div className="rounded-xl border border-[#2A2A2A] bg-[#1A1A1A] p-5">
           <div className="flex items-center gap-2 mb-4">
-            <span className="w-3 h-3 rounded-sm bg-blue-500 inline-block" />
-            <p className="text-sm font-medium text-gray-700">Cards per rep</p>
+            <span className="w-3 h-3 rounded-sm bg-[#378ADD] inline-block" />
+            <p className="text-sm font-medium text-[#A0A0A0]">Cards per rep</p>
           </div>
           <ResponsiveContainer width="100%" height={220}>
             <BarChart data={cardChartData} layout="vertical" margin={{ left: 0, right: 40 }}>
-              <XAxis type="number" tick={{ fontSize: 11 }} axisLine={false} tickLine={false} />
-              <YAxis type="category" dataKey="name" tick={{ fontSize: 11 }} width={60} axisLine={false} tickLine={false} />
-              <Tooltip formatter={(v) => [`${v} units`, 'Cards']} />
+              <XAxis type="number" tick={{ fontSize: 11, fill: '#666666' }} axisLine={false} tickLine={false} />
+              <YAxis type="category" dataKey="name" tick={{ fontSize: 11, fill: '#888888' }} width={60} axisLine={false} tickLine={false} />
+              <Tooltip formatter={(v) => [`${v} units`, 'Cards']} contentStyle={tooltipStyle} />
               <Bar dataKey="value" radius={[0, 3, 3, 0]} barSize={14}>
                 {cardChartData.map((d, i) => (
-                  <Cell key={i} fill={d.value > 0 ? '#378ADD' : '#D3D1C7'} />
+                  <Cell key={i} fill={d.value > 0 ? '#378ADD' : '#2A2A2A'} />
                 ))}
                 <LabelList
                   dataKey="value"
@@ -194,19 +202,19 @@ export default function PocAllocationSection() {
         </div>
 
         {/* Servers chart */}
-        <div className="rounded-xl border border-gray-200 bg-white p-5">
+        <div className="rounded-xl border border-[#2A2A2A] bg-[#1A1A1A] p-5">
           <div className="flex items-center gap-2 mb-4">
-            <span className="w-3 h-3 rounded-sm bg-teal-500 inline-block" />
-            <p className="text-sm font-medium text-gray-700">Servers per rep</p>
+            <span className="w-3 h-3 rounded-sm bg-[#1D9E75] inline-block" />
+            <p className="text-sm font-medium text-[#A0A0A0]">Servers per rep</p>
           </div>
           <ResponsiveContainer width="100%" height={220}>
             <BarChart data={serverChartData} layout="vertical" margin={{ left: 0, right: 40 }}>
-              <XAxis type="number" tick={{ fontSize: 11 }} axisLine={false} tickLine={false} />
-              <YAxis type="category" dataKey="name" tick={{ fontSize: 11 }} width={60} axisLine={false} tickLine={false} />
-              <Tooltip formatter={(v) => [`${v} units`, 'Servers']} />
+              <XAxis type="number" tick={{ fontSize: 11, fill: '#666666' }} axisLine={false} tickLine={false} />
+              <YAxis type="category" dataKey="name" tick={{ fontSize: 11, fill: '#888888' }} width={60} axisLine={false} tickLine={false} />
+              <Tooltip formatter={(v) => [`${v} units`, 'Servers']} contentStyle={tooltipStyle} />
               <Bar dataKey="value" radius={[0, 3, 3, 0]} barSize={14}>
                 {serverChartData.map((d, i) => (
-                  <Cell key={i} fill={d.value > 0 ? '#1D9E75' : '#D3D1C7'} />
+                  <Cell key={i} fill={d.value > 0 ? '#1D9E75' : '#2A2A2A'} />
                 ))}
                 <LabelList
                   dataKey="value"

@@ -28,81 +28,81 @@ interface Deal {
 }
 
 const STATUS_STYLE: Record<string, string> = {
-  Demand: 'bg-amber-100 text-amber-800',
-  Confirmed: 'bg-blue-100 text-blue-800',
-  'Waiting for Delivery': 'bg-sky-100 text-sky-800',
-  Delivered: 'bg-emerald-100 text-emerald-800',
-  SUBMITTED: 'bg-violet-100 text-violet-800',
+  Demand: 'bg-amber-900/40 text-amber-400',
+  Confirmed: 'bg-blue-900/40 text-[#B3C6E7]',
+  'Waiting for Delivery': 'bg-sky-900/40 text-sky-400',
+  Delivered: 'bg-emerald-900/40 text-emerald-400',
+  SUBMITTED: 'bg-violet-900/40 text-violet-400',
 }
 
 const CATEGORY_STYLE: Record<string, string> = {
-  B2B: 'bg-violet-100 text-violet-800',
-  B2G: 'bg-indigo-100 text-indigo-800',
-  Internal: 'bg-gray-100 text-gray-700',
-  Rental: 'bg-orange-100 text-orange-800',
+  B2B: 'bg-violet-900/40 text-violet-400',
+  B2G: 'bg-indigo-900/40 text-indigo-400',
+  Internal: 'bg-[#2A2A2A] text-[#888888]',
+  Rental: 'bg-orange-900/40 text-orange-400',
 }
 
 export default function DealsTable({ deals }: { deals: Deal[] }) {
   return (
-    <div className="rounded-xl border border-gray-200 bg-white shadow-sm">
+    <div className="rounded-xl border border-[#2A2A2A] bg-[#1A1A1A] shadow-sm">
       <Table>
         <TableHeader>
-          <TableRow className="bg-gray-50">
-            <TableHead className="w-24">DMD ID</TableHead>
-            <TableHead>Customer</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead>Category</TableHead>
-            <TableHead>Form Factor</TableHead>
-            <TableHead>Owner</TableHead>
-            <TableHead>Region</TableHead>
-            <TableHead className="text-right">Revenue</TableHead>
-            <TableHead className="text-right">Cards</TableHead>
-            <TableHead className="text-right">Servers</TableHead>
-            <TableHead className="text-right">Date</TableHead>
+          <TableRow className="bg-[#161616] border-[#2A2A2A]">
+            <TableHead className="w-24 text-[#888888]">DMD ID</TableHead>
+            <TableHead className="text-[#888888]">Customer</TableHead>
+            <TableHead className="text-[#888888]">Status</TableHead>
+            <TableHead className="text-[#888888]">Category</TableHead>
+            <TableHead className="text-[#888888]">Form Factor</TableHead>
+            <TableHead className="text-[#888888]">Owner</TableHead>
+            <TableHead className="text-[#888888]">Region</TableHead>
+            <TableHead className="text-right text-[#888888]">Revenue</TableHead>
+            <TableHead className="text-right text-[#888888]">Cards</TableHead>
+            <TableHead className="text-right text-[#888888]">Servers</TableHead>
+            <TableHead className="text-right text-[#888888]">Date</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {deals.length === 0 ? (
             <TableRow>
-              <TableCell colSpan={11} className="py-12 text-center text-sm text-gray-400">
+              <TableCell colSpan={11} className="py-12 text-center text-sm text-[#666666]">
                 No deals match the current filters.
               </TableCell>
             </TableRow>
           ) : (
             deals.map((deal) => (
-              <TableRow key={deal.id} className="hover:bg-gray-50">
+              <TableRow key={deal.id} className="border-[#2A2A2A] hover:bg-[#222222]">
                 <TableCell>
                   <Link
                     href={`/deals/${deal.dmdId}`}
-                    className="font-mono text-sm font-semibold text-blue-600 hover:underline"
+                    className="font-mono text-sm font-semibold text-[#B3C6E7] hover:underline"
                   >
                     {deal.dmdId}
                   </Link>
                 </TableCell>
-                <TableCell className="font-medium">{deal.customer}</TableCell>
+                <TableCell className="font-medium text-[#E0E0E0]">{deal.customer}</TableCell>
                 <TableCell>
                   <span
-                    className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold ${STATUS_STYLE[deal.status] ?? 'bg-gray-100 text-gray-700'}`}
+                    className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold ${STATUS_STYLE[deal.status] ?? 'bg-[#2A2A2A] text-[#888888]'}`}
                   >
                     {deal.status}
                   </span>
                 </TableCell>
                 <TableCell>
                   <span
-                    className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold ${CATEGORY_STYLE[deal.category] ?? 'bg-gray-100 text-gray-700'}`}
+                    className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold ${CATEGORY_STYLE[deal.category] ?? 'bg-[#2A2A2A] text-[#888888]'}`}
                   >
                     {deal.category}
                   </span>
                 </TableCell>
-                <TableCell className="text-sm text-gray-600">{deal.formFactor}</TableCell>
-                <TableCell className="text-sm">{deal.owner}</TableCell>
-                <TableCell className="text-sm">{deal.region}</TableCell>
-                <TableCell className="text-right text-sm font-medium">
+                <TableCell className="text-sm text-[#A0A0A0]">{deal.formFactor}</TableCell>
+                <TableCell className="text-sm text-[#E0E0E0]">{deal.owner}</TableCell>
+                <TableCell className="text-sm text-[#E0E0E0]">{deal.region}</TableCell>
+                <TableCell className="text-right text-sm font-medium text-[#E0E0E0]">
                   {formatRevenue(deal.revenue, deal.currency)}
                 </TableCell>
-                <TableCell className="text-right text-sm">{deal.cards || '—'}</TableCell>
-                <TableCell className="text-right text-sm">{deal.servers || '—'}</TableCell>
-                <TableCell className="text-right text-sm text-gray-400">
+                <TableCell className="text-right text-sm text-[#A0A0A0]">{deal.cards || '—'}</TableCell>
+                <TableCell className="text-right text-sm text-[#A0A0A0]">{deal.servers || '—'}</TableCell>
+                <TableCell className="text-right text-sm text-[#666666]">
                   {new Date(deal.createdAt).toLocaleDateString('en-US', {
                     year: '2-digit',
                     month: 'short',

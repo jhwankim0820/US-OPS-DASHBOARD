@@ -13,10 +13,10 @@ import {
 interface CostItem {
   rank: number | string
   item: string
-  q1: number  // FY24 full year
-  q2: number  // H1 2025 (Jan–Jun)
-  q3: number  // 9M 2025 (Jan–Sep)
-  q4: number  // FY25 full year
+  q1: number
+  q2: number
+  q3: number
+  q4: number
   badge?: 'Largest'
   grouped?: boolean
 }
@@ -46,60 +46,68 @@ function fmtAmtK(v: number) {
   })}K`
 }
 
+const tooltipStyle = {
+  background: '#1A1A1A',
+  border: '1px solid #2A2A2A',
+  borderRadius: 8,
+  color: '#E0E0E0',
+  fontSize: 12,
+}
+
 export default function FinancialsPage() {
   return (
-    <main className="min-h-screen bg-gray-50">
-      {/* ─── KPI Strip ─────────────────────────────────────────────────── */}
-      <div className="bg-gray-900 px-6 py-8 sm:px-10">
-        <p className="mb-5 text-xs font-bold uppercase tracking-widest text-gray-400">
+    <main className="min-h-screen bg-[#0D0D0D]">
+      {/* KPI Strip */}
+      <div className="bg-[#111111] border-b border-[#2A2A2A] px-6 py-8 sm:px-10">
+        <p className="mb-5 text-xs font-bold uppercase tracking-widest text-[#888888]">
           Key Profitability Metrics
         </p>
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-          <div className="rounded-xl border border-gray-700 bg-gray-800 p-5">
-            <p className="text-xs text-gray-400">Revenue (Cumulative)</p>
+          <div className="rounded-xl border border-[#2A2A2A] bg-[#1A1A1A] p-5">
+            <p className="text-xs text-[#888888]">Revenue (Cumulative)</p>
             <p className="mt-2 text-3xl font-bold text-white">$9,000</p>
-            <p className="mt-1 text-xs text-gray-500">Service sales only</p>
+            <p className="mt-1 text-xs text-[#666666]">Service sales only</p>
           </div>
-          <div className="rounded-xl border border-gray-700 bg-gray-800 p-5">
-            <p className="text-xs text-gray-400">Operating Loss (Q4)</p>
-            <p className="mt-2 text-3xl font-bold text-red-400">−$4.76M</p>
-            <p className="mt-1 text-xs text-gray-500">vs Q3 −$3.62M</p>
+          <div className="rounded-xl border border-[#2A2A2A] bg-[#1A1A1A] p-5">
+            <p className="text-xs text-[#888888]">Operating Loss (Q4)</p>
+            <p className="mt-2 text-3xl font-bold text-[#E21500]">−$4.76M</p>
+            <p className="mt-1 text-xs text-[#666666]">vs Q3 −$3.62M</p>
           </div>
-          <div className="rounded-xl border border-gray-700 bg-gray-800 p-5">
-            <p className="text-xs text-gray-400">Net Loss (Q4)</p>
-            <p className="mt-2 text-3xl font-bold text-red-400">−$4.74M</p>
-            <p className="mt-1 text-xs text-gray-500">Cumulative −$13.3M</p>
+          <div className="rounded-xl border border-[#2A2A2A] bg-[#1A1A1A] p-5">
+            <p className="text-xs text-[#888888]">Net Loss (Q4)</p>
+            <p className="mt-2 text-3xl font-bold text-[#E21500]">−$4.74M</p>
+            <p className="mt-1 text-xs text-[#666666]">Cumulative −$13.3M</p>
           </div>
-          <div className="rounded-xl border border-gray-700 bg-gray-800 p-5">
-            <p className="text-xs text-gray-400">Cash Balance</p>
+          <div className="rounded-xl border border-[#2A2A2A] bg-[#1A1A1A] p-5">
+            <p className="text-xs text-[#888888]">Cash Balance</p>
             <p className="mt-2 text-3xl font-bold text-white">$973K</p>
-            <p className="mt-1 text-xs text-gray-500">↓ from $1.11M in Q3</p>
+            <p className="mt-1 text-xs text-[#666666]">↓ from $1.11M in Q3</p>
           </div>
         </div>
       </div>
 
       <div className="space-y-8 p-6 sm:p-10">
-        {/* ─── Quarterly P&L Trend ──────────────────────────────────────── */}
-        <div className="rounded-xl border border-gray-200 bg-white p-6">
-          <p className="mb-1 text-xs font-bold uppercase tracking-widest text-gray-500">
+        {/* Quarterly P&L Trend */}
+        <div className="rounded-xl border border-[#2A2A2A] bg-[#1A1A1A] p-6">
+          <p className="mb-1 text-xs font-bold uppercase tracking-widest text-[#888888]">
             Quarterly P&amp;L Trend
           </p>
           <div className="mb-5 flex items-center gap-5">
-            <span className="flex items-center gap-1.5 text-xs text-gray-600">
-              <span className="inline-block h-2.5 w-2.5 rounded-sm bg-blue-500" />
+            <span className="flex items-center gap-1.5 text-xs text-[#888888]">
+              <span className="inline-block h-2.5 w-2.5 rounded-sm bg-[#B3C6E7]" />
               Revenue
             </span>
-            <span className="flex items-center gap-1.5 text-xs text-gray-600">
-              <span className="inline-block h-2.5 w-2.5 rounded-sm bg-red-500" />
+            <span className="flex items-center gap-1.5 text-xs text-[#888888]">
+              <span className="inline-block h-2.5 w-2.5 rounded-sm bg-[#E21500]" />
               Operating Loss
             </span>
           </div>
           <ResponsiveContainer width="100%" height={310}>
             <ComposedChart data={plData} margin={{ top: 10, right: 70, bottom: 0, left: 10 }} barCategoryGap="35%">
-              <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" vertical={false} />
+              <CartesianGrid strokeDasharray="3 3" stroke="#2A2A2A" vertical={false} />
               <XAxis
                 dataKey="quarter"
-                tick={{ fontSize: 12, fill: '#6b7280' }}
+                tick={{ fontSize: 12, fill: '#666666' }}
                 axisLine={false}
                 tickLine={false}
               />
@@ -108,7 +116,7 @@ export default function FinancialsPage() {
                 orientation="left"
                 domain={[0, 9000]}
                 tickFormatter={(v) => `$${v.toLocaleString()}`}
-                tick={{ fontSize: 11, fill: '#6b7280' }}
+                tick={{ fontSize: 11, fill: '#666666' }}
                 axisLine={false}
                 tickLine={false}
                 width={68}
@@ -117,7 +125,7 @@ export default function FinancialsPage() {
                   angle: -90,
                   position: 'insideLeft',
                   offset: 15,
-                  style: { fontSize: 10, fill: '#9ca3af', textAnchor: 'middle' },
+                  style: { fontSize: 10, fill: '#555555', textAnchor: 'middle' },
                 }}
               />
               <YAxis
@@ -127,7 +135,7 @@ export default function FinancialsPage() {
                 tickFormatter={(v) =>
                   v === 0 ? '$0.0M' : `-$${Math.abs(v / 1000000).toFixed(1)}M`
                 }
-                tick={{ fontSize: 11, fill: '#6b7280' }}
+                tick={{ fontSize: 11, fill: '#666666' }}
                 axisLine={false}
                 tickLine={false}
                 width={68}
@@ -136,7 +144,7 @@ export default function FinancialsPage() {
                   angle: 90,
                   position: 'insideRight',
                   offset: 15,
-                  style: { fontSize: 10, fill: '#9ca3af', textAnchor: 'middle' },
+                  style: { fontSize: 10, fill: '#555555', textAnchor: 'middle' },
                 }}
               />
               <Tooltip
@@ -145,12 +153,12 @@ export default function FinancialsPage() {
                   if (name === 'revenue') return [`$${n.toLocaleString()}`, 'Revenue']
                   return [`−$${Math.abs(n / 1000000).toFixed(2)}M`, 'Operating Loss']
                 }}
-                contentStyle={{ fontSize: 12, borderRadius: 8, border: '1px solid #e5e7eb' }}
+                contentStyle={tooltipStyle}
               />
               <Bar
                 yAxisId="rev"
                 dataKey="revenue"
-                fill="#3B82F6"
+                fill="#B3C6E7"
                 name="revenue"
                 barSize={28}
                 radius={[3, 3, 0, 0]}
@@ -158,7 +166,7 @@ export default function FinancialsPage() {
               <Bar
                 yAxisId="loss"
                 dataKey="opLoss"
-                fill="#EF4444"
+                fill="#E21500"
                 name="opLoss"
                 barSize={28}
                 radius={[0, 0, 3, 3]}
@@ -167,27 +175,27 @@ export default function FinancialsPage() {
           </ResponsiveContainer>
         </div>
 
-        {/* ─── Cost Breakdown ──────────────────────────────────────────── */}
-        <div className="overflow-hidden rounded-xl border border-gray-200 bg-white">
-          <div className="border-b border-gray-100 px-6 py-4">
+        {/* Cost Breakdown */}
+        <div className="overflow-hidden rounded-xl border border-[#2A2A2A] bg-[#1A1A1A]">
+          <div className="border-b border-[#2A2A2A] px-6 py-4">
             <div className="flex items-center justify-between">
-              <p className="text-xs font-bold uppercase tracking-widest text-gray-500">
+              <p className="text-xs font-bold uppercase tracking-widest text-[#888888]">
                 Cost Breakdown — All Quarters (USD, by Q4 size)
               </p>
-              <p className="text-xs text-gray-400">Q1 = FY24 · Q2 = H1&apos;25 · Q3 = 9M&apos;25 · Q4 = FY25</p>
+              <p className="text-xs text-[#666666]">Q1 = FY24 · Q2 = H1&apos;25 · Q3 = 9M&apos;25 · Q4 = FY25</p>
             </div>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full min-w-[640px]">
               <thead>
-                <tr className="border-b border-gray-100 bg-gray-50 text-left">
-                  <th className="w-10 py-3 pl-6 text-xs font-medium text-gray-400"></th>
-                  <th className="px-4 py-3 text-xs font-medium text-gray-500">Item</th>
-                  <th className="px-3 py-3 text-right text-xs font-medium text-gray-400">Q1</th>
-                  <th className="px-3 py-3 text-right text-xs font-medium text-gray-400">Q2</th>
-                  <th className="px-3 py-3 text-right text-xs font-medium text-gray-400">Q3</th>
-                  <th className="px-3 py-3 text-right text-xs font-medium text-gray-700">Q4</th>
-                  <th className="py-3 pr-6 text-right text-xs font-medium text-gray-500">QoQ</th>
+                <tr className="border-b border-[#2A2A2A] bg-[#161616] text-left">
+                  <th className="w-10 py-3 pl-6 text-xs font-medium text-[#666666]"></th>
+                  <th className="px-4 py-3 text-xs font-medium text-[#888888]">Item</th>
+                  <th className="px-3 py-3 text-right text-xs font-medium text-[#666666]">Q1</th>
+                  <th className="px-3 py-3 text-right text-xs font-medium text-[#666666]">Q2</th>
+                  <th className="px-3 py-3 text-right text-xs font-medium text-[#666666]">Q3</th>
+                  <th className="px-3 py-3 text-right text-xs font-medium text-[#E0E0E0]">Q4</th>
+                  <th className="py-3 pr-6 text-right text-xs font-medium text-[#888888]">QoQ</th>
                 </tr>
               </thead>
               <tbody>
@@ -196,38 +204,38 @@ export default function FinancialsPage() {
                   return (
                     <tr
                       key={String(c.rank)}
-                      className="border-b border-gray-50 last:border-0 hover:bg-gray-50"
+                      className="border-b border-[#222222] last:border-0 hover:bg-[#222222]"
                     >
-                      <td className="py-3.5 pl-6 text-sm text-gray-400">{c.rank}</td>
+                      <td className="py-3.5 pl-6 text-sm text-[#666666]">{c.rank}</td>
                       <td className="px-4 py-3.5">
-                        <span className="text-sm font-medium text-gray-900">{c.item}</span>
+                        <span className="text-sm font-medium text-white">{c.item}</span>
                         {c.badge === 'Largest' && (
-                          <span className="ml-2 rounded-full bg-gray-900 px-2 py-0.5 text-xs font-semibold text-white">
+                          <span className="ml-2 rounded-full bg-[#E21500] px-2 py-0.5 text-xs font-semibold text-white">
                             Largest
                           </span>
                         )}
                       </td>
-                      <td className="px-3 py-3.5 text-right text-xs text-gray-400">
+                      <td className="px-3 py-3.5 text-right text-xs text-[#666666]">
                         {fmtAmtK(c.q1)}
                       </td>
-                      <td className="px-3 py-3.5 text-right text-xs text-gray-400">
+                      <td className="px-3 py-3.5 text-right text-xs text-[#666666]">
                         {fmtAmtK(c.q2)}
                       </td>
-                      <td className="px-3 py-3.5 text-right text-xs text-gray-400">
+                      <td className="px-3 py-3.5 text-right text-xs text-[#666666]">
                         {fmtAmtK(c.q3)}
                       </td>
-                      <td className="px-3 py-3.5 text-right text-sm font-semibold text-gray-900">
+                      <td className="px-3 py-3.5 text-right text-sm font-semibold text-white">
                         {fmtAmtK(c.q4)}
                       </td>
                       <td className="py-3.5 pr-6 text-right">
                         {qoq === null ? (
-                          <span className="inline-flex items-center rounded-full bg-gray-100 px-2 py-0.5 text-xs font-semibold text-gray-600">
+                          <span className="inline-flex items-center rounded-full bg-[#2A2A2A] px-2 py-0.5 text-xs font-semibold text-[#888888]">
                             grouped
                           </span>
                         ) : (
                           <span
                             className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold ${
-                              qoq < 0 ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+                              qoq < 0 ? 'bg-green-900/40 text-green-400' : 'bg-red-900/40 text-red-400'
                             }`}
                           >
                             {qoq > 0 ? '+' : ''}
@@ -243,31 +251,31 @@ export default function FinancialsPage() {
           </div>
         </div>
 
-        {/* ─── Liquidity & Financial Health ─────────────────────────────── */}
+        {/* Liquidity & Financial Health */}
         <div>
-          <p className="mb-4 text-xs font-bold uppercase tracking-widest text-gray-500">
+          <p className="mb-4 text-xs font-bold uppercase tracking-widest text-[#888888]">
             Liquidity &amp; Financial Health
           </p>
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-            <div className="rounded-xl border border-gray-200 bg-white p-5">
-              <p className="text-xs text-gray-500">Total Assets</p>
-              <p className="mt-2 text-2xl font-bold text-gray-900">$1.12M</p>
-              <p className="mt-1 text-xs text-gray-400">↓ from $1.18M in Q3</p>
+            <div className="rounded-xl border border-[#2A2A2A] bg-[#1A1A1A] p-5">
+              <p className="text-xs text-[#888888]">Total Assets</p>
+              <p className="mt-2 text-2xl font-bold text-white">$1.12M</p>
+              <p className="mt-1 text-xs text-[#666666]">↓ from $1.18M in Q3</p>
             </div>
-            <div className="rounded-xl border border-gray-200 bg-white p-5">
-              <p className="text-xs text-gray-500">Total Liabilities</p>
-              <p className="mt-2 text-2xl font-bold text-gray-900">$100K</p>
-              <p className="mt-1 text-xs text-gray-400">Mainly lease liabilities</p>
+            <div className="rounded-xl border border-[#2A2A2A] bg-[#1A1A1A] p-5">
+              <p className="text-xs text-[#888888]">Total Liabilities</p>
+              <p className="mt-2 text-2xl font-bold text-white">$100K</p>
+              <p className="mt-1 text-xs text-[#666666]">Mainly lease liabilities</p>
             </div>
-            <div className="rounded-xl border border-gray-200 bg-white p-5">
-              <p className="text-xs text-gray-500">Total Equity</p>
-              <p className="mt-2 text-2xl font-bold text-gray-900">$1.02M</p>
-              <p className="mt-1 text-xs text-gray-400">Retained deficit ongoing</p>
+            <div className="rounded-xl border border-[#2A2A2A] bg-[#1A1A1A] p-5">
+              <p className="text-xs text-[#888888]">Total Equity</p>
+              <p className="mt-2 text-2xl font-bold text-white">$1.02M</p>
+              <p className="mt-1 text-xs text-[#666666]">Retained deficit ongoing</p>
             </div>
-            <div className="rounded-xl border border-gray-200 bg-white p-5">
-              <p className="text-xs text-gray-500">Current Ratio</p>
-              <p className="mt-2 text-2xl font-bold text-emerald-500">1,214%</p>
-              <p className="mt-1 text-xs text-gray-400">Short-term solvency solid</p>
+            <div className="rounded-xl border border-[#2A2A2A] bg-[#1A1A1A] p-5">
+              <p className="text-xs text-[#888888]">Current Ratio</p>
+              <p className="mt-2 text-2xl font-bold text-emerald-400">1,214%</p>
+              <p className="mt-1 text-xs text-[#666666]">Short-term solvency solid</p>
             </div>
           </div>
         </div>

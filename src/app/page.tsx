@@ -48,10 +48,10 @@ export default async function DashboardPage({ searchParams }: { searchParams: Se
   })
 
   return (
-    <main className="min-h-screen bg-gray-50 p-6 sm:p-10">
+    <main className="min-h-screen bg-[#0D0D0D] p-6 sm:p-10">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold tracking-tight">US Ops Dashboard</h1>
-        <p className="text-sm text-gray-500">FuriosaAI · Deal Pipeline Overview</p>
+        <h1 className="text-2xl font-bold tracking-tight text-white">US Ops Dashboard</h1>
+        <p className="text-sm text-[#888888]">FuriosaAI · Deal Pipeline Overview</p>
       </div>
 
       <div className="space-y-6">
@@ -71,7 +71,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Se
         <PocAllocationSection />
 
         <div>
-          <h2 className="mb-3 text-lg font-semibold">Deal Pipeline</h2>
+          <h2 className="mb-3 text-lg font-semibold text-white">Deal Pipeline</h2>
           <DealStatusFlow
             demand={deals.filter((d) => d.status === 'Demand')}
             confirmed={deals.filter((d) => d.status === 'Confirmed')}

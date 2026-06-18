@@ -51,7 +51,7 @@ export default function FilterBar({ regions, owners }: FilterBarProps) {
   }
 
   return (
-    <div className="flex flex-wrap items-center gap-3 rounded-xl border border-gray-200 bg-white px-4 py-3 shadow-sm">
+    <div className="flex flex-wrap items-center gap-3 rounded-xl border border-[#2A2A2A] bg-[#1A1A1A] px-4 py-3">
       <MultiSelect
         label="Status"
         options={STATUSES}
@@ -72,13 +72,13 @@ export default function FilterBar({ regions, owners }: FilterBarProps) {
       />
 
       <div className="flex items-center gap-2">
-        <span className="text-sm text-gray-400">Date</span>
+        <span className="text-sm text-[#666666]">Date</span>
         <DatePicker
           value={from}
           onChange={(v) => updateDateParam('from', v)}
           placeholder="From"
         />
-        <span className="text-xs text-gray-300">—</span>
+        <span className="text-xs text-[#444444]">—</span>
         <DatePicker
           value={to}
           onChange={(v) => updateDateParam('to', v)}
@@ -89,7 +89,7 @@ export default function FilterBar({ regions, owners }: FilterBarProps) {
       {hasFilter && (
         <button
           onClick={() => router.replace(pathname)}
-          className="flex items-center gap-1 rounded-md border border-gray-200 px-3 py-1.5 text-sm text-gray-500 transition-colors hover:border-gray-400 hover:text-gray-900"
+          className="flex items-center gap-1 rounded-md border border-[#333333] px-3 py-1.5 text-sm text-[#888888] transition-colors hover:border-[#555555] hover:text-white"
         >
           <XIcon className="h-3.5 w-3.5" />
           Clear
