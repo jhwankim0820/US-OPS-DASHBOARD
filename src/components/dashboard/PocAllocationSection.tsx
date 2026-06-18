@@ -212,7 +212,7 @@ export default function PocAllocationSection() {
                   dataKey="value"
                   position="right"
                   formatter={(v) => (Number(v) > 0 ? String(v) : '')}
-                  style={{ fill: '#378ADD', fontSize: 11, fontWeight: 600 }}
+                  style={{ fill: '#1D9E75', fontSize: 11, fontWeight: 600 }}
                 />
               </Bar>
             </BarChart>
