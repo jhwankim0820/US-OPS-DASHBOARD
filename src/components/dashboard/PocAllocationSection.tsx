@@ -204,7 +204,7 @@ export default function PocAllocationSection() {
         {/* Servers chart */}
         <div className="rounded-xl border border-[#2A2A2A] bg-[#1E1E1E] p-5">
           <div className="flex items-center gap-2 mb-4">
-            <span className="w-3 h-3 rounded-sm bg-[#E21500] inline-block" />
+            <span className="w-3 h-3 rounded-sm inline-block" style={{ background: 'rgb(124,77,255)' }} />
             <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[#666666]">Servers per rep</p>
           </div>
           <ResponsiveContainer width="100%" height={220}>
@@ -214,13 +214,13 @@ export default function PocAllocationSection() {
               <Tooltip formatter={(v) => [`${v} units`, 'Servers']} contentStyle={tooltipStyle} />
               <Bar dataKey="value" radius={[0, 3, 3, 0]} barSize={14}>
                 {serverChartData.map((d, i) => (
-                  <Cell key={i} fill={d.value > 0 ? '#E21500' : '#2A2A2A'} />
+                  <Cell key={i} fill={d.value > 0 ? 'rgb(124,77,255)' : '#2A2A2A'} />
                 ))}
                 <LabelList
                   dataKey="value"
                   position="right"
                   formatter={(v) => (Number(v) > 0 ? String(v) : '')}
-                  style={{ fill: '#E21500', fontSize: 11, fontWeight: 600 }}
+                  style={{ fill: 'rgb(124,77,255)', fontSize: 11, fontWeight: 600 }}
                 />
               </Bar>
             </BarChart>
