@@ -11,10 +11,10 @@ import {
 } from '@/components/ui/table'
 
 const STATUS_STYLE: Record<string, string> = {
-  SUBMITTED: 'bg-amber-900/40 text-amber-400',
-  IN_TRANSIT: 'bg-blue-900/40 text-[#B3C6E7]',
-  OUT_FOR_DELIVERY: 'bg-orange-900/40 text-orange-400',
-  DELIVERED: 'bg-emerald-900/40 text-emerald-400',
+  SUBMITTED: 'bg-amber-100 text-amber-700',
+  IN_TRANSIT: 'bg-blue-100 text-blue-700',
+  OUT_FOR_DELIVERY: 'bg-orange-100 text-orange-700',
+  DELIVERED: 'bg-emerald-100 text-emerald-700',
 }
 
 const STATUS_LABEL: Record<string, string> = {
@@ -38,22 +38,22 @@ export default function ShipmentsTable({ shipments }: { shipments: ShipmentRow[]
   const router = useRouter()
 
   return (
-    <div className="rounded-lg border border-[#3a3a48] bg-[#2a2a35]">
+    <div className="rounded-lg border border-[#E2E8F0] bg-white">
       <Table>
         <TableHeader>
-          <TableRow className="bg-[#20202c] border-[#3a3a48]">
-            <TableHead className="text-[#AAAAAA]">Tracking ID</TableHead>
-            <TableHead className="text-[#AAAAAA]">Customer (Deal)</TableHead>
-            <TableHead className="text-[#AAAAAA]">Status</TableHead>
-            <TableHead className="text-[#AAAAAA]">Origin</TableHead>
-            <TableHead className="text-[#AAAAAA]">Destination</TableHead>
-            <TableHead className="text-[#AAAAAA]">Created At</TableHead>
+          <TableRow className="bg-[#F8F9FA] border-[#E2E8F0]">
+            <TableHead className="text-[#6B7280]">Tracking ID</TableHead>
+            <TableHead className="text-[#6B7280]">Customer (Deal)</TableHead>
+            <TableHead className="text-[#6B7280]">Status</TableHead>
+            <TableHead className="text-[#6B7280]">Origin</TableHead>
+            <TableHead className="text-[#6B7280]">Destination</TableHead>
+            <TableHead className="text-[#6B7280]">Created At</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {shipments.length === 0 ? (
             <TableRow>
-              <TableCell colSpan={6} className="py-10 text-center text-[#666666]">
+              <TableCell colSpan={6} className="py-10 text-center text-[#9CA3AF]">
                 No shipments found.
               </TableCell>
             </TableRow>
@@ -61,30 +61,30 @@ export default function ShipmentsTable({ shipments }: { shipments: ShipmentRow[]
             shipments.map((s) => (
               <TableRow
                 key={s.id}
-                className="border-[#3a3a48] cursor-pointer hover:bg-[#35353f]"
+                className="border-[#E2E8F0] cursor-pointer hover:bg-[#F8F9FA]"
                 onClick={() => s.deal?.dmdId && router.push(`/deals/${s.deal.dmdId}`)}
               >
-                <TableCell className="font-mono text-sm font-semibold text-[#C0C0C0]">
+                <TableCell className="font-mono text-sm font-semibold text-[#4B5563]">
                   {s.trackingNo ?? '—'}
                 </TableCell>
                 <TableCell>
-                  <span className="font-medium text-white">{s.deal?.customer ?? '—'}</span>
+                  <span className="font-medium text-[#111827]">{s.deal?.customer ?? '—'}</span>
                   {s.deal?.dmdId && (
-                    <span className="ml-1.5 font-mono text-xs text-[#666666]">
+                    <span className="ml-1.5 font-mono text-xs text-[#9CA3AF]">
                       {s.deal.dmdId}
                     </span>
                   )}
                 </TableCell>
                 <TableCell>
                   <span
-                    className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold ${STATUS_STYLE[s.status] ?? 'bg-[#35353f] text-[#AAAAAA]'}`}
+                    className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold ${STATUS_STYLE[s.status] ?? 'bg-gray-100 text-gray-600'}`}
                   >
                     {STATUS_LABEL[s.status] ?? s.status}
                   </span>
                 </TableCell>
-                <TableCell className="text-sm text-[#C0C0C0]">{s.origin}</TableCell>
-                <TableCell className="text-sm text-[#C0C0C0]">{s.destination}</TableCell>
-                <TableCell className="text-sm text-[#666666]">
+                <TableCell className="text-sm text-[#4B5563]">{s.origin}</TableCell>
+                <TableCell className="text-sm text-[#4B5563]">{s.destination}</TableCell>
+                <TableCell className="text-sm text-[#9CA3AF]">
                   {new Date(s.createdAt).toLocaleDateString('en-US', {
                     year: '2-digit',
                     month: 'short',

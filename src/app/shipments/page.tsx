@@ -24,8 +24,8 @@ export default async function ShipmentsPage() {
   return (
     <main className="p-6 sm:p-10">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold tracking-tight text-white">Shipments</h1>
-        <p className="text-sm text-[#AAAAAA]">Track inbound and outbound hardware shipments.</p>
+        <h1 className="text-2xl font-bold tracking-tight text-[#111827]">Shipments</h1>
+        <p className="text-sm text-[#6B7280]">Track inbound and outbound hardware shipments.</p>
       </div>
 
       {/* Inbound / Outbound tracker + FedEx dispatch */}
@@ -33,7 +33,7 @@ export default async function ShipmentsPage() {
 
       {/* Existing shipments table */}
       <div className="mt-10">
-        <h2 className="mb-3 text-[11px] font-semibold uppercase tracking-[0.08em] text-[#666666]">All Shipment Records</h2>
+        <h2 className="mb-3 text-[11px] font-semibold uppercase tracking-[0.08em] text-[#9CA3AF]">All Shipment Records</h2>
         <ShipmentsTable shipments={rows} />
       </div>
     </main>

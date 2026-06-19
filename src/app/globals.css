@@ -48,25 +48,25 @@
   --radius-4xl: calc(var(--radius) * 2.6);
 }
 
-/* FuriosaAI dark theme — always on */
+/* FuriosaAI light theme */
 :root {
-  --background: #1c1c22;
-  --foreground: #F0F0F0;
-  --card: #2a2a35;
-  --card-foreground: #F0F0F0;
-  --popover: #2a2a35;
-  --popover-foreground: #F0F0F0;
+  --background: #F8F9FA;
+  --foreground: #111827;
+  --card: #FFFFFF;
+  --card-foreground: #111827;
+  --popover: #FFFFFF;
+  --popover-foreground: #111827;
   --primary: #E21500;
   --primary-foreground: #FFFFFF;
-  --secondary: #2a2a35;
-  --secondary-foreground: #F0F0F0;
-  --muted: #2a2a35;
-  --muted-foreground: #AAAAAA;
-  --accent: #2a2a35;
-  --accent-foreground: #F0F0F0;
+  --secondary: #F1F3F5;
+  --secondary-foreground: #111827;
+  --muted: #F1F3F5;
+  --muted-foreground: #6B7280;
+  --accent: #F1F3F5;
+  --accent-foreground: #111827;
   --destructive: #E21500;
-  --border: #3a3a48;
-  --input: #3a3a48;
+  --border: #E2E8F0;
+  --input: #E2E8F0;
   --ring: #E21500;
   --chart-1: #E21500;
   --chart-2: #F26B43;
@@ -74,13 +74,13 @@
   --chart-4: #1D9E75;
   --chart-5: #888888;
   --radius: 0.625rem;
-  --sidebar: #16161c;
-  --sidebar-foreground: #F0F0F0;
+  --sidebar: #FFFFFF;
+  --sidebar-foreground: #111827;
   --sidebar-primary: #E21500;
   --sidebar-primary-foreground: #FFFFFF;
-  --sidebar-accent: #2a2a35;
-  --sidebar-accent-foreground: #F0F0F0;
-  --sidebar-border: #3a3a48;
+  --sidebar-accent: #F1F3F5;
+  --sidebar-accent-foreground: #111827;
+  --sidebar-border: #E2E8F0;
   --sidebar-ring: #E21500;
 }
 

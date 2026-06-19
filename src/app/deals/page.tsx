@@ -40,8 +40,8 @@ export default async function DealsPage({ searchParams }: { searchParams: Search
   return (
     <main className="p-6 sm:p-10">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold tracking-tight text-white">Deals</h1>
-        <p className="text-sm text-[#AAAAAA]">{deals.length} items found</p>
+        <h1 className="text-2xl font-bold tracking-tight text-[#111827]">Deals</h1>
+        <p className="text-sm text-[#6B7280]">{deals.length} items found</p>
       </div>
       <div className="space-y-4">
         <Suspense>
