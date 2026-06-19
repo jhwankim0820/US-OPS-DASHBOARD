@@ -1,6 +1,7 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { SheetShipment } from '@/lib/sheets'
 
 type HardwareType = 'RNGD Cards' | 'Rack Server' | 'Workstation'
 type FedExService = 'FedEx Priority Overnight' | 'FedEx 2Day' | 'FedEx Ground' | 'FedEx International Priority'
@@ -37,59 +38,19 @@ interface ShipResult {
   labelUrl: string | null
 }
 
+type LiveShipment = SheetShipment & {
+  status: string
+  statusCode: string | null
+  location: string
+  eta: string | null
+  progress: number
+}
+
 const UNIT_PRICES: Record<HardwareType, number> = {
   'RNGD Cards': 7184,
   'Rack Server': 180000,
   'Workstation': 90000,
 }
-
-const inbound = [
-  {
-    id: 'KR-2405',
-    type: 'card' as const,
-    title: 'RNGD Cards — Batch #KR-2405',
-    sub: 'FedEx International Priority',
-    trackingNumber: '774823910045',
-    route: 'Seoul → Memphis hub → San Jose',
-    qty: '32 cards',
-    eta: 'ETA May 21',
-    status: 'In transit',
-    statusColor: 'bg-blue-100 text-blue-700',
-    progress: 70,
-    progressColor: 'bg-[#378ADD]',
-  },
-  {
-    id: 'KR-2406',
-    type: 'server' as const,
-    title: 'Rack Servers — Batch #KR-2406',
-    sub: 'FedEx International Economy',
-    trackingNumber: '774823911102',
-    route: 'Seoul → customs clearance',
-    qty: '4 servers',
-    eta: 'ETA Jun 3',
-    status: 'Customs',
-    statusColor: 'bg-amber-100 text-amber-700',
-    progress: 30,
-    progressColor: 'bg-[#378ADD]',
-  },
-]
-
-const outbound = [
-  {
-    id: 'DMD-63',
-    type: 'card' as const,
-    title: 'RNGD Cards — DMD-63 · KT Cloud',
-    sub: 'FedEx Ground',
-    trackingNumber: '453988123301',
-    route: 'San Jose → Seattle data center',
-    qty: '8 cards',
-    eta: 'ETA May 18',
-    status: 'Out for delivery',
-    statusColor: 'bg-emerald-100 text-emerald-700',
-    progress: 90,
-    progressColor: 'bg-[#1D9E75]',
-  },
-]
 
 const INPUT_CLS = 'w-full border border-[#E2E8F0] bg-[#F8F9FA] text-[#111827] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#E21500]/30'
 const LABEL_CLS = 'block text-xs text-[#6B7280] mb-1'
@@ -99,9 +60,18 @@ function fmt(date: string) {
   catch { return date }
 }
 
+function getStatusColor(code: string | null | undefined): string {
+  if (code === 'DL' || code === 'OD') return 'bg-emerald-100 text-emerald-700'
+  if (code === 'CA' || code === 'DE') return 'bg-red-100 text-red-700'
+  return 'bg-blue-100 text-blue-700'
+}
+
 export default function ShipmentTracker() {
   const [fedexOpen, setFedexOpen] = useState(false)
   const [contractOpen, setContractOpen] = useState(false)
+
+  const [liveData, setLiveData] = useState<{ inbound: LiveShipment[]; outbound: LiveShipment[] } | null>(null)
+  const [dataLoading, setDataLoading] = useState(true)
 
   const [form, setForm] = useState<ShipForm>({
     recipientCompany: '',
@@ -138,6 +108,26 @@ export default function ShipmentTracker() {
 
   const unitPrice = UNIT_PRICES[form.hwType]
   const totalPrice = unitPrice * form.qty
+
+  async function fetchLiveData() {
+    try {
+      const res = await fetch('/api/shipments/status')
+      const data = await res.json()
+      setLiveData(data)
+    } catch {
+      setLiveData({ inbound: [], outbound: [] })
+    } finally {
+      setDataLoading(false)
+    }
+  }
+
+  async function refresh() {
+    await fetchLiveData()
+  }
+
+  useEffect(() => {
+    fetchLiveData()
+  }, [])
 
   function resetFedex() {
     setFedexOpen(false)
@@ -204,6 +194,24 @@ export default function ShipmentTracker() {
       setShipResult({ trackingNumber: data.trackingNumber, labelUrl: data.labelUrl })
       setContractOpen(false)
       setFedexOpen(false)
+
+      // Save to Google Sheets and refresh live data
+      await fetch('/api/shipments/save', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          trackingNumber: data.trackingNumber,
+          direction: 'outbound',
+          company: form.recipientCompany,
+          hwType: form.hwType,
+          qty: form.qty,
+          service: form.service,
+          shipDate: new Date().toISOString().split('T')[0],
+          route: `San Jose → ${form.city}, ${form.state}`,
+          notes: '',
+        }),
+      })
+      await refresh()
     } catch (e) {
       setShipError(String(e))
     } finally {
@@ -237,6 +245,9 @@ export default function ShipmentTracker() {
   const set = (k: keyof ShipForm) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
     setForm(f => ({ ...f, [k]: k === 'qty' ? parseInt(e.target.value) || 1 : e.target.value }))
 
+  const inboundList = liveData?.inbound ?? []
+  const outboundList = liveData?.outbound ?? []
+
   return (
     <div className="space-y-6">
 
@@ -251,38 +262,50 @@ export default function ShipmentTracker() {
               <p className="text-sm font-medium text-[#4B5563]">Korea HQ → US Office</p>
             </div>
             <span className="text-xs font-medium bg-blue-100 text-blue-700 px-2 py-1 rounded-full">
-              {inbound.length} active
+              {liveData?.inbound.length ?? 0} active
             </span>
           </div>
           <div className="space-y-4">
-            {inbound.map((s) => (
-              <div key={s.id} className="flex gap-3">
-                <div className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center flex-shrink-0 text-blue-700 text-sm">
-                  {s.type === 'card' ? '▣' : '⬛'}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-[#111827] truncate">{s.title}</p>
-                  <p className="text-xs text-[#9CA3AF] mt-0.5">{s.sub} · {s.trackingNumber}</p>
-                  <div className="mt-1.5 h-1.5 bg-[#F1F3F5] rounded-full overflow-hidden">
-                    <div className={`h-full rounded-full ${s.progressColor}`} style={{ width: `${s.progress}%` }} />
-                  </div>
-                  <p className="text-xs text-[#9CA3AF] mt-1">{s.route}</p>
-                </div>
-                <div className="text-right flex-shrink-0">
-                  <p className="text-xs font-medium text-[#111827]">{s.qty}</p>
-                  <p className="text-xs text-[#9CA3AF]">{s.eta}</p>
-                  <span className={`mt-1 inline-block text-xs font-medium px-1.5 py-0.5 rounded ${s.statusColor}`}>
-                    {s.status}
-                  </span>
-                  <button
-                    onClick={() => openTrack(s.title, s.trackingNumber)}
-                    className="mt-1 block text-xs text-[#E21500] hover:underline"
-                  >
-                    Track →
-                  </button>
-                </div>
+            {dataLoading ? (
+              <div className="animate-pulse space-y-3">
+                <div className="h-10 bg-[#F1F3F5] rounded-lg" />
+                <div className="h-10 bg-[#F1F3F5] rounded-lg" />
               </div>
-            ))}
+            ) : inboundList.length === 0 ? (
+              <p className="text-xs text-[#9CA3AF] text-center py-4">No shipments yet — add a Shipments tab to Google Sheets.</p>
+            ) : (
+              inboundList.map((s) => {
+                const statusColor = getStatusColor(s.statusCode)
+                return (
+                  <div key={s.trackingNumber} className="flex gap-3">
+                    <div className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center flex-shrink-0 text-blue-700 text-sm">
+                      {s.hwType.toLowerCase().includes('server') ? '⬛' : '▣'}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-[#111827] truncate">{s.company} — {s.hwType}</p>
+                      <p className="text-xs text-[#9CA3AF] mt-0.5">{s.service} · {s.trackingNumber}</p>
+                      <div className="mt-1.5 h-1.5 bg-[#F1F3F5] rounded-full overflow-hidden">
+                        <div className="h-full rounded-full bg-[#378ADD]" style={{ width: `${s.progress}%` }} />
+                      </div>
+                      <p className="text-xs text-[#9CA3AF] mt-1">{s.route}</p>
+                    </div>
+                    <div className="text-right flex-shrink-0">
+                      <p className="text-xs font-medium text-[#111827]">{s.qty} units</p>
+                      <p className="text-xs text-[#9CA3AF]">{s.eta ? fmt(s.eta) : s.shipDate}</p>
+                      <span className={`mt-1 inline-block text-xs font-medium px-1.5 py-0.5 rounded ${statusColor}`}>
+                        {s.status}
+                      </span>
+                      <button
+                        onClick={() => openTrack(`${s.company} — ${s.hwType}`, s.trackingNumber)}
+                        className="mt-1 block text-xs text-[#E21500] hover:underline"
+                      >
+                        Track →
+                      </button>
+                    </div>
+                  </div>
+                )
+              })
+            )}
           </div>
         </div>
 
@@ -294,38 +317,50 @@ export default function ShipmentTracker() {
               <p className="text-sm font-medium text-[#4B5563]">US Office → Clients</p>
             </div>
             <span className="text-xs font-medium bg-emerald-100 text-emerald-700 px-2 py-1 rounded-full">
-              {outbound.length} active
+              {liveData?.outbound.length ?? 0} active
             </span>
           </div>
           <div className="space-y-4">
-            {outbound.map((s) => (
-              <div key={s.id} className="flex gap-3">
-                <div className="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center flex-shrink-0 text-emerald-700 text-sm">
-                  {s.type === 'card' ? '▣' : '⬛'}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-[#111827] truncate">{s.title}</p>
-                  <p className="text-xs text-[#9CA3AF] mt-0.5">{s.sub} · {s.trackingNumber}</p>
-                  <div className="mt-1.5 h-1.5 bg-[#F1F3F5] rounded-full overflow-hidden">
-                    <div className={`h-full rounded-full ${s.progressColor}`} style={{ width: `${s.progress}%` }} />
-                  </div>
-                  <p className="text-xs text-[#9CA3AF] mt-1">{s.route}</p>
-                </div>
-                <div className="text-right flex-shrink-0">
-                  <p className="text-xs font-medium text-[#111827]">{s.qty}</p>
-                  <p className="text-xs text-[#9CA3AF]">{s.eta}</p>
-                  <span className={`mt-1 inline-block text-xs font-medium px-1.5 py-0.5 rounded ${s.statusColor}`}>
-                    {s.status}
-                  </span>
-                  <button
-                    onClick={() => openTrack(s.title, s.trackingNumber)}
-                    className="mt-1 block text-xs text-[#E21500] hover:underline"
-                  >
-                    Track →
-                  </button>
-                </div>
+            {dataLoading ? (
+              <div className="animate-pulse space-y-3">
+                <div className="h-10 bg-[#F1F3F5] rounded-lg" />
+                <div className="h-10 bg-[#F1F3F5] rounded-lg" />
               </div>
-            ))}
+            ) : outboundList.length === 0 ? (
+              <p className="text-xs text-[#9CA3AF] text-center py-4">No shipments yet — add a Shipments tab to Google Sheets.</p>
+            ) : (
+              outboundList.map((s) => {
+                const statusColor = getStatusColor(s.statusCode)
+                return (
+                  <div key={s.trackingNumber} className="flex gap-3">
+                    <div className="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center flex-shrink-0 text-emerald-700 text-sm">
+                      {s.hwType.toLowerCase().includes('server') ? '⬛' : '▣'}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-[#111827] truncate">{s.company} — {s.hwType}</p>
+                      <p className="text-xs text-[#9CA3AF] mt-0.5">{s.service} · {s.trackingNumber}</p>
+                      <div className="mt-1.5 h-1.5 bg-[#F1F3F5] rounded-full overflow-hidden">
+                        <div className="h-full rounded-full bg-[#1D9E75]" style={{ width: `${s.progress}%` }} />
+                      </div>
+                      <p className="text-xs text-[#9CA3AF] mt-1">{s.route}</p>
+                    </div>
+                    <div className="text-right flex-shrink-0">
+                      <p className="text-xs font-medium text-[#111827]">{s.qty} units</p>
+                      <p className="text-xs text-[#9CA3AF]">{s.eta ? fmt(s.eta) : s.shipDate}</p>
+                      <span className={`mt-1 inline-block text-xs font-medium px-1.5 py-0.5 rounded ${statusColor}`}>
+                        {s.status}
+                      </span>
+                      <button
+                        onClick={() => openTrack(`${s.company} — ${s.hwType}`, s.trackingNumber)}
+                        className="mt-1 block text-xs text-[#E21500] hover:underline"
+                      >
+                        Track →
+                      </button>
+                    </div>
+                  </div>
+                )
+              })
+            )}
             <p className="text-xs text-[#9CA3AF] text-center pt-2 border-t border-[#E2E8F0]">
               ✓ 2 shipments delivered this month
             </p>

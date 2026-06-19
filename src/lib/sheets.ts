@@ -154,3 +154,76 @@ async function fetchDeals(): Promise<SheetDeal[]> {
 }
 
 export const getDeals = unstable_cache(fetchDeals, ['sheets-deals'], { revalidate: 15 })
+
+function getWriteAuth() {
+  const raw = process.env.GOOGLE_SERVICE_ACCOUNT_JSON
+  if (!raw) throw new Error('GOOGLE_SERVICE_ACCOUNT_JSON is not set')
+  const credentials = JSON.parse(raw.replace(/^﻿/, '').trim())
+  return new google.auth.GoogleAuth({
+    credentials,
+    scopes: ['https://www.googleapis.com/auth/spreadsheets'],
+  })
+}
+
+export interface SheetShipment {
+  trackingNumber: string
+  direction: 'inbound' | 'outbound'
+  company: string
+  hwType: string
+  qty: number
+  service: string
+  shipDate: string
+  route: string
+  notes: string
+}
+
+async function fetchShipments(): Promise<SheetShipment[]> {
+  let auth: ReturnType<typeof getAuth>
+  try {
+    auth = getAuth()
+  } catch (e) {
+    console.error('[sheets/shipments]', e)
+    return []
+  }
+  const sheets = google.sheets({ version: 'v4', auth })
+  let rows: string[][] = []
+  try {
+    const res = await sheets.spreadsheets.values.get({
+      spreadsheetId: SPREADSHEET_ID,
+      range: 'Shipments!A2:I500',
+    })
+    rows = (res.data.values ?? []) as string[][]
+  } catch (e) {
+    console.error('[sheets/shipments]', e)
+    return []
+  }
+
+  return rows
+    .filter((r) => r[0]?.trim())
+    .map((r) => ({
+      trackingNumber: r[0] ?? '',
+      direction: (r[1] === 'outbound' ? 'outbound' : 'inbound') as 'inbound' | 'outbound',
+      company: r[2] ?? '',
+      hwType: r[3] ?? '',
+      qty: parseInt(r[4]) || 0,
+      service: r[5] ?? '',
+      shipDate: r[6] ?? '',
+      route: r[7] ?? '',
+      notes: r[8] ?? '',
+    }))
+}
+
+export const getShipments = unstable_cache(fetchShipments, ['sheets-shipments'], { revalidate: 30 })
+
+export async function addShipment(s: SheetShipment): Promise<void> {
+  const auth = getWriteAuth()
+  const sheets = google.sheets({ version: 'v4', auth })
+  await sheets.spreadsheets.values.append({
+    spreadsheetId: SPREADSHEET_ID,
+    range: 'Shipments!A:I',
+    valueInputOption: 'RAW',
+    requestBody: {
+      values: [[s.trackingNumber, s.direction, s.company, s.hwType, s.qty, s.service, s.shipDate, s.route, s.notes]],
+    },
+  })
+}
