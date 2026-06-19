@@ -1,6 +1,6 @@
-const BASE = process.env.FEDEX_ENV === 'production'
-  ? 'https://apis.fedex.com'
-  : 'https://apis-sandbox.fedex.com'
+const BASE = process.env.FEDEX_ENV === 'sandbox'
+  ? 'https://apis-sandbox.fedex.com'
+  : 'https://apis.fedex.com'
 
 let cached: { token: string; exp: number } | null = null
 
