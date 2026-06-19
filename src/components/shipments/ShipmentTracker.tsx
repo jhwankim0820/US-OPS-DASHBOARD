@@ -272,6 +272,22 @@ export default function ShipmentTracker() {
   return (
     <div className="space-y-6">
 
+      {/* FedEx Dispatch */}
+      <div className="rounded-xl border border-[#E2E8F0] bg-white p-5 flex items-center justify-between gap-4 flex-wrap">
+        <div>
+          <p className="text-sm font-semibold text-[#111827]">Ship hardware via FedEx</p>
+          <p className="text-xs text-[#9CA3AF] mt-0.5">Create a new outbound shipment with live rate quote and label generation.</p>
+        </div>
+        <button
+          onClick={() => setFedexOpen(true)}
+          className="flex items-center gap-2 px-4 py-2 rounded-lg text-white text-sm font-semibold transition-opacity hover:opacity-90"
+          style={{ background: '#4D148C' }}
+        >
+          <span><span style={{ color: '#FF6200' }}>Fe</span>dEx</span>
+          Ship
+        </button>
+      </div>
+
       {/* Inbound + Outbound grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 
@@ -448,22 +464,6 @@ export default function ShipmentTracker() {
           Last updated: {lastUpdated.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' })} · auto-refreshes every 5 min
         </p>
       )}
-
-      {/* FedEx Dispatch */}
-      <div className="rounded-xl border border-[#E2E8F0] bg-white p-5 flex items-center justify-between gap-4 flex-wrap">
-        <div>
-          <p className="text-sm font-semibold text-[#111827]">Ship hardware via FedEx</p>
-          <p className="text-xs text-[#9CA3AF] mt-0.5">Create a new outbound shipment with live rate quote and label generation.</p>
-        </div>
-        <button
-          onClick={() => setFedexOpen(true)}
-          className="flex items-center gap-2 px-4 py-2 rounded-lg text-white text-sm font-semibold transition-opacity hover:opacity-90"
-          style={{ background: '#4D148C' }}
-        >
-          <span><span style={{ color: '#FF6200' }}>Fe</span>dEx</span>
-          Ship
-        </button>
-      </div>
 
       {/* Ship result toast */}
       {shipResult && (
