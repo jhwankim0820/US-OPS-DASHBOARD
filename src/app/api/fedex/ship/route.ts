@@ -14,6 +14,7 @@ export async function POST(req: NextRequest) {
       raw: data,
     })
   } catch (e) {
+    console.error('[fedex/ship]', e)
     return NextResponse.json({ error: String(e) }, { status: 500 })
   }
 }

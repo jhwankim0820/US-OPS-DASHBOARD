@@ -12,6 +12,7 @@ export async function POST(req: NextRequest) {
       raw: data,
     })
   } catch (e) {
+    console.error('[fedex/rates]', e)
     return NextResponse.json({ error: String(e) }, { status: 500 })
   }
 }

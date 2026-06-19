@@ -36,6 +36,7 @@ export async function POST(req: NextRequest) {
       scans,
     })
   } catch (e) {
+    console.error('[fedex/track]', e)
     return NextResponse.json({ error: String(e) }, { status: 500 })
   }
 }
