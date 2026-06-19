@@ -253,12 +253,14 @@ export default function ShipmentTracker() {
   const inboundList = liveData?.inbound ?? []
   const outboundList = liveData?.outbound ?? []
 
-  // Active = FedEx에서 known transit code이거나, 발송 후 30일 이내이고 명시적 완료(DL/CA) 아닌 것
-  const cutoff = new Date()
-  cutoff.setDate(cutoff.getDate() - 30)
+  // statusCode=null (FedEx 추적 만료) → 서비스별 예상 배송일 기준으로 active 판단
   const isActive = (s: LiveShipment) => {
     if (s.statusCode === 'DL' || s.statusCode === 'CA') return false
     if (s.statusCode && ['OC','PU','DP','AR','OD'].includes(s.statusCode)) return true
+    const svc = s.service.toLowerCase()
+    const maxDays = svc.includes('economy') ? 10 : svc.includes('express') ? 3 : 5
+    const cutoff = new Date()
+    cutoff.setDate(cutoff.getDate() - maxDays)
     return new Date(s.shipDate) >= cutoff
   }
   const activeInbound = inboundList.filter(isActive)
