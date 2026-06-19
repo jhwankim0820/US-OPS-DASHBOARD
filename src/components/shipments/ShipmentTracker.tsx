@@ -98,6 +98,8 @@ export default function ShipmentTracker() {
   const [shipResult, setShipResult] = useState<ShipResult | null>(null)
   const [shipError, setShipError] = useState<string | null>(null)
 
+  const [lastUpdated, setLastUpdated] = useState<Date | null>(null)
+
   // Track modal
   const [trackOpen, setTrackOpen] = useState(false)
   const [trackTitle, setTrackTitle] = useState('')
@@ -114,6 +116,7 @@ export default function ShipmentTracker() {
       const res = await fetch('/api/shipments/status')
       const data = await res.json()
       setLiveData(data)
+      setLastUpdated(new Date())
     } catch {
       setLiveData({ inbound: [], outbound: [] })
     } finally {
@@ -127,6 +130,8 @@ export default function ShipmentTracker() {
 
   useEffect(() => {
     fetchLiveData()
+    const interval = setInterval(fetchLiveData, 5 * 60 * 1000)
+    return () => clearInterval(interval)
   }, [])
 
   function resetFedex() {
@@ -367,6 +372,13 @@ export default function ShipmentTracker() {
           </div>
         </div>
       </div>
+
+      {/* Last updated */}
+      {lastUpdated && (
+        <p className="text-xs text-[#9CA3AF] text-right -mt-3">
+          Last updated: {lastUpdated.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' })} · auto-refreshes every 5 min
+        </p>
+      )}
 
       {/* FedEx Dispatch */}
       <div className="rounded-xl border border-[#E2E8F0] bg-white p-5 flex items-center justify-between gap-4 flex-wrap">
