@@ -252,9 +252,20 @@ export default function ShipmentTracker() {
 
   const inboundList = liveData?.inbound ?? []
   const outboundList = liveData?.outbound ?? []
-  const activeInbound = inboundList.filter(s => s.statusCode !== 'DL' && s.statusCode !== 'CA')
-  const activeOutbound = outboundList.filter(s => s.statusCode !== 'DL' && s.statusCode !== 'CA')
-  const allShipments = [...inboundList, ...outboundList].sort((a, b) => b.shipDate.localeCompare(a.shipDate))
+
+  // Active = FedEx에서 known transit code이거나, 발송 후 30일 이내이고 명시적 완료(DL/CA) 아닌 것
+  const cutoff = new Date()
+  cutoff.setDate(cutoff.getDate() - 30)
+  const isActive = (s: LiveShipment) => {
+    if (s.statusCode === 'DL' || s.statusCode === 'CA') return false
+    if (s.statusCode && ['OC','PU','DP','AR','OD'].includes(s.statusCode)) return true
+    return new Date(s.shipDate) >= cutoff
+  }
+  const activeInbound = inboundList.filter(isActive)
+  const activeOutbound = outboundList.filter(isActive)
+  const allShipments = [...inboundList, ...outboundList]
+    .slice()
+    .sort((a, b) => (b.shipDate > a.shipDate ? 1 : b.shipDate < a.shipDate ? -1 : 0))
 
   return (
     <div className="space-y-6">
