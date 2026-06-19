@@ -252,6 +252,9 @@ export default function ShipmentTracker() {
 
   const inboundList = liveData?.inbound ?? []
   const outboundList = liveData?.outbound ?? []
+  const activeInbound = inboundList.filter(s => s.statusCode !== 'DL' && s.statusCode !== 'CA')
+  const activeOutbound = outboundList.filter(s => s.statusCode !== 'DL' && s.statusCode !== 'CA')
+  const allShipments = [...inboundList, ...outboundList].sort((a, b) => b.shipDate.localeCompare(a.shipDate))
 
   return (
     <div className="space-y-6">
@@ -267,7 +270,7 @@ export default function ShipmentTracker() {
               <p className="text-sm font-medium text-[#4B5563]">Korea HQ → US Office</p>
             </div>
             <span className="text-xs font-medium bg-blue-100 text-blue-700 px-2 py-1 rounded-full">
-              {liveData?.inbound.length ?? 0} active
+              {dataLoading ? '…' : `${activeInbound.length} active`}
             </span>
           </div>
           <div className="space-y-4">
@@ -276,10 +279,10 @@ export default function ShipmentTracker() {
                 <div className="h-10 bg-[#F1F3F5] rounded-lg" />
                 <div className="h-10 bg-[#F1F3F5] rounded-lg" />
               </div>
-            ) : inboundList.length === 0 ? (
-              <p className="text-xs text-[#9CA3AF] text-center py-4">No shipments yet — add a Shipments tab to Google Sheets.</p>
+            ) : activeInbound.length === 0 ? (
+              <p className="text-xs text-[#9CA3AF] text-center py-4">No active inbound shipments.</p>
             ) : (
-              inboundList.map((s) => {
+              activeInbound.map((s) => {
                 const statusColor = getStatusColor(s.statusCode)
                 return (
                   <div key={s.trackingNumber} className="flex gap-3">
@@ -322,7 +325,7 @@ export default function ShipmentTracker() {
               <p className="text-sm font-medium text-[#4B5563]">US Office → Clients</p>
             </div>
             <span className="text-xs font-medium bg-emerald-100 text-emerald-700 px-2 py-1 rounded-full">
-              {liveData?.outbound.length ?? 0} active
+              {dataLoading ? '…' : `${activeOutbound.length} active`}
             </span>
           </div>
           <div className="space-y-4">
@@ -331,10 +334,10 @@ export default function ShipmentTracker() {
                 <div className="h-10 bg-[#F1F3F5] rounded-lg" />
                 <div className="h-10 bg-[#F1F3F5] rounded-lg" />
               </div>
-            ) : outboundList.length === 0 ? (
-              <p className="text-xs text-[#9CA3AF] text-center py-4">No shipments yet — add a Shipments tab to Google Sheets.</p>
+            ) : activeOutbound.length === 0 ? (
+              <p className="text-xs text-[#9CA3AF] text-center py-4">No active outbound shipments.</p>
             ) : (
-              outboundList.map((s) => {
+              activeOutbound.map((s) => {
                 const statusColor = getStatusColor(s.statusCode)
                 return (
                   <div key={s.trackingNumber} className="flex gap-3">
@@ -366,10 +369,63 @@ export default function ShipmentTracker() {
                 )
               })
             )}
-            <p className="text-xs text-[#9CA3AF] text-center pt-2 border-t border-[#E2E8F0]">
-              ✓ 2 shipments delivered this month
-            </p>
           </div>
+        </div>
+      </div>
+
+      {/* All Shipment Records */}
+      <div className="rounded-xl border border-[#E2E8F0] bg-white overflow-hidden">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-[#E2E8F0]">
+          <div>
+            <p className="text-sm font-semibold text-[#111827]">All Shipment Records</p>
+            <p className="text-xs text-[#9CA3AF] mt-0.5">{allShipments.length} total shipments</p>
+          </div>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full text-xs">
+            <thead>
+              <tr className="bg-[#F8F9FA] border-b border-[#E2E8F0]">
+                {['Date', 'Tracking #', 'Company', 'Route', 'Service', 'Direction', 'Status', ''].map(h => (
+                  <th key={h} className="px-4 py-2.5 text-left font-semibold text-[#6B7280] uppercase tracking-wide whitespace-nowrap">{h}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {dataLoading ? (
+                <tr><td colSpan={8} className="px-4 py-8 text-center text-[#9CA3AF]">
+                  <span className="animate-spin inline-block mr-2">⟳</span> Loading…
+                </td></tr>
+              ) : allShipments.length === 0 ? (
+                <tr><td colSpan={8} className="px-4 py-8 text-center text-[#9CA3AF]">No shipment records yet.</td></tr>
+              ) : allShipments.map((s) => (
+                <tr key={s.trackingNumber} className="border-b border-[#E2E8F0] hover:bg-[#F8F9FA] transition-colors">
+                  <td className="px-4 py-3 text-[#6B7280] whitespace-nowrap">{s.shipDate}</td>
+                  <td className="px-4 py-3 font-mono text-[#111827] whitespace-nowrap">{s.trackingNumber}</td>
+                  <td className="px-4 py-3 text-[#111827] max-w-[160px] truncate">{s.company}</td>
+                  <td className="px-4 py-3 text-[#6B7280] max-w-[200px] truncate">{s.route}</td>
+                  <td className="px-4 py-3 text-[#6B7280] whitespace-nowrap">{s.service.replace('FedEx ', '')}</td>
+                  <td className="px-4 py-3">
+                    <span className={`inline-block px-2 py-0.5 rounded font-medium ${s.direction === 'inbound' ? 'bg-blue-100 text-blue-700' : 'bg-purple-100 text-purple-700'}`}>
+                      {s.direction}
+                    </span>
+                  </td>
+                  <td className="px-4 py-3">
+                    <span className={`inline-block px-2 py-0.5 rounded font-medium ${getStatusColor(s.statusCode)}`}>
+                      {s.status}
+                    </span>
+                  </td>
+                  <td className="px-4 py-3">
+                    <button
+                      onClick={() => openTrack(`${s.company}`, s.trackingNumber)}
+                      className="text-[#E21500] hover:underline whitespace-nowrap"
+                    >
+                      Track →
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       </div>
 
