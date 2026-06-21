@@ -10,6 +10,8 @@ export async function getOrCreateDealFolder(dealId: string, customer: string): P
   const existing = await driveClient.files.list({
     q: `name='${folderName}' and '${ROOT}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false`,
     fields: 'files(id, name)',
+    supportsAllDrives: true,
+    includeItemsFromAllDrives: true,
   })
 
   if (existing.data.files?.length) {
@@ -23,6 +25,7 @@ export async function getOrCreateDealFolder(dealId: string, customer: string): P
       parents: [ROOT],
     },
     fields: 'id',
+    supportsAllDrives: true,
   })
 
   return folder.data.id!
@@ -57,6 +60,7 @@ export async function uploadFileToDrive({
       body: stream,
     },
     fields: 'id, webViewLink',
+    supportsAllDrives: true,
   })
 
   return file.data.webViewLink ?? file.data.id!
