@@ -4,9 +4,12 @@ import { getDeals } from '@/lib/sheets'
 import type { InvoiceDeal } from '@/lib/invoice-template'
 import FinancialsClient from '@/components/financials/FinancialsClient'
 
-function toISO(d: Date | null): string {
+// getDeals() is wrapped in unstable_cache, which JSON-serializes its result —
+// so on a cache hit these dates arrive as strings, not Date objects.
+function toISO(d: Date | string | null): string {
   if (!d) return ''
-  return d.toISOString().split('T')[0]
+  const date = d instanceof Date ? d : new Date(d)
+  return isNaN(date.getTime()) ? '' : date.toISOString().split('T')[0]
 }
 
 export default async function FinancialsPage() {
