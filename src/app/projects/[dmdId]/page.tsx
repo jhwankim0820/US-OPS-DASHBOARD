@@ -53,10 +53,10 @@ export default async function DealDetailPage({
       {/* Back + Header */}
       <div className="mb-8">
         <Link
-          href="/deals"
+          href="/projects"
           className="mb-4 inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-900"
         >
-          ← Back to Deals
+          ← Back to Project Management
         </Link>
         <div className="mt-3 flex items-start justify-between">
           <div>

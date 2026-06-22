@@ -44,7 +44,7 @@ export async function createShipment(
     })
   })
 
-  revalidatePath(`/deals/${input.dmdId}`)
+  revalidatePath(`/projects/${input.dmdId}`)
 
   return { trackingNo }
 }
@@ -77,7 +77,7 @@ export async function syncShipmentStatus(shipmentId: string): Promise<{ status: 
     }
   })
 
-  if (shipment.dmdId) revalidatePath(`/deals/${shipment.dmdId}`)
+  if (shipment.dmdId) revalidatePath(`/projects/${shipment.dmdId}`)
   revalidatePath('/shipments')
 
   return { status: nextStatus }

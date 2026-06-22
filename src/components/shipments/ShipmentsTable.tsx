@@ -62,7 +62,7 @@ export default function ShipmentsTable({ shipments }: { shipments: ShipmentRow[]
               <TableRow
                 key={s.id}
                 className="border-[#E2E8F0] cursor-pointer hover:bg-[#F8F9FA]"
-                onClick={() => s.deal?.dmdId && router.push(`/deals/${s.deal.dmdId}`)}
+                onClick={() => s.deal?.dmdId && router.push(`/projects/${s.deal.dmdId}`)}
               >
                 <TableCell className="font-mono text-sm font-semibold text-[#4B5563]">
                   {s.trackingNo ?? '—'}
