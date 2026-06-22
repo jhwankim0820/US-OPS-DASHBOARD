@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard — Layout Reference</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f5f5f0;color:#1a1a1a;font-size:14px}
+.topbar{background:#fff;border-bottom:1px solid #e5e5e0;padding:0 20px;display:flex;align-items:center;height:44px}
+.nav-logo{font-size:13px;font-weight:600;color:#1a1a1a;margin-right:20px}
+.nav-link{font-size:12px;color:#888;padding:0 12px;height:44px;display:flex;align-items:center;border-bottom:2px solid transparent;white-space:nowrap;text-decoration:none}
+.nav-link:hover{color:#444}
+.nav-link.active{color:#1d9e75;border-bottom-color:#1d9e75;font-weight:500}
+
+/* Alert banner */
+.alert-banner{background:#fffbeb;border-bottom:1px solid #fac775;padding:8px 20px;display:flex;align-items:center;gap:8px;font-size:11px;color:#633806;flex-wrap:wrap}
+.alert-dot{width:7px;height:7px;border-radius:50%;background:#ef9f27;flex-shrink:0;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+.alert-sep{color:#fac775;margin:0 2px}
+
+/* Page header */
+.page-hdr{background:#fff;border-bottom:1px solid #e5e5e0;padding:12px 20px;display:flex;align-items:center;justify-content:space-between}
+.page-title{font-size:16px;font-weight:500;color:#1a1a1a}
+.page-sub{font-size:10px;color:#888;margin-top:1px}
+.live-dot{width:6px;height:6px;border-radius:50%;background:#1d9e75;flex-shrink:0}
+.btn{display:inline-flex;align-items:center;gap:5px;padding:5px 11px;border-radius:7px;font-size:11px;font-weight:500;cursor:pointer;border:1px solid #e0e0e0;background:#fff;color:#1a1a1a}
+.btn-g{background:#1d9e75;color:#fff;border-color:#1d9e75}
+
+/* KPI stat row */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);background:#fff;border-bottom:1px solid #e5e5e0}
+.stat{padding:12px 16px;display:flex;align-items:center;justify-content:space-between;border-right:1px solid #e5e5e0}
+.stat:last-child{border-right:none}
+.stat-lbl{font-size:10px;color:#888;margin-bottom:2px;font-weight:500}
+.stat-val{font-size:18px;font-weight:500;color:#1a1a1a}
+.stat-sub{font-size:10px;color:#aaa;margin-top:1px}
+.ic{width:30px;height:30px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.ic-teal{background:#e1f5ee;color:#0f6e56}
+.ic-amber{background:#faeeda;color:#854f0b}
+.ic-purple{background:#eeedfe;color:#534ab7}
+.ic-blue{background:#e6f1fb;color:#185fa5}
+.ic-red{background:#fcebeb;color:#a32d2d}
+
+/* Fulfillment strip */
+.fulfill-strip{background:#fff;border-bottom:1px solid #e5e5e0;padding:10px 20px;display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.ff-card{display:flex;align-items:center;gap:12px}
+.ff-icon{width:28px;height:28px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0}
+.ff-label{font-size:10px;color:#888;margin-bottom:2px;font-weight:500}
+.ff-pct{font-size:13px;font-weight:500;color:#1a1a1a}
+.pbar{height:4px;background:#f0f0ea;border-radius:3px;overflow:hidden;margin:3px 0}
+.pbar-fill{height:100%;border-radius:3px}
+.fill-teal{background:#1d9e75}
+.fill-amber{background:#ef9f27}
+.fill-blue{background:#378add}
+.fill-purple{background:#7f77dd}
+.fill-red{background:#e24b4a}
+.eta{display:inline-flex;align-items:center;gap:3px;font-size:10px;color:#1d9e75;background:#e1f5ee;padding:1px 6px;border-radius:10px}
+.eta-warn{color:#854f0b;background:#faeeda}
+.eta-red{color:#a32d2d;background:#fcebeb}
+
+/* Content */
+.content{padding:14px 20px}
+.grid3{display:grid;grid-template-columns:1.1fr 1fr 1fr;gap:10px;margin-bottom:12px}
+.card{background:#fff;border:1px solid #e5e5e0;border-radius:10px;padding:13px}
+.card-title{font-size:11px;font-weight:500;color:#1a1a1a;margin-bottom:3px;display:flex;align-items:center;justify-content:space-between;gap:6px}
+.card-sub{font-size:10px;color:#888;margin-bottom:10px}
+.sec-title{font-size:10px;font-weight:500;color:#888;letter-spacing:0.5px;text-transform:uppercase;margin-bottom:8px;display:flex;align-items:center;gap:5px}
+
+/* Funnel */
+.funnel{display:flex;align-items:center;gap:4px}
+.funnel-step{flex:1;text-align:center;padding:8px 4px;background:#fafafa;border-radius:7px;border:1px solid #e5e5e0}
+.funnel-num{font-size:16px;font-weight:500;color:#1a1a1a}
+.funnel-lbl{font-size:9px;color:#888;margin-top:1px}
+.funnel-arrow{color:#ccc;font-size:14px;flex-shrink:0}
+
+/* At Risk */
+.risk-item{display:flex;align-items:flex-start;gap:8px;padding:7px 0;border-bottom:1px solid #f0f0f0}
+.risk-item:last-child{border-bottom:none;padding-bottom:0}
+.risk-badge{width:22px;height:22px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0;margin-top:1px}
+.rb-red{background:#fcebeb;color:#a32d2d}
+.rb-amber{background:#faeeda;color:#854f0b}
+.rb-purple{background:#eeedfe;color:#534ab7}
+.risk-title{font-size:11px;font-weight:500;color:#1a1a1a}
+.risk-desc{font-size:10px;color:#888;margin-top:1px;line-height:1.4}
+.risk-tag{display:inline-flex;align-items:center;padding:1px 6px;border-radius:10px;font-size:9px;font-weight:500;margin-top:3px}
+.rt-red{background:#fcebeb;color:#a32d2d}
+.rt-amber{background:#faeeda;color:#854f0b}
+
+/* Badges */
+.badge{display:inline-flex;align-items:center;padding:2px 6px;border-radius:20px;font-size:9px;font-weight:500;white-space:nowrap;gap:3px}
+.b-del{background:#eaf3de;color:#3b6d11}
+.b-wait{background:#faeeda;color:#854f0b}
+.b-b2b{background:#e6f1fb;color:#185fa5}
+.b-int{background:#f1efe8;color:#5f5e5a}
+.inv-warn{background:#fcebeb;color:#a32d2d}
+.inv-ok{background:#eaf3de;color:#3b6d11}
+.inv-na{background:#fafafa;color:#aaa;border:1px solid #e5e5e0}
+.muted{color:#aaa}
+.fw5{font-weight:500}
+
+/* Rep cards */
+.rep-grid{display:grid;grid-template-columns:repeat(3,1fr) repeat(3,1fr);gap:8px;margin-bottom:12px}
+.rep-card{background:#fff;border:1px solid #e5e5e0;border-radius:10px;padding:11px}
+.rep-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.rep-info{display:flex;align-items:center;gap:7px}
+.avatar{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500;flex-shrink:0}
+.av-teal{background:#e1f5ee;color:#0f6e56}
+.av-blue{background:#e6f1fb;color:#185fa5}
+.av-coral{background:#faece7;color:#993c1d}
+.av-gray{background:#f5f5f0;color:#888}
+.rep-name{font-size:11px;font-weight:500;color:#1a1a1a}
+.rep-role{font-size:9px;color:#aaa}
+.hb{display:inline-flex;align-items:center;gap:3px;padding:2px 7px;border-radius:10px;font-size:9px;font-weight:500}
+.hb-green{background:#eaf3de;color:#3b6d11}
+.hb-amber{background:#faeeda;color:#854f0b}
+.hb-red{background:#fcebeb;color:#a32d2d}
+.hb-gray{background:#fafafa;color:#888;border:1px solid #e5e5e0}
+.rep-stat-row{display:flex;justify-content:space-between;font-size:10px;color:#888;margin-bottom:2px}
+.rep-stat-val{font-size:10px;font-weight:500;color:#1a1a1a}
+.deal-chips{display:flex;flex-wrap:wrap;gap:3px;margin-top:6px}
+.chip{font-size:9px;padding:1px 5px;border-radius:4px;background:#fafafa;color:#888;border:1px solid #e5e5e0}
+.chip-b{background:#e6f1fb;color:#185fa5;border-color:#b5d4f4}
+.chip-warn{background:#fcebeb;color:#a32d2d;border-color:#f7c1c1}
+.no-deals{font-size:10px;color:#aaa;font-style:italic;margin-top:4px}
+
+/* Table */
+.tbl-wrap{background:#fff;border:1px solid #e5e5e0;border-radius:10px;overflow:hidden}
+table{width:100%;border-collapse:collapse;font-size:11px;table-layout:fixed}
+thead tr{background:#fafafa}
+th{padding:7px 10px;text-align:left;font-size:10px;font-weight:500;color:#888;border-bottom:1px solid #e5e5e0;white-space:nowrap}
+td{padding:7px 10px;border-bottom:1px solid #f0f0f0;color:#1a1a1a;vertical-align:middle;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:#fafafa}
+.pill-row{display:flex;gap:5px;margin-bottom:8px;align-items:center;flex-wrap:wrap}
+.pill-lbl{font-size:10px;color:#888;width:44px;flex-shrink:0}
+.pill{display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:20px;font-size:10px;border:1px solid #e5e5e0;background:#fafafa;color:#888;cursor:pointer}
+.pill.on{background:#e1f5ee;border-color:#5dcaa5;color:#0f6e56;font-weight:500}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <span class="nav-logo">FuriosaAI · US Ops</span>
+  <a class="nav-link active" href="#">Dashboard</a>
+  <a class="nav-link" href="#">Project Management</a>
+  <a class="nav-link" href="#">Shipments</a>
+  <a class="nav-link" href="#">Key Financials</a>
+</div>
+
+<!-- Alert banner — US deals only, real data -->
+<div class="alert-banner">
+  <div class="alert-dot"></div>
+  <span><strong>I/ONX $511K</strong> — delivered May 22, invoice not yet issued</span>
+  <span class="alert-sep">•</span>
+  <span><strong>MIMOS $16K</strong> — delivered, invoice pending</span>
+  <span class="alert-sep">•</span>
+  <span><strong>NTU $800K</strong> — ETD Aug 30, largest deal, no invoice</span>
+  <span class="alert-sep">•</span>
+  <span style="color:#a32d2d;font-weight:500">3 deals waiting · $916K unrecognized revenue</span>
+</div>
+
+<!-- Page header -->
+<div class="page-hdr">
+  <div>
+    <div class="page-title">US Ops Dashboard</div>
+    <div class="page-sub">US & APAC deals only · alex.liu · tom.gallivan · addison</div>
+  </div>
+  <div style="display:flex;align-items:center;gap:10px">
+    <div style="display:flex;align-items:center;gap:5px;font-size:10px;color:#888">
+      <div class="live-dot"></div>
+      Last updated Jun 22, 2026 · 09:14 PST
+    </div>
+    <button class="btn"><i class="ti ti-refresh" style="font-size:12px"></i> Refresh</button>
+    <button class="btn btn-g"><i class="ti ti-plus" style="font-size:12px"></i> Add Deal</button>
+  </div>
+</div>
+
+<!-- KPI stat row -->
+<div class="stats">
+  <div class="stat">
+    <div>
+      <div class="stat-lbl">Pipeline (Waiting)</div>
+      <div class="stat-val">$916K</div>
+      <div class="stat-sub">MIMOS · CADT · NTU</div>
+    </div>
+    <div class="ic ic-amber"><i class="ti ti-clock"></i></div>
+  </div>
+  <div class="stat">
+    <div>
+      <div class="stat-lbl">Delivered Revenue</div>
+      <div class="stat-val">$597K</div>
+      <div class="stat-sub">Flexgrid · J.A.M · I/ONX</div>
+    </div>
+    <div class="ic ic-teal"><i class="ti ti-circle-check"></i></div>
+  </div>
+  <div class="stat">
+    <div>
+      <div class="stat-lbl">Cards Shipped</div>
+      <div class="stat-val">76 / 150</div>
+      <div class="stat-sub">B2B delivered · 74 in pipeline</div>
+    </div>
+    <div class="ic ic-blue"><i class="ti ti-cpu"></i></div>
+  </div>
+  <div class="stat">
+    <div>
+      <div class="stat-lbl">Invoice Pending</div>
+      <div class="stat-val" style="color:#a32d2d">3 deals</div>
+      <div class="stat-sub">I/ONX · MIMOS · NTU</div>
+    </div>
+    <div class="ic ic-red"><i class="ti ti-file-invoice"></i></div>
+  </div>
+</div>
+
+<!-- Fulfillment progress strip -->
+<div class="fulfill-strip">
+  <div class="ff-card">
+    <div class="ff-icon ic-blue"><i class="ti ti-cpu"></i></div>
+    <div style="flex:1">
+      <div style="display:flex;justify-content:space-between;align-items:baseline">
+        <span class="ff-label">B2B Cards Delivery Progress</span>
+        <span class="ff-pct">51%</span>
+      </div>
+      <div class="pbar" style="margin:2px 0 3px"><div class="pbar-fill fill-blue" style="width:51%"></div></div>
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <span style="font-size:10px;color:#888">76 delivered · 74 pending (CADT 4 + NTU 48 + MIMOS 2)</span>
+        <span class="eta"><i class="ti ti-calendar" style="font-size:10px"></i> Next: Aug 30</span>
+      </div>
+    </div>
+  </div>
+  <div class="ff-card">
+    <div class="ff-icon ic-amber"><i class="ti ti-server"></i></div>
+    <div style="flex:1">
+      <div style="display:flex;justify-content:space-between;align-items:baseline">
+        <span class="ff-label">B2B Servers Delivery Progress</span>
+        <span class="ff-pct" style="color:#854f0b">14%</span>
+      </div>
+      <div class="pbar" style="margin:2px 0 3px"><div class="pbar-fill fill-amber" style="width:14%"></div></div>
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <span style="font-size:10px;color:#888">1 delivered · 7 pending (CADT 1 + NTU 6)</span>
+        <span class="eta eta-red"><i class="ti ti-alert-triangle" style="font-size:10px"></i> CADT Sep · NTU Aug</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="content">
+
+  <!-- Row 1: Funnel + At Risk + Inventory -->
+  <div class="grid3">
+
+    <!-- Delivery funnel -->
+    <div class="card">
+      <div class="card-title"><i class="ti ti-filter" style="font-size:13px;color:#185fa5"></i> Deal Pipeline (US Ops)</div>
+      <div class="card-sub">US · APAC deals · alex.liu / tom.gallivan / addison</div>
+      <div class="funnel">
+        <div class="funnel-step" style="background:#e6f1fb;border-color:#b5d4f4">
+          <div class="funnel-num" style="color:#185fa5">10</div>
+          <div class="funnel-lbl">Total</div>
+        </div>
+        <div class="funnel-arrow">›</div>
+        <div class="funnel-step" style="background:#eeedfe;border-color:#afa9ec">
+          <div class="funnel-num" style="color:#534ab7">4</div>
+          <div class="funnel-lbl">Internal</div>
+        </div>
+        <div class="funnel-arrow">›</div>
+        <div class="funnel-step" style="background:#faeeda;border-color:#fac775">
+          <div class="funnel-num" style="color:#854f0b">3</div>
+          <div class="funnel-lbl">Waiting</div>
+        </div>
+        <div class="funnel-arrow">›</div>
+        <div class="funnel-step" style="background:#eaf3de;border-color:#c0dd97">
+          <div class="funnel-num" style="color:#3b6d11">3</div>
+          <div class="funnel-lbl">Delivered</div>
+        </div>
+      </div>
+      <div style="margin-top:10px;display:flex;justify-content:space-between;font-size:10px;color:#888;border-top:1px solid #f0f0f0;padding-top:8px">
+        <span>Revenue: <strong style="color:#1d9e75">$597K</strong></span>
+        <span>Pipeline: <strong style="color:#854f0b">$916K</strong></span>
+        <span>Total: <strong style="color:#1a1a1a">$1.51M</strong></span>
+      </div>
+    </div>
+
+    <!-- At Risk — real data -->
+    <div class="card" style="border-color:#f7c1c1">
+      <div class="card-title">
+        <span style="display:flex;align-items:center;gap:5px"><i class="ti ti-alert-triangle" style="font-size:13px;color:#a32d2d"></i> At Risk</span>
+        <span class="badge inv-warn">4 signals</span>
+      </div>
+      <div class="card-sub">Based on actual US ops deal data</div>
+      <div class="risk-item">
+        <div class="risk-badge rb-red"><i class="ti ti-file-invoice"></i></div>
+        <div>
+          <div class="risk-title">I/ONX — $511,680</div>
+          <div class="risk-desc">Delivered May 22 · 31 days ago · invoice still not issued</div>
+          <span class="risk-tag rt-red">Invoice overdue</span>
+        </div>
+      </div>
+      <div class="risk-item">
+        <div class="risk-badge rb-red"><i class="ti ti-file-invoice"></i></div>
+        <div>
+          <div class="risk-title">MIMOS — $16,000</div>
+          <div class="risk-desc">Delivered · invoice pending · Malaysia research lab</div>
+          <span class="risk-tag rt-red">Invoice pending</span>
+        </div>
+      </div>
+      <div class="risk-item">
+        <div class="risk-badge rb-amber"><i class="ti ti-package"></i></div>
+        <div>
+          <div class="risk-title">NTU — $800,000</div>
+          <div class="risk-desc">ETD Aug 30 · 6 servers + 48 cards · largest deal · no invoice</div>
+          <span class="risk-tag rt-amber">Delivery + invoice</span>
+        </div>
+      </div>
+      <div class="risk-item">
+        <div class="risk-badge rb-purple" style="background:#eeedfe;color:#534ab7"><i class="ti ti-calendar"></i></div>
+        <div>
+          <div class="risk-title">CADT — $100,000</div>
+          <div class="risk-desc">PO Jul 25 · ETD Sep 30 · 1 server + 4 cards · Cambodia lab</div>
+          <span class="risk-tag" style="background:#eeedfe;color:#534ab7">Long ETA</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Inventory with sparkline -->
+    <div class="card">
+      <div class="card-title"><i class="ti ti-box" style="font-size:13px;color:#534ab7"></i> US Office Inventory</div>
+      <div class="card-sub">Live snapshot · Jun 22, 2026</div>
+      <div style="margin-bottom:10px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:2px">
+          <span style="font-size:10px;color:#888;font-weight:500">Cards</span>
+          <span class="eta"><i class="ti ti-trending-up" style="font-size:10px"></i> +4 this month</span>
+        </div>
+        <div style="display:flex;gap:10px;align-items:baseline;margin-bottom:3px">
+          <span style="font-size:18px;font-weight:500;color:#1a1a1a">16</span>
+          <span style="font-size:10px;color:#888">available / 40 total · 24 in use</span>
+        </div>
+        <div class="pbar"><div class="pbar-fill fill-purple" style="width:60%"></div></div>
+        <div style="display:flex;gap:2px;align-items:flex-end;height:20px;margin-top:4px">
+          <div style="flex:1;background:#eeedfe;height:55%;border-radius:1px 1px 0 0"></div>
+          <div style="flex:1;background:#eeedfe;height:40%;border-radius:1px 1px 0 0"></div>
+          <div style="flex:1;background:#eeedfe;height:70%;border-radius:1px 1px 0 0"></div>
+          <div style="flex:1;background:#eeedfe;height:45%;border-radius:1px 1px 0 0"></div>
+          <div style="flex:1;background:#7f77dd;height:60%;border-radius:1px 1px 0 0"></div>
+          <div style="flex:1;background:#eeedfe;height:50%;border-radius:1px 1px 0 0"></div>
+          <div style="flex:1;background:#534ab7;height:40%;border-radius:1px 1px 0 0"></div>
+        </div>
+        <div style="font-size:9px;color:#aaa;margin-top:2px">30-day availability trend</div>
+      </div>
+      <div style="border-top:1px solid #f0f0f0;padding-top:8px;margin-bottom:8px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:2px">
+          <span style="font-size:10px;color:#888;font-weight:500">Servers</span>
+          <span class="eta eta-warn"><i class="ti ti-alert-triangle" style="font-size:10px"></i> 62% in use</span>
+        </div>
+        <div style="display:flex;gap:10px;align-items:baseline;margin-bottom:3px">
+          <span style="font-size:18px;font-weight:500;color:#1a1a1a">6</span>
+          <span style="font-size:10px;color:#888">available / 16 total · 10 in use</span>
+        </div>
+        <div class="pbar"><div class="pbar-fill fill-amber" style="width:62%"></div></div>
+      </div>
+      <div style="border-top:1px solid #f0f0f0;padding-top:8px">
+        <div style="font-size:10px;color:#888;font-weight:500;margin-bottom:5px">Upcoming POC</div>
+        <div style="display:flex;justify-content:space-between;font-size:10px;padding:2px 0"><span>AWS</span><span class="badge" style="background:#e6f1fb;color:#185fa5">8 cards · Jun</span></div>
+        <div style="display:flex;justify-content:space-between;font-size:10px;padding:2px 0"><span>Meta</span><span class="badge" style="background:#e6f1fb;color:#185fa5">8 cards · Jul</span></div>
+        <div style="display:flex;justify-content:space-between;font-size:10px;padding:2px 0"><span>Microsoft</span><span class="badge" style="background:#e6f1fb;color:#185fa5">2 svr · Jul</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sales Rep section -->
+  <div class="sec-title"><i class="ti ti-users" style="font-size:11px"></i> POC Allocation — US Ops Reps</div>
+  <div class="rep-grid">
+    <div class="rep-card">
+      <div class="rep-head">
+        <div class="rep-info">
+          <div class="avatar av-blue">AL</div>
+          <div><div class="rep-name">Alex Liu</div><div class="rep-role">alex.liu@furiosa.ai</div></div>
+        </div>
+        <span class="hb hb-amber">&#9679; Busy</span>
+      </div>
+      <div class="rep-stat-row"><span>Cards</span><span class="rep-stat-val">76 / 150 (51%)</span></div>
+      <div class="pbar"><div class="pbar-fill fill-blue" style="width:51%"></div></div>
+      <div class="rep-stat-row"><span>Servers</span><span class="rep-stat-val">4 / 7 (57%)</span></div>
+      <div class="pbar" style="margin-bottom:4px"><div class="pbar-fill fill-blue" style="width:57%"></div></div>
+      <div class="deal-chips">
+        <span class="chip chip-b">Flexgrid ✓</span>
+        <span class="chip chip-b">J.A.M ✓</span>
+        <span class="chip">US Int. ×3</span>
+      </div>
+    </div>
+    <div class="rep-card">
+      <div class="rep-head">
+        <div class="rep-info">
+          <div class="avatar av-coral">TG</div>
+          <div><div class="rep-name">Tom Gallivan</div><div class="rep-role">tom.gallivan@furiosa.ai</div></div>
+        </div>
+        <span class="hb hb-green">&#9679; Healthy</span>
+      </div>
+      <div class="rep-stat-row"><span>Cards</span><span class="rep-stat-val">64 / 150 (43%)</span></div>
+      <div class="pbar"><div class="pbar-fill fill-amber" style="width:43%"></div></div>
+      <div class="rep-stat-row"><span>Servers</span><span class="rep-stat-val">0 / 7 (0%)</span></div>
+      <div class="pbar" style="margin-bottom:4px"><div class="pbar-fill" style="width:0%"></div></div>
+      <div class="deal-chips">
+        <span class="chip chip-warn">I/ONX &#9888; inv</span>
+      </div>
+    </div>
+    <div class="rep-card">
+      <div class="rep-head">
+        <div class="rep-info">
+          <div class="avatar av-teal">AC</div>
+          <div><div class="rep-name">Addison Chi</div><div class="rep-role">addison@furiosa.ai</div></div>
+        </div>
+        <span class="hb hb-red">&#9679; Overloaded</span>
+      </div>
+      <div class="rep-stat-row"><span>Cards</span><span class="rep-stat-val">62 / 150 (41%)</span></div>
+      <div class="pbar"><div class="pbar-fill fill-teal" style="width:41%"></div></div>
+      <div class="rep-stat-row"><span>Servers</span><span class="rep-stat-val">8 / 7 (114%)</span></div>
+      <div class="pbar" style="margin-bottom:4px"><div class="pbar-fill fill-red" style="width:100%"></div></div>
+      <div class="deal-chips">
+        <span class="chip chip-warn">MIMOS &#9888;</span>
+        <span class="chip chip-warn">NTU &#9888;</span>
+        <span class="chip">CADT</span>
+        <span class="chip">Keppel</span>
+      </div>
+    </div>
+    <div class="rep-card"><div class="rep-head"><div class="rep-info"><div class="avatar av-gray">AT</div><div><div class="rep-name">Auro Tripathy</div><div class="rep-role">auro@furiosa.ai</div></div></div><span class="hb hb-gray">Available</span></div><div class="no-deals">No US ops deals assigned</div></div>
+    <div class="rep-card"><div class="rep-head"><div class="rep-info"><div class="avatar av-gray">BL</div><div><div class="rep-name">Bill Leszinske</div><div class="rep-role">bill@furiosa.ai</div></div></div><span class="hb hb-gray">Available</span></div><div class="no-deals">No US ops deals assigned</div></div>
+    <div class="rep-card"><div class="rep-head"><div class="rep-info"><div class="avatar av-gray">SB</div><div><div class="rep-name">Sean Berner</div><div class="rep-role">sean@furiosa.ai</div></div></div><span class="hb hb-gray">Available</span></div><div class="no-deals">No US ops deals assigned</div></div>
+  </div>
+
+  <!-- Deal Pipeline table -->
+  <div class="sec-title"><i class="ti ti-layout-list" style="font-size:11px"></i> Deal Pipeline — US Ops Only</div>
+  <div class="pill-row">
+    <span class="pill-lbl">Status</span>
+    <span class="pill on">All 10</span>
+    <span class="pill">Waiting 3</span>
+    <span class="pill">Delivered 3</span>
+    <span class="pill">Internal 4</span>
+    <span style="margin-left:8px" class="pill-lbl">Region</span>
+    <span class="pill on">All</span>
+    <span class="pill">US</span>
+    <span class="pill">APAC</span>
+  </div>
+  <div class="tbl-wrap">
+    <table>
+      <colgroup>
+        <col style="width:8%"><col style="width:14%"><col style="width:11%"><col style="width:9%"><col style="width:7%">
+        <col style="width:7%"><col style="width:7%"><col style="width:10%"><col style="width:9%"><col style="width:9%"><col style="width:9%">
+      </colgroup>
+      <thead><tr>
+        <th>Deal ID</th><th>Customer</th><th>Status</th><th>Category</th><th>Region</th>
+        <th>Cards</th><th>Servers</th><th>Revenue</th><th>ETD</th><th>Owner</th><th>Invoice</th>
+      </tr></thead>
+      <tbody>
+        <tr><td class="muted" style="font-family:monospace;font-size:10px">SHT-001</td><td class="fw5">MIMOS</td><td><span class="badge b-wait">&#9201; Waiting</span></td><td><span class="badge b-b2b">B2B</span></td><td class="muted">MY</td><td>2</td><td class="muted">—</td><td class="fw5">$16,000</td><td class="muted" style="font-size:10px">Jun 24</td><td class="muted">AC</td><td><span class="badge inv-warn">&#9888; Pending</span></td></tr>
+        <tr><td class="muted" style="font-family:monospace;font-size:10px">SHT-002</td><td class="fw5">CADT</td><td><span class="badge b-wait">&#9201; Waiting</span></td><td><span class="badge b-b2b">B2B</span></td><td class="muted">KH</td><td>4</td><td>1</td><td class="fw5">$100,000</td><td class="muted" style="font-size:10px">Sep 30</td><td class="muted">AC</td><td><span class="badge" style="background:#faeeda;color:#854f0b">Not yet</span></td></tr>
+        <tr><td class="muted" style="font-family:monospace;font-size:10px">SHT-003</td><td class="fw5">NTU</td><td><span class="badge b-wait">&#9201; Waiting</span></td><td><span class="badge b-b2b">B2B</span></td><td class="muted">SG</td><td>48</td><td>6</td><td class="fw5">$800,000</td><td class="muted" style="font-size:10px">Aug 30</td><td class="muted">AC</td><td><span class="badge inv-warn">&#9888; Pending</span></td></tr>
+        <tr><td class="muted" style="font-family:monospace;font-size:10px">SHT-004</td><td class="fw5">Flexgrid</td><td><span class="badge b-del">&#10003; Delivered</span></td><td><span class="badge b-b2b">B2B</span></td><td class="muted">US</td><td>10</td><td class="muted">—</td><td class="fw5">$70,368</td><td class="muted" style="font-size:10px">May 23</td><td class="muted">AL</td><td><span class="badge inv-ok">&#10003; Issued</span></td></tr>
+        <tr><td class="muted" style="font-family:monospace;font-size:10px">SHT-005</td><td class="fw5">J.A.M Global</td><td><span class="badge b-del">&#10003; Delivered</span></td><td><span class="badge b-b2b">B2B</span></td><td class="muted">US</td><td>2</td><td class="muted">—</td><td class="fw5">$15,394</td><td class="muted" style="font-size:10px">May 17</td><td class="muted">AL</td><td><span class="badge inv-ok">&#10003; Issued</span></td></tr>
+        <tr style="background:#fff8f8"><td class="muted" style="font-family:monospace;font-size:10px">SHT-006</td><td class="fw5">I/ONX</td><td><span class="badge b-del">&#10003; Delivered</span></td><td><span class="badge b-b2b">B2B</span></td><td class="muted">US</td><td>64</td><td class="muted">—</td><td class="fw5" style="color:#a32d2d">$511,680</td><td class="muted" style="font-size:10px">Jun 15</td><td class="muted">TG</td><td><span class="badge inv-warn">&#9888; Overdue</span></td></tr>
+        <tr><td class="muted" style="font-family:monospace;font-size:10px">SHT-007</td><td class="fw5">US Internal</td><td><span class="badge b-del">&#10003; Delivered</span></td><td><span class="badge b-int">Internal</span></td><td class="muted">US</td><td>32</td><td>4</td><td class="muted">—</td><td class="muted" style="font-size:10px">May 31</td><td class="muted">AL</td><td><span class="badge inv-na">N/A</span></td></tr>
+        <tr><td class="muted" style="font-family:monospace;font-size:10px">SHT-008</td><td class="fw5">US Internal</td><td><span class="badge b-del">&#10003; Delivered</span></td><td><span class="badge b-int">Internal</span></td><td class="muted">US</td><td>24</td><td class="muted">—</td><td class="muted">—</td><td class="muted" style="font-size:10px">May 31</td><td class="muted">AL</td><td><span class="badge inv-na">N/A</span></td></tr>
+        <tr><td class="muted" style="font-family:monospace;font-size:10px">SHT-009</td><td class="fw5">SG Demo Keppel</td><td><span class="badge b-del">&#10003; Delivered</span></td><td><span class="badge b-int">Internal</span></td><td class="muted">SG</td><td>8</td><td>1</td><td class="muted">—</td><td class="muted" style="font-size:10px">Jun 15</td><td class="muted">AC</td><td><span class="badge inv-na">N/A</span></td></tr>
+        <tr><td class="muted" style="font-family:monospace;font-size:10px">SHT-010</td><td class="fw5">US Internal</td><td><span class="badge b-del">&#10003; Delivered</span></td><td><span class="badge b-int">Internal</span></td><td class="muted">US</td><td>96</td><td>12</td><td class="muted">—</td><td class="muted" style="font-size:10px">Jun 30</td><td class="muted">AL</td><td><span class="badge inv-na">N/A</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+</div>
+</body>
+</html>

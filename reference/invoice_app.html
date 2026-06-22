@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FuriosaAI Invoice Generator</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f5f0; color: #1a1a1a; font-size: 14px; }
+
+.app { display: flex; height: 100vh; overflow: hidden; }
+
+/* Sidebar */
+.sidebar { width: 280px; background: #fff; border-right: 1px solid #e5e5e0; display: flex; flex-direction: column; flex-shrink: 0; }
+.sidebar-header { padding: 20px 20px 16px; border-bottom: 1px solid #e5e5e0; }
+.sidebar-header img { height: 28px; }
+.sidebar-nav { padding: 8px 0; }
+.nav-item { display: flex; align-items: center; gap: 10px; padding: 10px 20px; color: #666; cursor: pointer; transition: background 0.15s; font-size: 13px; text-decoration: none; }
+.nav-item:hover { background: #f5f5f0; color: #1a1a1a; }
+.nav-item.active { background: #f0efff; color: #4a40c8; font-weight: 500; }
+.nav-icon { font-size: 16px; width: 18px; text-align: center; }
+
+/* Main content */
+.main { flex: 1; overflow-y: auto; display: flex; flex-direction: column; }
+
+/* Tab bar */
+.tab-bar { background: #fff; border-bottom: 1px solid #e5e5e0; padding: 0 28px; display: flex; align-items: center; gap: 0; }
+.tab { padding: 14px 20px; cursor: pointer; font-size: 13px; color: #888; border-bottom: 2px solid transparent; transition: all 0.15s; white-space: nowrap; }
+.tab:hover { color: #444; }
+.tab.active { color: #4a40c8; border-bottom-color: #4a40c8; font-weight: 500; }
+
+/* Panel */
+.panel { padding: 28px; flex: 1; }
+
+/* Project list */
+.page-title { font-size: 18px; font-weight: 500; margin-bottom: 6px; }
+.page-subtitle { color: #888; font-size: 13px; margin-bottom: 24px; }
+
+.project-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 14px; }
+.project-card { background: #fff; border: 1px solid #e5e5e0; border-radius: 10px; padding: 18px; cursor: pointer; transition: all 0.15s; }
+.project-card:hover { border-color: #b8b3f0; box-shadow: 0 2px 8px rgba(74,64,200,0.08); }
+.project-card-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 12px; }
+.project-id { font-size: 11px; color: #888; font-weight: 500; letter-spacing: 0.3px; }
+.status-badge { font-size: 11px; padding: 3px 8px; border-radius: 20px; font-weight: 500; }
+.status-delivered { background: #eaf3de; color: #3b6d11; }
+.status-waiting { background: #faeeda; color: #854f0b; }
+.project-name { font-size: 15px; font-weight: 500; margin-bottom: 4px; }
+.project-meta { font-size: 12px; color: #888; margin-bottom: 14px; }
+.project-footer { display: flex; align-items: center; justify-content: space-between; }
+.project-revenue { font-size: 15px; font-weight: 500; color: #1a1a1a; }
+.project-owner { font-size: 11px; color: #aaa; }
+.invoice-btn { font-size: 12px; color: #4a40c8; font-weight: 500; display: flex; align-items: center; gap: 4px; }
+
+/* Invoice form */
+.invoice-wrapper { display: none; }
+.invoice-wrapper.visible { display: flex; gap: 28px; }
+
+.invoice-form-col { flex: 1; min-width: 0; }
+.invoice-preview-col { width: 420px; flex-shrink: 0; }
+
+.form-section { background: #fff; border: 1px solid #e5e5e0; border-radius: 10px; padding: 20px; margin-bottom: 16px; }
+.form-section-title { font-size: 12px; font-weight: 600; letter-spacing: 0.5px; color: #888; text-transform: uppercase; margin-bottom: 16px; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+.form-row.full { grid-template-columns: 1fr; }
+.form-group { display: flex; flex-direction: column; gap: 5px; }
+label { font-size: 12px; color: #666; font-weight: 500; }
+input, select, textarea { border: 1px solid #e0e0e0; border-radius: 6px; padding: 8px 10px; font-size: 13px; font-family: inherit; color: #1a1a1a; background: #fafafa; transition: border-color 0.15s; width: 100%; }
+input:focus, select:focus, textarea:focus { outline: none; border-color: #4a40c8; background: #fff; }
+textarea { resize: vertical; min-height: 60px; }
+
+/* Line items */
+.line-items { width: 100%; border-collapse: collapse; font-size: 12px; }
+.line-items th { text-align: left; padding: 8px 8px; border-bottom: 1px solid #e5e5e0; color: #888; font-weight: 500; }
+.line-items td { padding: 8px 8px; border-bottom: 1px solid #f0f0f0; }
+.line-items input { border: none; background: transparent; padding: 4px; font-size: 12px; }
+.line-items input:focus { background: #f5f5ff; border-radius: 4px; }
+.add-line-btn { font-size: 12px; color: #4a40c8; cursor: pointer; padding: 8px 0; display: flex; align-items: center; gap: 4px; background: none; border: none; font-family: inherit; }
+.add-line-btn:hover { opacity: 0.7; }
+.remove-line { color: #ccc; cursor: pointer; font-size: 16px; line-height: 1; }
+.remove-line:hover { color: #e24b4a; }
+
+/* Totals */
+.totals-table { width: 100%; font-size: 13px; }
+.totals-table td { padding: 5px 0; }
+.totals-table td:last-child { text-align: right; font-weight: 500; }
+.total-row td { font-size: 15px; font-weight: 600; border-top: 1px solid #e5e5e0; padding-top: 10px; }
+
+/* Actions */
+.action-bar { display: flex; gap: 10px; flex-wrap: wrap; }
+.btn { padding: 10px 18px; border-radius: 7px; font-size: 13px; font-weight: 500; cursor: pointer; border: none; font-family: inherit; transition: all 0.15s; display: flex; align-items: center; gap: 6px; }
+.btn-primary { background: #4a40c8; color: #fff; }
+.btn-primary:hover { background: #3d35b0; }
+.btn-secondary { background: #fff; color: #1a1a1a; border: 1px solid #e0e0e0; }
+.btn-secondary:hover { background: #f5f5f0; }
+.btn-success { background: #1d9e75; color: #fff; }
+.btn-success:hover { background: #187a5a; }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* Email section */
+.email-section { background: #f0efff; border: 1px solid #ccc9f5; border-radius: 10px; padding: 18px; margin-top: 16px; }
+.email-section-title { font-size: 12px; font-weight: 600; color: #4a40c8; margin-bottom: 14px; letter-spacing: 0.5px; text-transform: uppercase; }
+
+/* Preview */
+.preview-sticky { position: sticky; top: 28px; }
+.invoice-preview { background: #fff; border: 1px solid #e5e5e0; border-radius: 10px; overflow: hidden; }
+.preview-header { padding: 14px 18px; border-bottom: 1px solid #e5e5e0; font-size: 12px; font-weight: 600; color: #888; letter-spacing: 0.5px; text-transform: uppercase; display: flex; align-items: center; justify-content: space-between; }
+.preview-body { padding: 0; }
+.invoice-doc { padding: 24px; font-size: 11px; line-height: 1.5; }
+.invoice-doc h1 { font-size: 20px; font-weight: 700; color: #1a1a1a; margin-bottom: 20px; letter-spacing: -0.3px; }
+.inv-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+.inv-section { }
+.inv-section .label { font-size: 9px; text-transform: uppercase; letter-spacing: 0.5px; color: #aaa; margin-bottom: 4px; font-weight: 600; }
+.inv-section .value { font-size: 11px; color: #1a1a1a; font-weight: 500; }
+.inv-section .addr { font-size: 10px; color: #666; line-height: 1.6; }
+.inv-meta { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; background: #f8f8f5; padding: 12px; border-radius: 6px; margin-bottom: 20px; }
+.inv-meta-item .label { font-size: 9px; text-transform: uppercase; letter-spacing: 0.5px; color: #aaa; font-weight: 600; }
+.inv-meta-item .value { font-size: 11px; font-weight: 600; color: #1a1a1a; }
+.inv-table { width: 100%; border-collapse: collapse; margin-bottom: 16px; }
+.inv-table th { text-align: left; padding: 8px 8px; border-bottom: 2px solid #1a1a1a; font-size: 9px; text-transform: uppercase; letter-spacing: 0.5px; color: #888; }
+.inv-table td { padding: 7px 8px; border-bottom: 1px solid #f0f0f0; font-size: 10px; vertical-align: top; }
+.inv-table td.num { text-align: right; }
+.inv-totals { margin-left: auto; width: 180px; }
+.inv-totals .row { display: flex; justify-content: space-between; padding: 3px 0; font-size: 10px; }
+.inv-totals .row.total { border-top: 1px solid #1a1a1a; margin-top: 6px; padding-top: 6px; font-weight: 700; font-size: 12px; }
+.inv-footer { margin-top: 20px; border-top: 1px solid #e5e5e0; padding-top: 12px; font-size: 9px; color: #aaa; line-height: 1.6; }
+.inv-cert { font-size: 10px; color: #666; margin-top: 16px; font-style: italic; }
+
+/* Toast */
+.toast { position: fixed; bottom: 24px; right: 24px; background: #1a1a1a; color: #fff; padding: 12px 18px; border-radius: 8px; font-size: 13px; z-index: 1000; opacity: 0; transition: opacity 0.2s; pointer-events: none; }
+.toast.show { opacity: 1; }
+.toast.success { background: #1d9e75; }
+.toast.error { background: #e24b4a; }
+
+/* Loading */
+.spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid rgba(255,255,255,0.4); border-top-color: #fff; border-radius: 50%; animation: spin 0.6s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Back link */
+.back-link { display: flex; align-items: center; gap: 6px; color: #888; font-size: 12px; cursor: pointer; margin-bottom: 20px; background: none; border: none; font-family: inherit; padding: 0; }
+.back-link:hover { color: #1a1a1a; }
+</style>
+</head>
+<body>
+<div class="app">
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="sidebar-header">
+      <div style="font-size: 15px; font-weight: 600; color: #1a1a1a;">FuriosaAI · US Ops</div>
+    </div>
+    <nav class="sidebar-nav">
+      <a class="nav-item" href="https://us-ops-dashboard-five.vercel.app/" target="_top"><span class="nav-icon">⊞</span> Dashboard</a>
+      <a class="nav-item" href="https://us-ops-dashboard-five.vercel.app/deals" target="_top"><span class="nav-icon">◈</span> Deals</a>
+      <a class="nav-item" href="https://us-ops-dashboard-five.vercel.app/shipments" target="_top"><span class="nav-icon">⬡</span> Shipments</a>
+      <a class="nav-item" href="https://us-ops-dashboard-five.vercel.app/financials" target="_top"><span class="nav-icon">◎</span> Key Financials</a>
+    </nav>
+  </div>
+
+  <!-- Main -->
+  <div class="main">
+    <!-- Tab bar -->
+    <div class="tab-bar">
+      <div class="tab" onclick="showTab('overview')">Overview</div>
+      <div class="tab active" onclick="showTab('invoice')">🧾 Invoices</div>
+    </div>
+
+    <!-- Panel -->
+    <div class="panel">
+
+      <!-- Project list view -->
+      <div id="projectList">
+        <div class="page-title">Invoice Management</div>
+        <div class="page-subtitle">프로젝트를 선택하여 Commercial Invoice를 발행하세요.</div>
+
+        <div class="project-grid" id="projectGrid"></div>
+      </div>
+
+      <!-- Invoice form view -->
+      <div id="invoiceView" style="display:none;">
+        <button class="back-link" onclick="showProjectList()">← Back to projects</button>
+        <div class="invoice-wrapper visible">
+          <!-- Form col -->
+          <div class="invoice-form-col">
+            <div class="form-section">
+              <div class="form-section-title">Invoice Info</div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Invoice #</label>
+                  <input type="text" id="f-invoiceNo" placeholder="e.g. 2026062201">
+                </div>
+                <div class="form-group">
+                  <label>Invoice Date</label>
+                  <input type="date" id="f-invoiceDate">
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Ship Date</label>
+                  <input type="date" id="f-shipDate">
+                </div>
+                <div class="form-group">
+                  <label>Currency</label>
+                  <select id="f-currency">
+                    <option value="USD">USD</option>
+                    <option value="KRW">KRW</option>
+                    <option value="SGD">SGD</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Incoterms</label>
+                  <select id="f-incoterms">
+                    <option value="DAP">DAP</option>
+                    <option value="FOB">FOB</option>
+                    <option value="CIF">CIF</option>
+                    <option value="EXW">EXW</option>
+                    <option value="DDP">DDP</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>End Customer PO #</label>
+                  <input type="text" id="f-poNo" placeholder="e.g. 5000098370">
+                </div>
+              </div>
+            </div>
+
+            <div class="form-section">
+              <div class="form-section-title">Shipper (Logistics)</div>
+              <div class="form-row full">
+                <div class="form-group">
+                  <label>Company</label>
+                  <input type="text" id="f-shipperCompany" value="Furiosa AI Inc. C/O DIVERSIFIED INTERNATIONAL LOGISTICS CO. LTD.">
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Contact</label>
+                  <input type="text" id="f-shipperContact" value="Ying Chen">
+                </div>
+                <div class="form-group">
+                  <label>Email</label>
+                  <input type="text" id="f-shipperEmail" value="Ying_Y_Chen@dimerco.com">
+                </div>
+              </div>
+              <div class="form-row full">
+                <div class="form-group">
+                  <label>Address</label>
+                  <textarea id="f-shipperAddr" rows="2">3F., NO. 9/5F., NO. 7, HANGXIANG RD., DAYUAN DIST., TAOYUAN CITY, 33747, Taiwan(R.O.C.)</textarea>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-section">
+              <div class="form-section-title">Seller (FuriosaAI)</div>
+              <div class="form-row full">
+                <div class="form-group">
+                  <label>Company</label>
+                  <input type="text" id="f-sellerCompany" value="FuriosaAI, Inc.">
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Contact</label>
+                  <input type="text" id="f-sellerContact" value="Leo Seo">
+                </div>
+                <div class="form-group">
+                  <label>Phone / Email</label>
+                  <input type="text" id="f-sellerPhone" value="+82-10-9557-9037 / leo.seo@furiosa.ai">
+                </div>
+              </div>
+              <div class="form-row full">
+                <div class="form-group">
+                  <label>Address</label>
+                  <textarea id="f-sellerAddr" rows="2">(06036) 14F, Dosan-daero 145, Gangnam-gu, Seoul, Republic of Korea</textarea>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-section">
+              <div class="form-section-title">Ship To</div>
+              <div class="form-row full">
+                <div class="form-group">
+                  <label>Company</label>
+                  <input type="text" id="f-shipToCompany">
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Contact</label>
+                  <input type="text" id="f-shipToContact">
+                </div>
+                <div class="form-group">
+                  <label>Email / Phone</label>
+                  <input type="text" id="f-shipToContactInfo">
+                </div>
+              </div>
+              <div class="form-row full">
+                <div class="form-group">
+                  <label>Address</label>
+                  <textarea id="f-shipToAddr" rows="2"></textarea>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-section">
+              <div class="form-section-title">Bill To / Sold-To</div>
+              <div class="form-row full">
+                <div class="form-group">
+                  <label>Company</label>
+                  <input type="text" id="f-billToCompany">
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Contact</label>
+                  <input type="text" id="f-billToContact">
+                </div>
+                <div class="form-group">
+                  <label>Email / Phone</label>
+                  <input type="text" id="f-billToContactInfo">
+                </div>
+              </div>
+              <div class="form-row full">
+                <div class="form-group">
+                  <label>Address</label>
+                  <textarea id="f-billToAddr" rows="2"></textarea>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-section">
+              <div class="form-section-title">Line Items</div>
+              <table class="line-items">
+                <thead>
+                  <tr>
+                    <th style="width:30px">#</th>
+                    <th>Item / PN</th>
+                    <th style="width:50px">Qty</th>
+                    <th>Description</th>
+                    <th style="width:80px">Unit Price</th>
+                    <th style="width:80px">Subtotal</th>
+                    <th style="width:24px"></th>
+                  </tr>
+                </thead>
+                <tbody id="lineItemsBody"></tbody>
+              </table>
+              <button class="add-line-btn" onclick="addLineItem()">+ Add line item</button>
+            </div>
+
+            <div class="form-section">
+              <div class="form-section-title">Totals & Notes</div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Certificate of Origin</label>
+                  <input type="text" id="f-origin" value="Taiwan">
+                </div>
+                <div class="form-group">
+                  <label>Signatory Title</label>
+                  <input type="text" id="f-signatoryTitle" value="Sr. Manager, BD & Sales">
+                </div>
+              </div>
+              <div class="form-row full">
+                <div class="form-group">
+                  <label>Export Control Notice (auto-filled)</label>
+                  <textarea id="f-exportNotice" rows="3">These items are controlled by the U.S. Government and authorized for export only to the country of ultimate destination for use by the ultimate consignee or end-user(s) herein identified. They may not be resold, transferred, or otherwise disposed of, to any other country or to any person other than the authorized ultimate consignee or end-user(s), either in their original form or after being incorporated into other items, without first obtaining approval from the U.S. government or as otherwise authorized by U.S. law and regulations.</textarea>
+                </div>
+              </div>
+            </div>
+
+            <!-- Email & Send section -->
+            <div class="email-section">
+              <div class="email-section-title">📧 Send Invoice</div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Recipient Email</label>
+                  <input type="email" id="f-recipientEmail" placeholder="customer@example.com">
+                </div>
+                <div class="form-group">
+                  <label>CC</label>
+                  <input type="email" id="f-ccEmail" placeholder="cc@example.com">
+                </div>
+              </div>
+              <div class="form-row full">
+                <div class="form-group">
+                  <label>Email Subject</label>
+                  <input type="text" id="f-emailSubject" placeholder="Commercial Invoice - [Customer] - [Invoice #]">
+                </div>
+              </div>
+              <div class="form-row full">
+                <div class="form-group">
+                  <label>Email Body</label>
+                  <textarea id="f-emailBody" rows="4" placeholder="Dear [Contact],&#10;&#10;Please find attached the commercial invoice for your recent order.&#10;&#10;Best regards,&#10;FuriosaAI Team"></textarea>
+                </div>
+              </div>
+            </div>
+
+            <div style="margin-top: 20px;">
+              <div class="action-bar">
+                <button class="btn btn-secondary" onclick="updatePreview()">🔄 Preview 업데이트</button>
+                <button class="btn btn-primary" id="btnSaveDrive" onclick="saveToDrive()">
+                  <span id="saveDriveLabel">💾 Google Drive 저장</span>
+                </button>
+                <button class="btn btn-success" id="btnSendEmail" onclick="sendInvoiceEmail()">
+                  <span id="sendEmailLabel">✉️ PDF로 이메일 발송</span>
+                </button>
+              </div>
+              <div id="statusMsg" style="margin-top: 12px; font-size: 12px; color: #888;"></div>
+            </div>
+          </div>
+
+          <!-- Preview col -->
+          <div class="invoice-preview-col">
+            <div class="preview-sticky">
+              <div class="invoice-preview">
+                <div class="preview-header">
+                  <span>Preview</span>
+                  <span id="previewInvoiceNo" style="color: #1a1a1a; font-size: 11px;">—</span>
+                </div>
+                <div class="preview-body">
+                  <div class="invoice-doc" id="invoicePreviewDoc">
+                    <div style="color: #aaa; text-align: center; padding: 40px 0; font-size: 12px;">
+                      폼을 작성한 후 Preview 업데이트를 클릭하세요.
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const DEALS = [
+  { id: 'SHT-001', customer: 'MIMOS', status: 'Waiting for Delivery', revenue: 16000, cards: 2, servers: 0, owner: 'addison@furiosa.ai', region: 'APAC', date: '2026-05-30', category: 'B2B', formFactor: 'Card Only' },
+  { id: 'SHT-002', customer: 'CADT', status: 'Waiting for Delivery', revenue: 100000, cards: 4, servers: 1, owner: 'addison@furiosa.ai', region: 'APAC', date: '2026-07-25', category: 'B2B', formFactor: 'Rack Server' },
+  { id: 'SHT-003', customer: 'NTU', status: 'Waiting for Delivery', revenue: 800000, cards: 48, servers: 6, owner: 'addison@furiosa.ai', region: 'APAC', date: '2026-07-30', category: 'B2B', formFactor: 'Rack Server' },
+  { id: 'SHT-004', customer: 'Flexgrid', status: 'Delivered', revenue: 70368, cards: 10, servers: 0, owner: 'alex.liu@furiosa.ai', region: 'US', date: '2026-05-09', category: 'B2B', formFactor: 'Card Only' },
+  { id: 'SHT-005', customer: 'J.A.M Global', status: 'Delivered', revenue: 15394, cards: 2, servers: 0, owner: 'alex.liu@furiosa.ai', region: 'US', date: '2026-05-03', category: 'B2B', formFactor: 'Card Only' },
+  { id: 'SHT-006', customer: 'I/ONX', status: 'Delivered', revenue: 511680, cards: 64, servers: 0, owner: 'tom.gallivan@furiosa.ai', region: 'US', date: '2026-05-22', category: 'B2B', formFactor: 'Card Only' },
+  { id: 'SHT-007', customer: 'US Internal', status: 'Delivered', revenue: null, cards: 32, servers: 4, owner: 'alex.liu@furiosa.ai', region: 'US', date: '2026-05-22', category: 'Internal', formFactor: 'Rack Server' },
+  { id: 'SHT-008', customer: 'US Internal', status: 'Delivered', revenue: null, cards: 24, servers: 0, owner: 'alex.liu@furiosa.ai', region: 'US', date: '2026-06-15', category: 'Internal', formFactor: 'Card Only' },
+  { id: 'SHT-009', customer: 'SG Demo for Keppel', status: 'Delivered', revenue: null, cards: 8, servers: 1, owner: 'addison@furiosa.ai', region: 'APAC', date: '2026-06-15', category: 'Internal', formFactor: 'Rack Server' },
+  { id: 'SHT-010', customer: 'US Internal', status: 'Delivered', revenue: null, cards: 96, servers: 12, owner: 'alex.liu@furiosa.ai', region: 'US', date: '2026-06-15', category: 'Internal', formFactor: 'Rack Server' },
+];
+
+let currentDeal = null;
+let lineItems = [];
+
+function showTab(tab) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  event.target.classList.add('active');
+}
+
+function renderProjects() {
+  const grid = document.getElementById('projectGrid');
+  grid.innerHTML = DEALS.map(d => {
+    const revenueStr = d.revenue ? '$' + d.revenue.toLocaleString() : '—';
+    const statusClass = d.status === 'Delivered' ? 'status-delivered' : 'status-waiting';
+    const itemStr = [d.cards > 0 ? `Cards ${d.cards}` : null, d.servers > 0 ? `Servers ${d.servers}` : null].filter(Boolean).join(' · ');
+    return `<div class="project-card" onclick="openInvoice('${d.id}')">
+      <div class="project-card-header">
+        <span class="project-id">${d.id}</span>
+        <span class="status-badge ${statusClass}">${d.status}</span>
+      </div>
+      <div class="project-name">${d.customer}</div>
+      <div class="project-meta">${d.formFactor} · ${d.region} · ${itemStr}</div>
+      <div class="project-footer">
+        <span class="project-revenue">${revenueStr}</span>
+        <span class="invoice-btn">Invoice 발행 →</span>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function openInvoice(dealId) {
+  currentDeal = DEALS.find(d => d.id === dealId);
+  document.getElementById('projectList').style.display = 'none';
+  document.getElementById('invoiceView').style.display = 'block';
+  prefillForm(currentDeal);
+}
+
+function showProjectList() {
+  document.getElementById('projectList').style.display = 'block';
+  document.getElementById('invoiceView').style.display = 'none';
+}
+
+function prefillForm(deal) {
+  const today = new Date().toISOString().split('T')[0];
+  const invNo = '2026' + today.replace(/-/g,'').slice(4) + '01';
+
+  document.getElementById('f-invoiceNo').value = invNo;
+  document.getElementById('f-invoiceDate').value = today;
+  document.getElementById('f-shipDate').value = deal.date || today;
+  document.getElementById('f-poNo').value = '';
+  document.getElementById('f-emailSubject').value = `Commercial Invoice - ${deal.customer} - ${invNo}`;
+  document.getElementById('f-emailBody').value = `Dear ${deal.customer} Team,\n\nPlease find attached the commercial invoice for your recent order.\n\nInvoice #: ${invNo}\nDeal ID: ${deal.id}\nAmount: ${deal.revenue ? '$' + deal.revenue.toLocaleString() : 'TBD'}\n\nIf you have any questions, please don't hesitate to contact us.\n\nBest regards,\nFuriosaAI Sales Team`;
+
+  document.getElementById('f-shipToCompany').value = deal.customer;
+  document.getElementById('f-billToCompany').value = deal.customer;
+
+  lineItems = [];
+  if (deal.cards > 0) {
+    lineItems.push({
+      item: 'RNGD PCIe Accelerator Card (FuriosaAI PN: RNGA0UNO-04)',
+      qty: deal.cards,
+      desc: 'FuriosaAI RNGD TCP NPU Card, PCIeGen5 x16, 48GB HBM3, 180W TDP, Full-height, 3/4-length dual-slot',
+      unitPrice: deal.revenue && deal.cards ? Math.round(deal.revenue / deal.cards) : 4000,
+    });
+  }
+  if (deal.servers > 0) {
+    lineItems.push({
+      item: 'SMC Appliance TNRT2',
+      qty: deal.servers,
+      desc: 'SuperMicro Rack Server with RNGD NPU, configured as per order',
+      unitPrice: 0,
+    });
+  }
+  renderLineItems();
+  updatePreview();
+}
+
+function renderLineItems() {
+  const tbody = document.getElementById('lineItemsBody');
+  tbody.innerHTML = lineItems.map((li, i) => `
+    <tr>
+      <td style="color:#aaa">${i+1}</td>
+      <td><input type="text" value="${escHtml(li.item)}" oninput="lineItems[${i}].item=this.value; schedulePreview()" style="width:100%"></td>
+      <td><input type="number" value="${li.qty}" min="0" oninput="lineItems[${i}].qty=+this.value; calcSubtotals()" style="width:45px"></td>
+      <td><input type="text" value="${escHtml(li.desc)}" oninput="lineItems[${i}].desc=this.value; schedulePreview()" style="width:100%"></td>
+      <td><input type="number" value="${li.unitPrice}" min="0" oninput="lineItems[${i}].unitPrice=+this.value; calcSubtotals()"></td>
+      <td style="text-align:right; font-weight:500" id="sub-${i}">${(li.qty*li.unitPrice).toLocaleString()}</td>
+      <td><span class="remove-line" onclick="removeLineItem(${i})">×</span></td>
+    </tr>
+  `).join('');
+}
+
+function addLineItem() {
+  lineItems.push({ item: '', qty: 1, desc: '', unitPrice: 0 });
+  renderLineItems();
+}
+
+function removeLineItem(i) {
+  lineItems.splice(i, 1);
+  renderLineItems();
+  updatePreview();
+}
+
+function calcSubtotals() {
+  lineItems.forEach((li, i) => {
+    const el = document.getElementById('sub-' + i);
+    if (el) el.textContent = (li.qty * li.unitPrice).toLocaleString();
+  });
+  schedulePreview();
+}
+
+let previewTimer;
+function schedulePreview() {
+  clearTimeout(previewTimer);
+  previewTimer = setTimeout(updatePreview, 300);
+}
+
+function escHtml(s) { return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+function getFormData() {
+  return {
+    invoiceNo: document.getElementById('f-invoiceNo').value,
+    invoiceDate: document.getElementById('f-invoiceDate').value,
+    shipDate: document.getElementById('f-shipDate').value,
+    currency: document.getElementById('f-currency').value,
+    incoterms: document.getElementById('f-incoterms').value,
+    poNo: document.getElementById('f-poNo').value,
+    shipperCompany: document.getElementById('f-shipperCompany').value,
+    shipperContact: document.getElementById('f-shipperContact').value,
+    shipperEmail: document.getElementById('f-shipperEmail').value,
+    shipperAddr: document.getElementById('f-shipperAddr').value,
+    sellerCompany: document.getElementById('f-sellerCompany').value,
+    sellerContact: document.getElementById('f-sellerContact').value,
+    sellerPhone: document.getElementById('f-sellerPhone').value,
+    sellerAddr: document.getElementById('f-sellerAddr').value,
+    shipToCompany: document.getElementById('f-shipToCompany').value,
+    shipToContact: document.getElementById('f-shipToContact').value,
+    shipToContactInfo: document.getElementById('f-shipToContactInfo').value,
+    shipToAddr: document.getElementById('f-shipToAddr').value,
+    billToCompany: document.getElementById('f-billToCompany').value,
+    billToContact: document.getElementById('f-billToContact').value,
+    billToContactInfo: document.getElementById('f-billToContactInfo').value,
+    billToAddr: document.getElementById('f-billToAddr').value,
+    origin: document.getElementById('f-origin').value,
+    signatoryTitle: document.getElementById('f-signatoryTitle').value,
+    exportNotice: document.getElementById('f-exportNotice').value,
+  };
+}
+
+function updatePreview() {
+  const f = getFormData();
+  const total = lineItems.reduce((s, li) => s + li.qty * li.unitPrice, 0);
+  document.getElementById('previewInvoiceNo').textContent = f.invoiceNo || '—';
+
+  const rows = lineItems.map((li, i) => `
+    <tr>
+      <td>${i+1}</td>
+      <td><strong>${escHtml(li.item)}</strong><br><span style="color:#888">${escHtml(li.desc)}</span></td>
+      <td class="num">${li.qty}</td>
+      <td class="num">${f.currency} ${li.unitPrice.toLocaleString()}</td>
+      <td class="num" style="font-weight:500">${f.currency} ${(li.qty*li.unitPrice).toLocaleString()}</td>
+    </tr>
+  `).join('');
+
+  document.getElementById('invoicePreviewDoc').innerHTML = `
+    <h1>Commercial Invoice</h1>
+    <div class="inv-meta">
+      <div class="inv-meta-item"><div class="label">Invoice #</div><div class="value">${escHtml(f.invoiceNo)||'—'}</div></div>
+      <div class="inv-meta-item"><div class="label">Date</div><div class="value">${f.invoiceDate||'—'}</div></div>
+      <div class="inv-meta-item"><div class="label">Currency</div><div class="value">${f.currency} · ${f.incoterms}</div></div>
+    </div>
+    <div class="inv-grid">
+      <div class="inv-section"><div class="label">Shipper</div><div class="value">${escHtml(f.shipperCompany)}</div><div class="addr">${escHtml(f.shipperContact)}<br>${escHtml(f.shipperAddr)}</div></div>
+      <div class="inv-section"><div class="label">Seller</div><div class="value">${escHtml(f.sellerCompany)}</div><div class="addr">${escHtml(f.sellerContact)}<br>${escHtml(f.sellerAddr)}</div></div>
+      <div class="inv-section"><div class="label">Ship To</div><div class="value">${escHtml(f.shipToCompany)||'—'}</div><div class="addr">${escHtml(f.shipToContact)}<br>${escHtml(f.shipToAddr)}</div></div>
+      <div class="inv-section"><div class="label">Bill To / Sold-To</div><div class="value">${escHtml(f.billToCompany)||'—'}</div><div class="addr">${escHtml(f.billToContact)}<br>${escHtml(f.billToAddr)}</div></div>
+    </div>
+    ${f.poNo ? `<div style="font-size:10px; margin-bottom:14px; color:#666">End Customer PO #: <strong>${escHtml(f.poNo)}</strong> &nbsp;·&nbsp; Ship Date: ${f.shipDate}</div>` : ''}
+    <table class="inv-table">
+      <thead><tr><th>#</th><th>Item / Description</th><th class="num">Qty</th><th class="num">Unit Price</th><th class="num">Subtotal</th></tr></thead>
+      <tbody>${rows}</tbody>
+      <tfoot><tr><td colspan="2" style="font-weight:600">Total</td><td class="num" style="font-weight:600">${lineItems.reduce((s,li)=>s+li.qty,0)}</td><td></td><td class="num" style="font-weight:700">${f.currency} ${total.toLocaleString()}</td></tr></tfoot>
+    </table>
+    <div class="inv-totals">
+      <div class="row total"><span>Grand Total</span><span>${f.currency} ${total.toLocaleString()}</span></div>
+    </div>
+    <div class="inv-cert">I certify that the information on this invoice is true and correct.<br><br>___________________________<br>${escHtml(f.signatoryTitle)}</div>
+    <div class="inv-footer">
+      Certificate of Origin: ${escHtml(f.origin)}<br><br>
+      ${escHtml(f.exportNotice)}
+    </div>
+  `;
+}
+
+function buildInvoiceHTML() {
+  const f = getFormData();
+  const total = lineItems.reduce((s, li) => s + li.qty * li.unitPrice, 0);
+  const rows = lineItems.map((li, i) => `
+    <tr>
+      <td>${i+1}</td>
+      <td><strong>${escHtml(li.item)}</strong><br><small style="color:#888">${escHtml(li.desc)}</small></td>
+      <td align="right">${li.qty}</td>
+      <td align="right">${f.currency} ${li.unitPrice.toLocaleString()}</td>
+      <td align="right"><strong>${f.currency} ${(li.qty*li.unitPrice).toLocaleString()}</strong></td>
+    </tr>
+  `).join('');
+
+  return `<!DOCTYPE html>
+<html><head><meta charset="UTF-8">
+<style>
+body { font-family: Arial, sans-serif; font-size: 11px; color: #1a1a1a; margin: 0; padding: 32px; }
+h1 { font-size: 24px; margin-bottom: 20px; }
+.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 24px; }
+.section .label { font-size: 9px; text-transform: uppercase; letter-spacing: 0.5px; color: #aaa; font-weight: bold; margin-bottom: 4px; }
+.section .value { font-weight: bold; margin-bottom: 2px; }
+.section .addr { color: #666; line-height: 1.6; }
+.meta { display: flex; gap: 24px; background: #f8f8f8; padding: 12px; border-radius: 4px; margin-bottom: 20px; }
+.meta-item .label { font-size: 9px; text-transform: uppercase; color: #aaa; font-weight: bold; }
+.meta-item .value { font-weight: bold; font-size: 13px; }
+table { width: 100%; border-collapse: collapse; margin-bottom: 16px; }
+th { text-align: left; padding: 8px; border-bottom: 2px solid #1a1a1a; font-size: 9px; text-transform: uppercase; color: #888; }
+td { padding: 8px; border-bottom: 1px solid #f0f0f0; vertical-align: top; }
+.total-row td { font-weight: bold; font-size: 14px; border-top: 2px solid #1a1a1a; padding-top: 10px; }
+.footer { margin-top: 24px; border-top: 1px solid #e5e5e0; padding-top: 12px; font-size: 9px; color: #aaa; line-height: 1.6; }
+.cert { font-size: 10px; color: #666; margin: 16px 0; }
+</style></head><body>
+<h1>Commercial Invoice</h1>
+<div class="meta">
+  <div class="meta-item"><div class="label">Invoice #</div><div class="value">${escHtml(f.invoiceNo)}</div></div>
+  <div class="meta-item"><div class="label">Date</div><div class="value">${f.invoiceDate}</div></div>
+  <div class="meta-item"><div class="label">Ship Date</div><div class="value">${f.shipDate}</div></div>
+  <div class="meta-item"><div class="label">Currency / Incoterms</div><div class="value">${f.currency} · ${f.incoterms}</div></div>
+  ${f.poNo ? `<div class="meta-item"><div class="label">PO #</div><div class="value">${escHtml(f.poNo)}</div></div>` : ''}
+</div>
+<div class="grid">
+  <div class="section"><div class="label">Shipper</div><div class="value">${escHtml(f.shipperCompany)}</div><div class="addr">${escHtml(f.shipperContact)} / ${escHtml(f.shipperEmail)}<br>${escHtml(f.shipperAddr)}</div></div>
+  <div class="section"><div class="label">Seller</div><div class="value">${escHtml(f.sellerCompany)}</div><div class="addr">${escHtml(f.sellerContact)} / ${escHtml(f.sellerPhone)}<br>${escHtml(f.sellerAddr)}</div></div>
+  <div class="section"><div class="label">Ship To</div><div class="value">${escHtml(f.shipToCompany)}</div><div class="addr">${escHtml(f.shipToContact)} / ${escHtml(f.shipToContactInfo)}<br>${escHtml(f.shipToAddr)}</div></div>
+  <div class="section"><div class="label">Bill To / Sold-To</div><div class="value">${escHtml(f.billToCompany)}</div><div class="addr">${escHtml(f.billToContact)} / ${escHtml(f.billToContactInfo)}<br>${escHtml(f.billToAddr)}</div></div>
+</div>
+<table>
+  <thead><tr><th>#</th><th>Item / Description</th><th align="right">Qty</th><th align="right">Unit Price</th><th align="right">Subtotal</th></tr></thead>
+  <tbody>${rows}</tbody>
+  <tr class="total-row"><td colspan="2">Grand Total</td><td align="right">${lineItems.reduce((s,li)=>s+li.qty,0)}</td><td></td><td align="right">${f.currency} ${total.toLocaleString()}</td></tr>
+</table>
+<div class="cert">
+  Certificate of Origin: ${escHtml(f.origin)}<br><br>
+  I certify that the information on this invoice is true and correct.<br><br>
+  ___________________________<br>
+  ${escHtml(f.signatoryTitle)}
+</div>
+<div class="footer">${escHtml(f.exportNotice)}</div>
+</body></html>`;
+}
+
+async function callClaude(systemPrompt, userMessage, mcpServers) {
+  const body = {
+    model: 'claude-sonnet-4-6',
+    max_tokens: 1000,
+    system: systemPrompt,
+    messages: [{ role: 'user', content: userMessage }],
+  };
+  if (mcpServers) body.mcp_servers = mcpServers;
+
+  const resp = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  });
+  if (!resp.ok) throw new Error('API error ' + resp.status);
+  return resp.json();
+}
+
+function setStatus(msg) {
+  document.getElementById('statusMsg').textContent = msg;
+}
+
+async function saveToDrive() {
+  const btn = document.getElementById('btnSaveDrive');
+  const label = document.getElementById('saveDriveLabel');
+  btn.disabled = true;
+  label.innerHTML = '<span class="spinner"></span> 저장 중...';
+  setStatus('');
+
+  const f = getFormData();
+  const htmlContent = buildInvoiceHTML();
+  const fileName = `Invoice_${f.invoiceNo}_${(currentDeal?.customer||'').replace(/[^a-zA-Z0-9]/g,'_')}.html`;
+
+  try {
+    const data = await callClaude(
+      'You are a Google Drive file manager. When asked to save content to Drive, use the available Drive tools to create the file. Always confirm success with the file URL.',
+      `Please save the following commercial invoice as an HTML file named "${fileName}" in Google Drive. Create it in a folder named "Invoices" (create if it doesn't exist). Here is the file content:\n\n${htmlContent}`,
+      [{ type: 'url', url: 'https://drivemcp.googleapis.com/mcp/v1', name: 'gdrive' }]
+    );
+
+    const textBlocks = data.content.filter(c => c.type === 'text').map(c => c.text).join('\n');
+    showToast('✅ Google Drive에 저장되었습니다!', 'success');
+    setStatus('Drive 저장 완료: ' + (textBlocks.slice(0, 100) || fileName));
+  } catch (e) {
+    showToast('❌ Drive 저장 실패: ' + e.message, 'error');
+    setStatus('오류: ' + e.message);
+  }
+
+  btn.disabled = false;
+  label.textContent = '💾 Google Drive 저장';
+}
+
+async function sendInvoiceEmail() {
+  const recipientEmail = document.getElementById('f-recipientEmail').value.trim();
+  if (!recipientEmail) { showToast('수신자 이메일을 입력해주세요.', 'error'); return; }
+
+  const btn = document.getElementById('btnSendEmail');
+  const label = document.getElementById('sendEmailLabel');
+  btn.disabled = true;
+  label.innerHTML = '<span class="spinner"></span> 발송 중...';
+  setStatus('');
+
+  const f = getFormData();
+  const ccEmail = document.getElementById('f-ccEmail').value.trim();
+  const subject = document.getElementById('f-emailSubject').value;
+  const body = document.getElementById('f-emailBody').value;
+  const htmlContent = buildInvoiceHTML();
+
+  const emailPrompt = `Please send an email with the following details:
+- To: ${recipientEmail}
+${ccEmail ? `- CC: ${ccEmail}` : ''}
+- Subject: ${subject}
+- Body: ${body}
+- Attach the following HTML content as an attachment named "Invoice_${f.invoiceNo}.html":
+
+${htmlContent}
+
+Please use Gmail to send this email with the invoice attached.`;
+
+  try {
+    const data = await callClaude(
+      'You are an email assistant. Send emails via Gmail using the available tools. When attaching HTML content, encode it as base64 and attach as a file.',
+      emailPrompt,
+      [{ type: 'url', url: 'https://gmailmcp.googleapis.com/mcp/v1', name: 'gmail' }]
+    );
+
+    const textBlocks = data.content.filter(c => c.type === 'text').map(c => c.text).join('\n');
+    showToast('✅ 이메일이 발송되었습니다!', 'success');
+    setStatus('이메일 발송 완료 → ' + recipientEmail);
+  } catch (e) {
+    showToast('❌ 이메일 발송 실패: ' + e.message, 'error');
+    setStatus('오류: ' + e.message);
+  }
+
+  btn.disabled = false;
+  label.textContent = '✉️ PDF로 이메일 발송';
+}
+
+function showToast(msg, type = '') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show ' + type;
+  setTimeout(() => { t.className = 'toast'; }, 3500);
+}
+
+// Init
+renderProjects();
+</script>
+</body>
+</html>

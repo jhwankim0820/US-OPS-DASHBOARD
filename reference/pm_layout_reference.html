@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Project Management — Layout Reference</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f5f5f0;color:#1a1a1a;font-size:14px}
+.topbar{background:#fff;border-bottom:1px solid #e5e5e0;padding:0 28px;display:flex;align-items:center;height:48px;gap:0}
+.nav-logo{font-size:13px;font-weight:600;color:#1a1a1a;margin-right:24px}
+.nav-link{font-size:13px;color:#888;padding:0 14px;height:48px;display:flex;align-items:center;border-bottom:2px solid transparent;cursor:pointer;text-decoration:none;white-space:nowrap}
+.nav-link:hover{color:#444}
+.nav-link.active{color:#1d9e75;border-bottom-color:#1d9e75;font-weight:500}
+.page-header{background:#fff;border-bottom:1px solid #e5e5e0;padding:20px 28px;display:flex;align-items:flex-start;justify-content:space-between}
+.page-title{font-size:18px;font-weight:500;margin-bottom:3px}
+.page-sub{font-size:12px;color:#888}
+.btn-group{display:flex;gap:8px}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:7px;font-size:13px;font-weight:500;cursor:pointer;border:1px solid #e0e0e0;background:#fff;color:#1a1a1a;white-space:nowrap}
+.btn-primary{background:#1d9e75;color:#fff;border-color:#1d9e75}
+.btn-primary:hover{background:#187a5a}
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);background:#fff;border-bottom:1px solid #e5e5e0}
+.stat{padding:18px 24px;display:flex;align-items:center;justify-content:space-between;border-right:1px solid #e5e5e0}
+.stat:last-child{border-right:none}
+.stat-label{font-size:11px;color:#888;margin-bottom:4px}
+.stat-value{font-size:22px;font-weight:500}
+.stat-sub{font-size:11px;color:#aaa;margin-top:2px}
+.stat-icon{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:17px}
+.ic-teal{background:#e1f5ee;color:#0f6e56}
+.ic-amber{background:#faeeda;color:#854f0b}
+.ic-purple{background:#eeedfe;color:#534ab7}
+.ic-blue{background:#e6f1fb;color:#185fa5}
+.content{padding:20px 28px}
+.toolbar{display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap}
+.search-wrap{position:relative;flex:1;min-width:200px;max-width:320px}
+.search-icon{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:#aaa;font-size:14px}
+.search-input{width:100%;padding:8px 10px 8px 32px;border:1px solid #e0e0e0;border-radius:7px;font-size:13px;background:#fff;color:#1a1a1a}
+.filter-rows{display:flex;flex-direction:column;gap:6px;margin-bottom:12px}
+.filter-row{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.filter-label{font-size:11px;color:#aaa;width:52px;flex-shrink:0}
+.pill{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:20px;font-size:12px;cursor:pointer;border:1px solid #e5e5e0;background:#fafafa;color:#666;white-space:nowrap}
+.pill.active{background:#e1f5ee;border-color:#5dcaa5;color:#0f6e56;font-weight:500}
+.pill .cnt{font-size:11px;opacity:0.75}
+.result-count{font-size:12px;color:#888;margin-bottom:10px}
+.table-wrap{background:#fff;border:1px solid #e5e5e0;border-radius:10px;overflow:hidden}
+.tbl-scroll{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:12px;table-layout:fixed}
+thead tr{background:#fafafa;border-bottom:1px solid #e5e5e0}
+th{padding:9px 10px;text-align:left;font-size:11px;font-weight:500;color:#888;white-space:nowrap;cursor:pointer;user-select:none}
+th .sort{opacity:0.4;font-size:10px;margin-left:2px}
+td{padding:10px 10px;color:#1a1a1a;border-bottom:1px solid #f0f0f0;vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:#fafafa}
+.deal-id{font-size:11px;color:#888;font-family:monospace;letter-spacing:0.3px}
+.customer{font-weight:500;font-size:13px}
+.badge{display:inline-flex;align-items:center;padding:3px 8px;border-radius:20px;font-size:11px;font-weight:500;white-space:nowrap}
+.b-delivered{background:#eaf3de;color:#3b6d11}
+.b-waiting{background:#faeeda;color:#854f0b}
+.b-b2b{background:#e6f1fb;color:#185fa5}
+.b-internal{background:#f1efe8;color:#5f5e5a}
+.b-rental{background:#fbeaf0;color:#993556}
+.b-quote{background:#eeedfe;color:#534ab7}
+.b-po{background:#e6f1fb;color:#185fa5}
+.b-invoice{background:#eaf3de;color:#3b6d11}
+.doc-group{display:flex;align-items:flex-end;gap:5px;justify-content:center}
+.doc-item{display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer}
+.doc-item:hover .doc-icon{border-color:#888}
+.doc-lbl{font-size:9px;color:#aaa;font-weight:500;letter-spacing:0.3px}
+.doc-icon{width:24px;height:24px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:13px;border:1px solid transparent}
+.doc-on{background:#eaf3de;color:#1d9e75;border-color:#c0dd97}
+.doc-off{background:#f5f5f0;color:#ccc;border-color:#e5e5e0}
+.la{display:flex;flex-direction:column;gap:3px}
+.la-badge{display:inline-flex;align-items:center;gap:4px;padding:3px 7px;border-radius:4px;font-size:11px;font-weight:500}
+.la-time{font-size:10px;color:#aaa}
+.la-file{font-size:11px;color:#666;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:130px}
+.owner-wrap{display:flex;align-items:center;gap:6px}
+.avatar{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500;flex-shrink:0}
+.av-g{background:#e1f5ee;color:#0f6e56}
+.av-b{background:#e6f1fb;color:#185fa5}
+.av-c{background:#faece7;color:#993c1d}
+.owner-name{font-size:11px;color:#888}
+.rev{font-weight:500}
+.muted{color:#aaa}
+.qty{font-size:11px;color:#666;display:flex;align-items:center;gap:4px;flex-wrap:wrap}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <span class="nav-logo">FuriosaAI · US Ops</span>
+  <a class="nav-link" href="#">Dashboard</a>
+  <a class="nav-link active" href="#">Project Management</a>
+  <a class="nav-link" href="#">Shipments</a>
+  <a class="nav-link" href="#">Key Financials</a>
+</div>
+
+<div class="page-header">
+  <div>
+    <div class="page-title">Project Management</div>
+    <div class="page-sub">Records never lie, even when plans do.</div>
+  </div>
+  <div class="btn-group">
+    <button class="btn">&#128197; Schedule</button>
+    <button class="btn btn-primary">+ Add Project</button>
+  </div>
+</div>
+
+<div class="stats-row">
+  <div class="stat">
+    <div>
+      <div class="stat-label">Total Projects</div>
+      <div class="stat-value">10</div>
+      <div class="stat-sub">All registered projects</div>
+    </div>
+    <div class="stat-icon ic-teal">&#128193;</div>
+  </div>
+  <div class="stat">
+    <div>
+      <div class="stat-label">In Progress</div>
+      <div class="stat-value">3</div>
+      <div class="stat-sub">Projects in active stage</div>
+    </div>
+    <div class="stat-icon ic-amber">&#9654;</div>
+  </div>
+  <div class="stat">
+    <div>
+      <div class="stat-label">Invoice Pending</div>
+      <div class="stat-value">6</div>
+      <div class="stat-sub">B2B deals without invoice</div>
+    </div>
+    <div class="stat-icon ic-purple">&#128196;</div>
+  </div>
+  <div class="stat">
+    <div>
+      <div class="stat-label">Total Revenue</div>
+      <div class="stat-value">$1.51M</div>
+      <div class="stat-sub">Confirmed B2B revenue</div>
+    </div>
+    <div class="stat-icon ic-blue">&#128202;</div>
+  </div>
+</div>
+
+<div class="content">
+  <div class="toolbar">
+    <div class="search-wrap">
+      <span class="search-icon">&#128269;</span>
+      <input class="search-input" type="text" placeholder="Search by project, customer, owner...">
+    </div>
+    <button class="btn">&#9881; Filter</button>
+    <button class="btn">&#8595; Export</button>
+  </div>
+
+  <div class="filter-rows">
+    <div class="filter-row">
+      <span class="filter-label">Type</span>
+      <span class="pill active">All <span class="cnt">10</span></span>
+      <span class="pill">B2B <span class="cnt">6</span></span>
+      <span class="pill">Internal <span class="cnt">4</span></span>
+    </div>
+    <div class="filter-row">
+      <span class="filter-label">Status</span>
+      <span class="pill active">All <span class="cnt">10</span></span>
+      <span class="pill">Waiting <span class="cnt">3</span></span>
+      <span class="pill">Delivered <span class="cnt">7</span></span>
+    </div>
+    <div class="filter-row">
+      <span class="filter-label">Region</span>
+      <span class="pill active">All <span class="cnt">10</span></span>
+      <span class="pill">US <span class="cnt">6</span></span>
+      <span class="pill">APAC <span class="cnt">4</span></span>
+    </div>
+  </div>
+
+  <div class="result-count">10 projects</div>
+
+  <div class="table-wrap">
+    <div class="tbl-scroll">
+    <table>
+      <colgroup>
+        <col style="width:32px">
+        <col style="width:88px">
+        <col style="width:130px">
+        <col style="width:90px">
+        <col style="width:75px">
+        <col style="width:60px">
+        <col style="width:110px">
+        <col style="width:85px">
+        <col style="width:80px">
+        <col style="width:135px">
+        <col style="width:155px">
+        <col style="width:85px">
+      </colgroup>
+      <thead>
+        <tr>
+          <th><input type="checkbox" style="width:13px;height:13px"></th>
+          <th>Deal ID <span class="sort">&#8645;</span></th>
+          <th>Customer <span class="sort">&#8645;</span></th>
+          <th>Status</th>
+          <th>Category</th>
+          <th>Region</th>
+          <th>Owner</th>
+          <th>Revenue <span class="sort">&#8645;</span></th>
+          <th>Qty</th>
+          <th style="text-align:center">Documents</th>
+          <th>Latest Action</th>
+          <th>Date <span class="sort">&#8645;</span></th>
+        </tr>
+      </thead>
+      <tbody>
+
+        <tr>
+          <td><input type="checkbox" style="width:13px;height:13px"></td>
+          <td><span class="deal-id">SHT-001</span></td>
+          <td><span class="customer">MIMOS</span></td>
+          <td><span class="badge b-waiting">Waiting</span></td>
+          <td><span class="badge b-b2b">B2B</span></td>
+          <td class="muted">APAC</td>
+          <td><div class="owner-wrap"><div class="avatar av-g">AC</div><span class="owner-name">addison</span></div></td>
+          <td><span class="rev">$16,000</span></td>
+          <td><div class="qty">&#9634; 2</div></td>
+          <td>
+            <div class="doc-group">
+              <div class="doc-item" title="0. Rental — empty"><span class="doc-lbl">RENT</span><div class="doc-icon doc-off">&#8212;</div></div>
+              <div class="doc-item" title="1. Quote — has files"><span class="doc-lbl">QT</span><div class="doc-icon doc-on">&#10003;</div></div>
+              <div class="doc-item" title="2. PO — has files"><span class="doc-lbl">PO</span><div class="doc-icon doc-on">&#10003;</div></div>
+              <div class="doc-item" title="3. Invoice — empty"><span class="doc-lbl">INV</span><div class="doc-icon doc-off">&#8212;</div></div>
+            </div>
+          </td>
+          <td><div class="la"><span class="la-badge b-po">&#128196; PO</span><span class="la-file">MIMOS_PO_2026.pdf</span><span class="la-time">3 days ago</span></div></td>
+          <td class="muted">May 30, 26</td>
+        </tr>
+
+        <tr>
+          <td><input type="checkbox" style="width:13px;height:13px"></td>
+          <td><span class="deal-id">SHT-002</span></td>
+          <td><span class="customer">CADT</span></td>
+          <td><span class="badge b-waiting">Waiting</span></td>
+          <td><span class="badge b-b2b">B2B</span></td>
+          <td class="muted">APAC</td>
+          <td><div class="owner-wrap"><div class="avatar av-g">AC</div><span class="owner-name">addison</span></div></td>
+          <td><span class="rev">$100,000</span></td>
+          <td><div class="qty">&#9634; 4 &nbsp;&#128438; 1</div></td>
+          <td>
+            <div class="doc-group">
+              <div class="doc-item"><span class="doc-lbl">RENT</span><div class="doc-icon doc-off">&#8212;</div></div>
+              <div class="doc-item"><span class="doc-lbl">QT</span><div class="doc-icon doc-on">&#10003;</div></div>
+              <div class="doc-item"><span class="doc-lbl">PO</span><div class="doc-icon doc-off">&#8212;</div></div>
+              <div class="doc-item"><span class="doc-lbl">INV</span><div class="doc-icon doc-off">&#8212;</div></div>
+            </div>
+          </td>
+          <td><div class="la"><span class="la-badge b-quote">&#128203; Quote</span><span class="la-file">CADT_Quote_v2.xlsx</span><span class="la-time">1 week ago</span></div></td>
+          <td class="muted">Jul 25, 26</td>
+        </tr>
+
+        <tr>
+          <td><input type="checkbox" style="width:13px;height:13px"></td>
+          <td><span class="deal-id">SHT-003</span></td>
+          <td><span class="customer">NTU</span></td>
+          <td><span class="badge b-waiting">Waiting</span></td>
+          <td><span class="badge b-b2b">B2B</span></td>
+          <td class="muted">APAC</td>
+          <td><div class="owner-wrap"><div class="avatar av-g">AC</div><span class="owner-name">addison</span></div></td>
+          <td><span class="rev">$800,000</span></td>
+          <td><div class="qty">&#9634; 48 &nbsp;&#128438; 6</div></td>
+          <td>
+            <div class="doc-group">
+              <div class="doc-item"><span class="doc-lbl">RENT</span><div class="doc-icon doc-off">&#8212;</div></div>
+              <div class="doc-item"><span class="doc-lbl">QT</span><div class="doc-icon doc-on">&#10003;</div></div>
+              <div class="doc-item"><span class="doc-lbl">PO</span><div class="doc-icon doc-on">&#10003;</div></div>
+              <div class="doc-item"><span class="doc-lbl">INV</span><div class="doc-icon doc-off">&#8212;</div></div>
+            </div>
+          </td>
+          <td><div class="la"><span class="la-badge b-po">&#128196; PO</span><span class="la-file">NTU_PO_final.pdf</span><span class="la-time">2 days ago</span></div></td>
+          <td class="muted">Jul 30, 26</td>
+        </tr>
+
+        <tr>
+          <td><input type="checkbox" style="width:13px;height:13px"></td>
+          <td><span class="deal-id">SHT-004</span></td>
+          <td><span class="customer">Flexgrid</span></td>
+          <td><span class="badge b-delivered">Delivered</span></td>
+          <td><span class="badge b-b2b">B2B</span></td>
+          <td class="muted">US</td>
+          <td><div class="owner-wrap"><div class="avatar av-b">AL</div><span class="owner-name">alex.liu</span></div></td>
+          <td><span class="rev">$70,368</span></td>
+          <td><div class="qty">&#9634; 10</div></td>
+          <td>
+            <div class="doc-group">
+              <div class="doc-item"><span class="doc-lbl">RENT</span><div class="doc-icon doc-off">&#8212;</div></div>
+              <div class="doc-item"><span class="doc-lbl">QT</span><div class="doc-icon doc-on">&#10003;</div></div>
+              <div class="doc-item"><span class="doc-lbl">PO</span><div class="doc-icon doc-on">&#10003;</div></div>
+              <div class="doc-item"><span class="doc-lbl">INV</span><div class="doc-icon doc-on">&#10003;</div></div>
+            </div>
+          </td>
+          <td><div class="la"><span class="la-badge b-invoice">&#129534; Invoice</span><span class="la-file">Flexgrid_Invoice_2026.html</span><span class="la-time">5 days ago</span></div></td>
+          <td class="muted">May 9, 26</td>
+        </tr>
+
+        <tr>
+          <td><input type="checkbox" style="width:13px;height:13px"></td>
+          <td><span class="deal-id">SHT-005</span></td>
+          <td><span class="customer">J.A.M Global</span></td>
+          <td><span class="badge b-delivered">Delivered</span></td>
+          <td><span class="badge b-b2b">B2B</span></td>
+          <td class="muted">US</td>
+          <td><div class="owner-wrap"><div class="avatar av-b">AL</div><span class="owner-name">alex.liu</span></div></td>
+          <td><span class="rev">$15,394</span></td>
+          <td><div class="qty">&#9634; 2</div></td>
+          <td>
+            <div class="doc-group">
+              <div class="doc-item"><span class="doc-lbl">RENT</span><div class="doc-icon doc-off">&#8212;</div></div>
+              <div class="doc-item"><span class="doc-lbl">QT</span><div class="doc-icon doc-on">&#10003;</div></div>
+              <div class="doc-item"><span class="doc-lbl">PO</span><div class="doc-icon doc-on">&#10003;</div></div>
+              <div class="doc-item"><span class="doc-lbl">INV</span><div class="doc-icon doc-on">&#10003;</div></div>
+            </div>
+          </td>
+          <td><div class="la"><span class="la-badge b-invoice">&#129534; Invoice</span><span class="la-file">JAM_Invoice_final.pdf</span><span class="la-time">1 week ago</span></div></td>
+          <td class="muted">May 3, 26</td>
+        </tr>
+
+        <tr>
+          <td><input type="checkbox" style="width:13px;height:13px"></td>
+          <td><span class="deal-id">SHT-006</span></td>
+          <td><span class="customer">I/ONX</span></td>
+          <td><span class="badge b-delivered">Delivered</span></td>
+          <td><span class="badge b-b2b">B2B</span></td>
+          <td class="muted">US</td>
+          <td><div class="owner-wrap"><div class="avatar av-c">TG</div><span class="owner-name">tom.g</span></div></td>
+          <td><span class="rev">$511,680</span></td>
+          <td><div class="qty">&#9634; 64</div></td>
+          <td>
+            <div class="doc-group">
+              <div class="doc-item"><span class="doc-lbl">RENT</span><div class="doc-icon doc-off">&#8212;</div></div>
+              <div class="doc-item"><span class="doc-lbl">QT</span><div class="doc-icon doc-off">&#8212;</div></div>
+              <div class="doc-item"><span class="doc-lbl">PO</span><div class="doc-icon doc-on">&#10003;</div></div>
+              <div class="doc-item"><span class="doc-lbl">INV</span><div class="doc-icon doc-off">&#8212;</div></div>
+            </div>
+          </td>
+          <td><div class="la"><span class="la-badge b-po">&#128196; PO</span><span class="la-file">IONX_PO_signed.pdf</span><span class="la-time">2 weeks ago</span></div></td>
+          <td class="muted">May 22, 26</td>
+        </tr>
+
+        <tr>
+          <td><input type="checkbox" style="width:13px;height:13px"></td>
+          <td><span class="deal-id">SHT-007</span></td>
+          <td><span class="customer">US Internal</span></td>
+          <td><span class="badge b-delivered">Delivered</span></td>
+          <td><span class="badge b-internal">Internal</span></td>
+          <td class="muted">US</td>
+          <td><div class="owner-wrap"><div class="avatar av-b">AL</div><span class="owner-name">alex.liu</span></div></td>
+          <td class="muted">&#8212;</td>
+          <td><div class="qty">&#9634; 32 &nbsp;&#128438; 4</div></td>
+          <td>
+            <div class="doc-group">
+              <div class="doc-item" title="0. Rental — has files"><span class="doc-lbl">RENT</span><div class="doc-icon doc-on">&#10003;</div></div>
+              <div class="doc-item"><span class="doc-lbl">QT</span><div class="doc-icon doc-off">&#8212;</div></div>
+              <div class="doc-item"><span class="doc-lbl">PO</span><div class="doc-icon doc-off">&#8212;</div></div>
+              <div class="doc-item"><span class="doc-lbl">INV</span><div class="doc-icon doc-off">&#8212;</div></div>
+            </div>
+          </td>
+          <td><div class="la"><span class="la-badge b-rental">&#128209; Rental</span><span class="la-file">Internal_Rental_Agreement.pdf</span><span class="la-time">3 weeks ago</span></div></td>
+          <td class="muted">May 22, 26</td>
+        </tr>
+
+        <tr>
+          <td><input type="checkbox" style="width:13px;height:13px"></td>
+          <td><span class="deal-id">SHT-008</span></td>
+          <td><span class="customer">US Internal</span></td>
+          <td><span class="badge b-delivered">Delivered</span></td>
+          <td><span class="badge b-internal">Internal</span></td>
+          <td class="muted">US</td>
+          <td><div class="owner-wrap"><div class="avatar av-b">AL</div><span class="owner-name">alex.liu</span></div></td>
+          <td class="muted">&#8212;</td>
+          <td><div class="qty">&#9634; 24</div></td>
+          <td>
+            <div class="doc-group">
+              <div class="doc-item"><span class="doc-lbl">RENT</span><div class="doc-icon doc-off">&#8212;</div></div>
+              <div class="doc-item"><span class="doc-lbl">QT</span><div class="doc-icon doc-off">&#8212;</div></div>
+              <div class="doc-item"><span class="doc-lbl">PO</span><div class="doc-icon doc-off">&#8212;</div></div>
+              <div class="doc-item"><span class="doc-lbl">INV</span><div class="doc-icon doc-off">&#8212;</div></div>
+            </div>
+          </td>
+          <td><span style="font-size:12px;color:#aaa">No activity yet</span></td>
+          <td class="muted">Jun 15, 26</td>
+        </tr>
+
+        <tr>
+          <td><input type="checkbox" style="width:13px;height:13px"></td>
+          <td><span class="deal-id">SHT-009</span></td>
+          <td><span class="customer">SG Demo Keppel</span></td>
+          <td><span class="badge b-delivered">Delivered</span></td>
+          <td><span class="badge b-internal">Internal</span></td>
+          <td class="muted">APAC</td>
+          <td><div class="owner-wrap"><div class="avatar av-g">AC</div><span class="owner-name">addison</span></div></td>
+          <td class="muted">&#8212;</td>
+          <td><div class="qty">&#9634; 8 &nbsp;&#128438; 1</div></td>
+          <td>
+            <div class="doc-group">
+              <div class="doc-item"><span class="doc-lbl">RENT</span><div class="doc-icon doc-on">&#10003;</div></div>
+              <div class="doc-item"><span class="doc-lbl">QT</span><div class="doc-icon doc-off">&#8212;</div></div>
+              <div class="doc-item"><span class="doc-lbl">PO</span><div class="doc-icon doc-off">&#8212;</div></div>
+              <div class="doc-item"><span class="doc-lbl">INV</span><div class="doc-icon doc-off">&#8212;</div></div>
+            </div>
+          </td>
+          <td><div class="la"><span class="la-badge b-rental">&#128209; Rental</span><span class="la-file">Keppel_Demo_Contract.pdf</span><span class="la-time">1 week ago</span></div></td>
+          <td class="muted">Jun 15, 26</td>
+        </tr>
+
+        <tr>
+          <td><input type="checkbox" style="width:13px;height:13px"></td>
+          <td><span class="deal-id">SHT-010</span></td>
+          <td><span class="customer">US Internal</span></td>
+          <td><span class="badge b-delivered">Delivered</span></td>
+          <td><span class="badge b-internal">Internal</span></td>
+          <td class="muted">US</td>
+          <td><div class="owner-wrap"><div class="avatar av-b">AL</div><span class="owner-name">alex.liu</span></div></td>
+          <td class="muted">&#8212;</td>
+          <td><div class="qty">&#9634; 96 &nbsp;&#128438; 12</div></td>
+          <td>
+            <div class="doc-group">
+              <div class="doc-item"><span class="doc-lbl">RENT</span><div class="doc-icon doc-off">&#8212;</div></div>
+              <div class="doc-item"><span class="doc-lbl">QT</span><div class="doc-icon doc-off">&#8212;</div></div>
+              <div class="doc-item"><span class="doc-lbl">PO</span><div class="doc-icon doc-off">&#8212;</div></div>
+              <div class="doc-item"><span class="doc-lbl">INV</span><div class="doc-icon doc-off">&#8212;</div></div>
+            </div>
+          </td>
+          <td><span style="font-size:12px;color:#aaa">No activity yet</span></td>
+          <td class="muted">Jun 15, 26</td>
+        </tr>
+
+      </tbody>
+    </table>
+    </div>
+  </div>
+</div>
+</body>
+</html>
