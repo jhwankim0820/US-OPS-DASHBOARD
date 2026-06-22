@@ -3,12 +3,19 @@
 import { useState } from 'react'
 import { cn } from '@/lib/utils'
 import type { InvoiceDeal } from '@/lib/invoice-template'
+import type { UsDeal } from '@/lib/us-ops'
 import OverviewTab from './OverviewTab'
 import InvoicesTab from './InvoicesTab'
 
 type Tab = 'overview' | 'invoices'
 
-export default function FinancialsClient({ deals }: { deals: InvoiceDeal[] }) {
+export default function FinancialsClient({
+  deals,
+  revenueDeals,
+}: {
+  deals: InvoiceDeal[]
+  revenueDeals: UsDeal[]
+}) {
   const [tab, setTab] = useState<Tab>('overview')
 
   return (
@@ -23,7 +30,7 @@ export default function FinancialsClient({ deals }: { deals: InvoiceDeal[] }) {
         </TabButton>
       </div>
 
-      {tab === 'overview' ? <OverviewTab /> : <InvoicesTab deals={deals} />}
+      {tab === 'overview' ? <OverviewTab deals={revenueDeals} /> : <InvoicesTab deals={deals} />}
     </main>
   )
 }

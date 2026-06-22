@@ -2,6 +2,7 @@ export const dynamic = 'force-dynamic'
 
 import { getDeals } from '@/lib/sheets'
 import type { InvoiceDeal } from '@/lib/invoice-template'
+import { type UsDeal, countryCode } from '@/lib/us-ops'
 import FinancialsClient from '@/components/financials/FinancialsClient'
 
 // getDeals() is wrapped in unstable_cache, which JSON-serializes its result —
@@ -30,5 +31,22 @@ export default async function FinancialsPage() {
     shipDate: toISO(d.billingDate ?? d.etdDate),
   }))
 
-  return <FinancialsClient deals={deals} />
+  const revenueDeals: UsDeal[] = sheetDeals
+    .filter((d) => d.region !== 'Korea')
+    .map((d) => ({
+      id: d.id,
+      customer: d.customer,
+      status: d.status,
+      category: d.category,
+      region: d.region,
+      country: countryCode(d.salesParty, d.region),
+      owner: d.owner,
+      revenue: d.revenue,
+      cards: d.cards,
+      servers: d.servers,
+      etd: toISO(d.etdDate ?? d.billingDate),
+      dealDate: toISO(d.poDate ?? d.createdAt),
+    }))
+
+  return <FinancialsClient deals={deals} revenueDeals={revenueDeals} />
 }
