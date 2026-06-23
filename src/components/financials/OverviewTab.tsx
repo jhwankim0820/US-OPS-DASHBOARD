@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from 'react'
 import { type UsDeal, dealFinance, fmtUsdFull } from '@/lib/us-ops'
+import { PnlBarChart, CostStackedChart, type CostDataset } from './CostPnlCharts'
 
 // ── Curated quarterly financials (from financial statements, not the deals sheet) ──
 const COSTS = [
@@ -15,10 +16,33 @@ const COSTS = [
   { rank: '…', item: 'Others (Rent, R&D, Consumables +2)', q1: 71760, q2: 17239, q3: 31495, q4: 65557, grouped: true },
 ]
 const PL = [
-  { q: 'Q1', opLoss: 3174932 },
-  { q: 'Q2', opLoss: 2026617 },
-  { q: 'Q3', opLoss: 3619463 },
-  { q: 'Q4', opLoss: 4760564 },
+  { q: 'Q1', rev: 9000, opLoss: 3174932 },
+  { q: 'Q2', rev: 0, opLoss: 2026617 },
+  { q: 'Q3', rev: 0, opLoss: 3619463 },
+  { q: 'Q4', rev: 0, opLoss: 4760564 },
+]
+
+// ── Derived chart data (Chart.js) ──
+const PNL_LABELS = PL.map((p) => p.q)
+const PNL_REVENUE = PL.map((p) => p.rev / 1_000_000)
+const PNL_LOSS = PL.map((p) => -(p.opLoss / 1_000_000))
+
+// Stacked cost breakdown: Top 5 rows + "Others" (Travel, Depreciation, grouped rest)
+const COST_COLORS = ['#185FA5', '#0F6E56', '#854F0B', '#993C1D', '#534AB7']
+const QK = ['q1', 'q2', 'q3', 'q4'] as const
+const toK = (v: number) => Math.round(v / 1000)
+const COST_DATASETS: CostDataset[] = [
+  ...COSTS.slice(0, 5).map((c, i) => ({
+    label: c.item,
+    data: QK.map((k) => toK(c[k])),
+    bg: COST_COLORS[i],
+  })),
+  {
+    label: 'Others',
+    data: QK.map((k) => toK(COSTS.slice(5).reduce((s, c) => s + c[k], 0))),
+    bg: '#888780',
+    topmost: true,
+  },
 ]
 
 function costK(v: number) {
@@ -226,23 +250,12 @@ export default function OverviewTab({ deals }: { deals: UsDeal[] }) {
           <Card>
             <CardTitle icon="▥" color="#1d9e75">Quarterly P&amp;L Trend</CardTitle>
             <p className="mb-2.5 text-[10px] text-[#888]">Revenue vs Operating Loss by quarter</p>
-            <div className="flex h-[80px] items-end gap-1.5 px-1">
-              {PL.map((p) => {
-                const maxLoss = Math.max(...PL.map((x) => x.opLoss))
-                return (
-                  <div key={p.q} className="flex flex-1 flex-col items-center gap-1">
-                    <div className="flex h-[70px] w-full items-end justify-center gap-0.5">
-                      <div className="w-3 rounded-t bg-[#1d9e75]" style={{ height: '2px' }} />
-                      <div className="w-3 rounded-t bg-[#e24b4a]" style={{ height: `${(p.opLoss / maxLoss) * 70}px` }} title={`−${fmtK(p.opLoss)}`} />
-                    </div>
-                    <div className="text-[9px] text-[#888]">{p.q}</div>
-                  </div>
-                )
-              })}
+            <div className="mb-2.5 flex flex-wrap gap-3.5 text-[11px] text-[#5f5e5a]">
+              <Legend color="#378ADD" label="Revenue" />
+              <Legend color="#E24B4A" label="Operating Loss" />
             </div>
-            <div className="mt-2 flex gap-3 text-[10px] text-[#888]">
-              <Legend color="#1d9e75" label="Revenue" />
-              <Legend color="#e24b4a" label="Operating Loss" />
+            <div className="relative h-[200px]">
+              <PnlBarChart labels={PNL_LABELS} revenue={PNL_REVENUE} loss={PNL_LOSS} />
             </div>
           </Card>
 
@@ -259,7 +272,23 @@ export default function OverviewTab({ deals }: { deals: UsDeal[] }) {
           </Card>
         </div>
 
-        {/* Cost breakdown */}
+        {/* Cost breakdown stacked chart */}
+        <div className="mb-3.5">
+          <Card>
+            <CardTitle icon="▦" color="#185fa5">Cost Breakdown — Stacked (Top 5 + Others)</CardTitle>
+            <p className="mb-2.5 text-[10px] text-[#888]">Q1 = FY24 · Q2 = H1&apos;25 · Q3 = 9M&apos;25 · Q4 = FY25</p>
+            <div className="mb-3 flex flex-wrap gap-3.5 text-[11px] text-[#5f5e5a]">
+              {COST_DATASETS.map((d) => (
+                <Legend key={d.label} color={d.bg} label={d.label} />
+              ))}
+            </div>
+            <div className="relative h-[280px]">
+              <CostStackedChart labels={PNL_LABELS} datasets={COST_DATASETS} />
+            </div>
+          </Card>
+        </div>
+
+        {/* Cost breakdown table */}
         <SectionTitle icon="▦">Cost Breakdown — All Quarters</SectionTitle>
         <p className="mb-2 text-[10px] text-[#888]">Q1 = FY24 · Q2 = H1&apos;25 · Q3 = 9M&apos;25 · Q4 = FY25</p>
         <div className="mb-3.5 overflow-hidden rounded-[10px] border border-[#e5e5e0] bg-white">
