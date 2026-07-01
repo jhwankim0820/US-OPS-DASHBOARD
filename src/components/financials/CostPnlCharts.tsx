@@ -15,32 +15,35 @@ ChartJS.register(CategoryScale, LinearScale, BarElement, Tooltip)
 const axisTicks = { color: '#888780', font: { size: 12 }, autoSkip: false } as const
 const gridColor = 'rgba(136,135,128,0.15)'
 
-// ── Chart 1: Quarterly P&L Trend — grouped, wider bars ──
+// ── Chart 1: Quarterly P&L Trend — Revenue vs stacked Operating Expense ──
 const pnlOptions: ChartOptions<'bar'> = {
   responsive: true,
   maintainAspectRatio: false,
+  // index mode so a single hover lists Revenue + every opex category for that quarter
+  interaction: { mode: 'index', intersect: false },
   plugins: {
     legend: { display: false }, // custom HTML legend instead
     tooltip: {
       callbacks: {
-        label: (ctx) => {
-          const v = ctx.parsed.y ?? 0
-          return ` ${ctx.dataset.label}: ${v < 0 ? '−' : ''}$${Math.abs(v).toFixed(2)}M`
+        label: (ctx) => ` ${ctx.dataset.label}: $${(ctx.parsed.y ?? 0).toFixed(2)}M`,
+        // total operating expense across the stacked opex datasets
+        footer: (items) => {
+          const opex = items.filter((i) => i.dataset.stack === 'opex')
+          if (!opex.length) return ''
+          const total = opex.reduce((s, i) => s + (i.parsed.y ?? 0), 0)
+          return `Operating Expense: $${total.toFixed(2)}M`
         },
       },
     },
   },
   scales: {
-    x: { grid: { display: false }, ticks: axisTicks },
+    x: { stacked: true, grid: { display: false }, ticks: axisTicks },
     y: {
+      stacked: true,
       grid: { color: gridColor },
       ticks: {
         ...axisTicks,
-        // sign before $ symbol for negatives
-        callback: (value) => {
-          const v = Number(value)
-          return `${v < 0 ? '−' : ''}$${Math.abs(v).toFixed(1)}M`
-        },
+        callback: (value) => `$${Number(value).toFixed(1)}M`,
       },
     },
   },
@@ -49,11 +52,11 @@ const pnlOptions: ChartOptions<'bar'> = {
 export function PnlBarChart({
   labels,
   revenue,
-  loss,
+  opex,
 }: {
   labels: string[]
   revenue: number[]
-  loss: number[]
+  opex: CostDataset[]
 }) {
   return (
     <Bar
@@ -66,18 +69,21 @@ export function PnlBarChart({
             data: revenue,
             backgroundColor: '#378ADD',
             borderRadius: 4,
-            // wider bars — key change from the original chart
+            stack: 'revenue', // its own group, beside the opex stack
             barPercentage: 0.72,
             categoryPercentage: 0.78,
           },
-          {
-            label: 'Operating Loss',
-            data: loss,
-            backgroundColor: '#E24B4A',
-            borderRadius: 4,
+          // Operating Expense — same Top 5 + Others breakdown as the stacked chart below
+          ...opex.map((d) => ({
+            label: d.label,
+            data: d.data,
+            backgroundColor: d.bg,
+            stack: 'opex', // all categories share one stacked bar
+            borderRadius: d.topmost ? 4 : 0,
+            borderSkipped: d.topmost ? ('bottom' as const) : (false as const),
             barPercentage: 0.72,
             categoryPercentage: 0.78,
-          },
+          })),
         ],
       }}
     />

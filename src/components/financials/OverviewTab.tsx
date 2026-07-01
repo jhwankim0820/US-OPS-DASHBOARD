@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from 'react'
 import { type UsDeal, dealFinance, fmtUsdFull } from '@/lib/us-ops'
-import { PnlBarChart, CostStackedChart, type CostDataset } from './CostPnlCharts'
+import { PnlBarChart, type CostDataset } from './CostPnlCharts'
 
 // ── Curated quarterly financials (from financial statements, not the deals sheet) ──
 const COSTS = [
@@ -25,7 +25,6 @@ const PL = [
 // ── Derived chart data (Chart.js) ──
 const PNL_LABELS = PL.map((p) => p.q)
 const PNL_REVENUE = PL.map((p) => p.rev / 1_000_000)
-const PNL_LOSS = PL.map((p) => -(p.opLoss / 1_000_000))
 
 // Stacked cost breakdown: Top 5 rows + "Others" (Travel, Depreciation, grouped rest)
 const COST_COLORS = ['#185FA5', '#0F6E56', '#854F0B', '#993C1D', '#534AB7']
@@ -44,6 +43,12 @@ const COST_DATASETS: CostDataset[] = [
     topmost: true,
   },
 ]
+
+// Same Top 5 + Others breakdown, in $M, used as the Operating Expense stack in the P&L trend
+const PNL_OPEX_DATASETS: CostDataset[] = COST_DATASETS.map((d) => ({
+  ...d,
+  data: d.data.map((k) => k / 1000),
+}))
 
 function costK(v: number) {
   return `$${Math.round(v / 1000).toLocaleString('en-US')}K`
@@ -249,13 +254,15 @@ export default function OverviewTab({ deals }: { deals: UsDeal[] }) {
           {/* P&L trend */}
           <Card>
             <CardTitle icon="▥" color="#1d9e75">Quarterly P&amp;L Trend</CardTitle>
-            <p className="mb-2.5 text-[10px] text-[#888]">Revenue vs Operating Loss by quarter</p>
+            <p className="mb-2.5 text-[10px] text-[#888]">Revenue vs Operating Expense (total cost) by quarter</p>
             <div className="mb-2.5 flex flex-wrap gap-3.5 text-[11px] text-[#5f5e5a]">
               <Legend color="#378ADD" label="Revenue" />
-              <Legend color="#E24B4A" label="Operating Loss" />
+              {PNL_OPEX_DATASETS.map((d) => (
+                <Legend key={d.label} color={d.bg} label={d.label} />
+              ))}
             </div>
             <div className="relative h-[200px]">
-              <PnlBarChart labels={PNL_LABELS} revenue={PNL_REVENUE} loss={PNL_LOSS} />
+              <PnlBarChart labels={PNL_LABELS} revenue={PNL_REVENUE} opex={PNL_OPEX_DATASETS} />
             </div>
           </Card>
 
@@ -268,22 +275,6 @@ export default function OverviewTab({ deals }: { deals: UsDeal[] }) {
               <Mini label="Total Liabilities" value="$100K" sub="Lease liabilities" subCls="text-[#888]" />
               <Mini label="Total Equity" value="$1.02M" sub="Retained deficit" subCls="text-[#888]" />
               <Mini label="Current Ratio" value="1,214%" valueCls="text-[#1d9e75]" sub="Solvency solid" subCls="text-[#0f6e56]" />
-            </div>
-          </Card>
-        </div>
-
-        {/* Cost breakdown stacked chart */}
-        <div className="mb-3.5">
-          <Card>
-            <CardTitle icon="▦" color="#185fa5">Cost Breakdown — Stacked (Top 5 + Others)</CardTitle>
-            <p className="mb-2.5 text-[10px] text-[#888]">Q1 = FY24 · Q2 = H1&apos;25 · Q3 = 9M&apos;25 · Q4 = FY25</p>
-            <div className="mb-3 flex flex-wrap gap-3.5 text-[11px] text-[#5f5e5a]">
-              {COST_DATASETS.map((d) => (
-                <Legend key={d.label} color={d.bg} label={d.label} />
-              ))}
-            </div>
-            <div className="relative h-[280px]">
-              <CostStackedChart labels={PNL_LABELS} datasets={COST_DATASETS} />
             </div>
           </Card>
         </div>

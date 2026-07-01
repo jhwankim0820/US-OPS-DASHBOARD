@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cost & P&L — Redesign Reference</title>
+
+  <!--
+  ============================================================
+  CLAUDE CODE REFERENCE — Cost & P&L Section Redesign
+  ============================================================
+  TARGET PAGE : /financials  (Cost & P&L section)
+  SCOPE       : Replace existing "▥ Quarterly P&L Trend" block
+                with the two-chart layout below.
+
+  CHANGES FROM CURRENT:
+  1. P&L Trend bar chart  → wider bars (barPercentage 0.72,
+     categoryPercentage 0.78).  Keep Revenue + Operating Loss
+     side-by-side (grouped), not stacked.
+  2. NEW: Stacked "Cost Breakdown" bar chart below the P&L chart.
+     Datasets: Top 5 cost items (Salaries, Employee Benefits,
+     Taxes & Dues, Retirement Benefits, Professional Fees)
+     + "Others" as the sixth stacked segment.
+  3. Summary metric cards above the charts (Operating Loss Q4,
+     Total Cost Q4).
+  4. Custom HTML legend (no Chart.js default legend).
+
+  DATA SOURCE : Cost Breakdown table already on the page.
+  CHART LIB   : Chart.js 4.4.1 (already used in the project).
+  COLORS      : Inherit from existing design tokens where possible.
+                Hardcoded hex values below are fallbacks for Chart.js
+                canvas (Canvas API cannot read CSS variables).
+  ============================================================
+  -->
+
+  <style>
+    /* ── Reset / base ─────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif;
+      background: #f5f5f3;
+      color: #1a1a18;
+      padding: 2rem;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    /* ── Reference banner ─────────────────────────────── */
+    .ref-banner {
+      background: #faeeda;
+      border: 1px solid #f0c060;
+      border-radius: 8px;
+      padding: 10px 14px;
+      margin-bottom: 24px;
+      font-size: 12px;
+      color: #633806;
+      font-weight: 500;
+    }
+
+    /* ── Section wrapper ──────────────────────────────── */
+    .pnl-section {
+      max-width: 900px;
+    }
+
+    .section-eyebrow {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      color: #888780;
+      margin-bottom: 4px;
+    }
+
+    .section-heading {
+      font-size: 18px;
+      font-weight: 500;
+      color: #1a1a18;
+      margin-bottom: 20px;
+    }
+
+    /* ── Metric cards row ─────────────────────────────── */
+    .metric-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .metric-card {
+      background: #fff;
+      border: 0.5px solid rgba(0,0,0,0.12);
+      border-radius: 10px;
+      padding: 14px 16px;
+    }
+
+    .metric-card .label {
+      font-size: 12px;
+      color: #888780;
+      margin-bottom: 4px;
+    }
+
+    .metric-card .value {
+      font-size: 22px;
+      font-weight: 500;
+      line-height: 1.2;
+    }
+
+    .metric-card .sub {
+      font-size: 12px;
+      color: #888780;
+      margin-top: 3px;
+    }
+
+    .value.loss  { color: #E24B4A; }
+    .value.total { color: #1a1a18; }
+
+    /* ── Chart cards ──────────────────────────────────── */
+    .chart-card {
+      background: #fff;
+      border: 0.5px solid rgba(0,0,0,0.12);
+      border-radius: 12px;
+      padding: 18px 20px;
+      margin-bottom: 16px;
+    }
+
+    .chart-card .chart-title {
+      font-size: 13px;
+      font-weight: 500;
+      color: #1a1a18;
+      margin-bottom: 2px;
+    }
+
+    .chart-card .chart-sub {
+      font-size: 12px;
+      color: #888780;
+      margin-bottom: 14px;
+    }
+
+    /* ── Custom legend ────────────────────────────────── */
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      margin-bottom: 12px;
+      font-size: 12px;
+      color: #5f5e5a;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .legend-swatch {
+      width: 10px;
+      height: 10px;
+      border-radius: 2px;
+      flex-shrink: 0;
+    }
+
+    /* ── Canvas wrappers ──────────────────────────────── */
+    .canvas-wrap {
+      position: relative;
+      width: 100%;
+    }
+
+    .canvas-wrap.pnl   { height: 200px; }
+    .canvas-wrap.cost  { height: 280px; }
+
+    /* ── Annotation note ──────────────────────────────── */
+    .impl-note {
+      background: #e6f1fb;
+      border-left: 3px solid #378ADD;
+      border-radius: 0 6px 6px 0;
+      padding: 10px 14px;
+      font-size: 12px;
+      color: #0c447c;
+      margin-top: 8px;
+      line-height: 1.6;
+    }
+    .impl-note strong { font-weight: 600; }
+  </style>
+</head>
+<body>
+
+  <div class="ref-banner">
+    ⚙ Claude Code reference — replace the existing "Quarterly P&L Trend" block in <code>/financials</code> with this two-chart layout.
+  </div>
+
+  <!-- ── Section ─────────────────────────────────────── -->
+  <section class="pnl-section" aria-labelledby="pnl-heading">
+
+    <p class="section-eyebrow">Cost &amp; P&amp;L</p>
+    <h2 class="section-heading" id="pnl-heading">Quarterly P&L Trend &amp; Cost Breakdown</h2>
+
+    <!-- Metric cards -->
+    <div class="metric-row">
+      <div class="metric-card">
+        <p class="label">Operating Loss (Q4)</p>
+        <p class="value loss">−$4.76M</p>
+        <p class="sub">vs Q3 −$3.62M · ↑31%</p>
+      </div>
+      <div class="metric-card">
+        <p class="label">Total Cost (Q4)</p>
+        <p class="value total">$4.31M</p>
+        <p class="sub">Salaries largest · $3.32M</p>
+      </div>
+      <div class="metric-card">
+        <p class="label">Net Loss (Q4)</p>
+        <p class="value loss">−$4.74M</p>
+        <p class="sub">Cumulative −$13.3M</p>
+      </div>
+      <div class="metric-card">
+        <p class="label">Cash Balance</p>
+        <p class="value total">$973K</p>
+        <p class="sub">↓ from $1.11M in Q3</p>
+      </div>
+    </div>
+
+    <!-- ── Chart 1 : P&L Trend ─────────────────────── -->
+    <div class="chart-card">
+      <p class="chart-title">Revenue vs Operating Loss by quarter</p>
+      <p class="chart-sub">Grouped bars — wider bar width applied</p>
+
+      <div class="legend">
+        <span class="legend-item">
+          <span class="legend-swatch" style="background:#378ADD;"></span>Revenue
+        </span>
+        <span class="legend-item">
+          <span class="legend-swatch" style="background:#E24B4A;"></span>Operating Loss
+        </span>
+      </div>
+
+      <div class="canvas-wrap pnl">
+        <!--
+          IMPLEMENTATION NOTE:
+          barPercentage: 0.72   (was ~0.5 — makes individual bar wider)
+          categoryPercentage: 0.78  (was ~0.6 — tightens space between groups)
+        -->
+        <canvas id="pnlChart"
+          role="img"
+          aria-label="Grouped bar chart of Revenue vs Operating Loss Q1–Q4. Q4 operating loss is −$4.76M, revenue $0.60M.">
+          Q1: Revenue $0.12M, Loss −$2.40M.
+          Q2: Revenue $0.10M, Loss −$2.15M.
+          Q3: Revenue $0.07M, Loss −$3.62M.
+          Q4: Revenue $0.60M, Loss −$4.76M.
+        </canvas>
+      </div>
+
+      <p class="impl-note">
+        <strong>Key config:</strong>
+        Set <code>barPercentage: 0.72</code> and <code>categoryPercentage: 0.78</code>
+        on both datasets to widen the bars. Negative values format as
+        <code>−$NM</code> (sign before symbol) via the y-axis callback.
+      </p>
+    </div>
+
+    <!-- ── Chart 2 : Stacked Cost Breakdown ────────── -->
+    <div class="chart-card">
+      <p class="chart-title">Cost breakdown — stacked Top 5 + Others</p>
+      <p class="chart-sub">Q1 = FY24 · Q2 = H1'25 · Q3 = 9M'25 · Q4 = FY25</p>
+
+      <div class="legend">
+        <span class="legend-item"><span class="legend-swatch" style="background:#185FA5;"></span>Salaries</span>
+        <span class="legend-item"><span class="legend-swatch" style="background:#0F6E56;"></span>Employee Benefits</span>
+        <span class="legend-item"><span class="legend-swatch" style="background:#854F0B;"></span>Taxes &amp; Dues</span>
+        <span class="legend-item"><span class="legend-swatch" style="background:#993C1D;"></span>Retirement Benefits</span>
+        <span class="legend-item"><span class="legend-swatch" style="background:#534AB7;"></span>Professional Fees</span>
+        <span class="legend-item"><span class="legend-swatch" style="background:#888780;"></span>Others</span>
+      </div>
+
+      <div class="canvas-wrap cost">
+        <!--
+          IMPLEMENTATION NOTE:
+          All datasets share stack: 'cost' to enable stacking.
+          Use borderRadius only on the topmost dataset (Others)
+          to round the top of each stacked bar.
+          barPercentage / categoryPercentage same as P&L chart above.
+        -->
+        <canvas id="costChart"
+          role="img"
+          aria-label="Stacked bar chart showing Top 5 cost items plus Others by quarter. Q4 total approximately $4.3M, with Salaries at $3.32M being the largest.">
+          Q1: Salaries $2,309K, Benefits $232K, Taxes $177K, Retirement $107K, Prof Fees $120K, Others $240K.
+          Q2: Salaries $1,529K, Benefits $144K, Taxes $127K, Retirement $103K, Prof Fees $48K, Others $89K.
+          Q3: Salaries $2,613K, Benefits $222K, Taxes $183K, Retirement $121K, Prof Fees $343K, Others $137K.
+          Q4: Salaries $3,323K, Benefits $326K, Taxes $213K, Retirement $133K, Prof Fees $96K, Others $221K.
+        </canvas>
+      </div>
+
+      <p class="impl-note">
+        <strong>Key config:</strong>
+        All datasets use <code>stack: 'cost'</code>.
+        "Others" aggregates: Travel &amp; Transportation, Depreciation,
+        Rent, R&amp;D, Consumables (rows 6–… in the existing table).
+        Only the <em>topmost</em> dataset (Others) gets <code>borderRadius: 4</code>
+        and <code>borderSkipped: 'bottom'</code> so the cap rounds correctly.
+      </p>
+    </div>
+
+  </section>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+  <script>
+    /* ── Shared axis style helpers ──────────────────── */
+    const axisStyle = {
+      ticks: { color: '#888780', font: { size: 12 }, autoSkip: false },
+      grid:  { color: 'rgba(136,135,128,0.15)' }
+    };
+
+    const noGrid = { ...axisStyle, grid: { display: false } };
+
+    /* ── Chart 1: P&L Trend ─────────────────────────── */
+    new Chart(document.getElementById('pnlChart'), {
+      type: 'bar',
+      data: {
+        labels: ['Q1', 'Q2', 'Q3', 'Q4'],
+        datasets: [
+          {
+            label: 'Revenue',
+            data: [0.12, 0.10, 0.07, 0.60],
+            backgroundColor: '#378ADD',
+            borderRadius: 4,
+            /*
+             * WIDER BAR CONFIG — key change from original
+             * barPercentage: how wide each bar is within its slot
+             * categoryPercentage: how wide the group slot is within each category
+             */
+            barPercentage: 0.72,
+            categoryPercentage: 0.78
+          },
+          {
+            label: 'Operating Loss',
+            data: [-2.40, -2.15, -3.62, -4.76],
+            backgroundColor: '#E24B4A',
+            borderRadius: 4,
+            barPercentage: 0.72,
+            categoryPercentage: 0.78
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false }, tooltip: {
+          callbacks: {
+            label: ctx => {
+              const v = ctx.parsed.y;
+              return ' ' + ctx.dataset.label + ': ' + (v < 0 ? '−' : '') + '$' + Math.abs(v).toFixed(2) + 'M';
+            }
+          }
+        }},
+        scales: {
+          x: { ...noGrid },
+          y: {
+            ...axisStyle,
+            ticks: {
+              ...axisStyle.ticks,
+              /* Sign before $ symbol for negatives */
+              callback: v => (v < 0 ? '−' : '') + '$' + Math.abs(v).toFixed(1) + 'M'
+            }
+          }
+        }
+      }
+    });
+
+    /* ── Chart 2: Stacked Cost Breakdown ────────────── */
+    /*
+     * DATA (in $K) from existing Cost Breakdown table on the page.
+     * "Others" = sum of Travel, Depreciation, Rent, R&D, Consumables per quarter.
+     *   Q1: 98 + 70 + 72 = 240K (approx)
+     *   Q2: 24 + 35 + 17 =  76K (approx, using mid-year partial)
+     *   Q3: 53 + 53 + 31 = 137K
+     *   Q4: 83 + 72 + 66 = 221K
+     */
+    const costDatasets = [
+      { label: 'Salaries',            data: [2309, 1529, 2613, 3323], bg: '#185FA5' },
+      { label: 'Employee Benefits',   data: [ 232,  144,  222,  326], bg: '#0F6E56' },
+      { label: 'Taxes & Dues',        data: [ 177,  127,  183,  213], bg: '#854F0B' },
+      { label: 'Retirement Benefits', data: [ 107,  103,  121,  133], bg: '#993C1D' },
+      { label: 'Professional Fees',   data: [ 120,   48,  343,   96], bg: '#534AB7' },
+      /* Others is always topmost — gets rounded top corners */
+      { label: 'Others',              data: [ 240,   76,  137,  221], bg: '#888780', topmost: true }
+    ];
+
+    new Chart(document.getElementById('costChart'), {
+      type: 'bar',
+      data: {
+        labels: ['Q1', 'Q2', 'Q3', 'Q4'],
+        datasets: costDatasets.map(d => ({
+          label: d.label,
+          data: d.data,
+          backgroundColor: d.bg,
+          stack: 'cost',
+          /*
+           * Round only the top of the full stacked bar:
+           * topmost segment → round top corners, skip bottom
+           * other segments  → no rounding (flat joins)
+           */
+          borderRadius:  d.topmost ? 4 : 0,
+          borderSkipped: d.topmost ? 'bottom' : false,
+          barPercentage: 0.78,
+          categoryPercentage: 0.82
+        }))
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: ctx => {
+                const v = ctx.parsed.y;
+                return ' ' + ctx.dataset.label + ': $' + v.toLocaleString() + 'K';
+              }
+            }
+          }
+        },
+        scales: {
+          x: { ...noGrid, stacked: true },
+          y: {
+            ...axisStyle,
+            stacked: true,
+            ticks: {
+              ...axisStyle.ticks,
+              callback: v => '$' + (v / 1000).toFixed(1) + 'M'
+            }
+          }
+        }
+      }
+    });
+  </script>
+</body>
+</html>
