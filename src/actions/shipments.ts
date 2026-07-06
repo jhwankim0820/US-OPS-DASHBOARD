@@ -1,6 +1,7 @@
 'use server'
 
 import { prisma } from '@/lib/prisma'
+import { logAudit } from '@/lib/audit'
 import { revalidatePath } from 'next/cache'
 
 function generateMockTrackingNo(): string {
@@ -38,9 +39,25 @@ export async function createShipment(
         destination: input.destination,
       },
     })
+    await logAudit(tx, {
+      action: 'CREATE_SHIPMENT',
+      dealId: input.dmdId,
+      newValue: trackingNo,
+      source: 'ui',
+    })
+
+    const deal = await tx.deal.findUnique({ where: { dmdId: input.dmdId } })
     await tx.deal.update({
       where: { dmdId: input.dmdId },
       data: { status: 'SUBMITTED' },
+    })
+    await logAudit(tx, {
+      action: 'UPDATE_DEAL_STATUS',
+      dealId: input.dmdId,
+      field: 'status',
+      oldValue: deal?.status ?? null,
+      newValue: 'SUBMITTED',
+      source: 'ui',
     })
   })
 
@@ -69,10 +86,28 @@ export async function syncShipmentStatus(shipmentId: string): Promise<{ status: 
       where: { id: shipmentId },
       data: { status: nextStatus },
     })
+    await logAudit(tx, {
+      action: 'UPDATE_SHIPMENT_STATUS',
+      dealId: shipment.dmdId,
+      field: 'status',
+      oldValue: shipment.status,
+      newValue: nextStatus,
+      source: 'fedex-mock',
+    })
+
     if (nextStatus === 'DELIVERED' && shipment.dmdId) {
+      const deal = await tx.deal.findUnique({ where: { dmdId: shipment.dmdId } })
       await tx.deal.update({
         where: { dmdId: shipment.dmdId },
         data: { status: 'Delivered' },
+      })
+      await logAudit(tx, {
+        action: 'UPDATE_DEAL_STATUS',
+        dealId: shipment.dmdId,
+        field: 'status',
+        oldValue: deal?.status ?? null,
+        newValue: 'Delivered',
+        source: 'fedex-mock',
       })
     }
   })

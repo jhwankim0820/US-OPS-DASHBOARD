@@ -37,3 +37,18 @@ model Shipment {
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 }
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  actor     String   // who made the change; defaults to 'system' until auth exists
+  action    String   // e.g. CREATE_SHIPMENT | UPDATE_DEAL_STATUS | CREATE_INVOICE
+  dealId    String?  // deal id — plain string (not FK) so history survives deletes
+  field     String?  // changed field, e.g. 'status'
+  oldValue  String?
+  newValue  String?
+  source    String   // origin of the change, e.g. 'ui' | 'fedex-mock' | 'sheets'
+  timestamp DateTime @default(now())
+
+  @@index([timestamp])
+  @@index([dealId])
+}

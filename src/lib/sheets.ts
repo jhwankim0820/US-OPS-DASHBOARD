@@ -1,5 +1,6 @@
 import { google } from 'googleapis'
 import { unstable_cache } from 'next/cache'
+import { logAuditSafe } from '@/lib/audit'
 
 const SPREADSHEET_ID = process.env.GOOGLE_SPREADSHEET_ID!.replace(/^﻿/, '').trim()
 const RANGE = 'A2:R200'
@@ -225,5 +226,13 @@ export async function addShipment(s: SheetShipment): Promise<void> {
     requestBody: {
       values: [[s.trackingNumber, s.direction, s.company, s.hwType, s.qty, s.service, s.shipDate, s.route, s.notes]],
     },
+  })
+
+  // Best-effort audit log (Sheets has no transaction — never fail the write on this).
+  await logAuditSafe({
+    action: 'CREATE_SHIPMENT',
+    source: 'sheets',
+    dealId: null,
+    newValue: `${s.direction} · ${s.company} · ${s.trackingNumber}`,
   })
 }
