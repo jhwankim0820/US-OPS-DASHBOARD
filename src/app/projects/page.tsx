@@ -27,6 +27,10 @@ export default async function ProjectsPage() {
     npuModel: d.npuModel,
     shipDate: toISO(d.billingDate ?? d.etdDate),
     date: toISO(d.etdDate ?? d.poDate ?? d.createdAt),
+    quoteAt: d.quoteAt,
+    poAt: d.poAt,
+    invoiceAt: d.invoiceAt,
+    shipAt: d.shipAt,
   }))
 
   return <ProjectManagementClient deals={deals} />

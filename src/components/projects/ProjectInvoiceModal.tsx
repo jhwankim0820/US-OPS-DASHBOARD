@@ -3,6 +3,7 @@
 import { useMemo, useState } from 'react'
 import { toast } from 'sonner'
 import {
+  type DocType,
   type InvoiceDeal,
   type InvoiceForm,
   type LineItem,
@@ -27,16 +28,23 @@ export default function ProjectInvoiceModal({
   deal,
   onClose,
   onSaved,
+  docType = 'invoice',
 }: {
   deal: InvoiceDeal
   onClose: () => void
   onSaved: () => void
+  docType?: DocType
 }) {
   const [form, setForm] = useState<InvoiceForm>(() => buildInitialForm(deal))
   const [items, setItems] = useState<LineItem[]>(() => buildInitialLineItems(deal))
   const [email, setEmail] = useState(() => ({ ...defaultEmail(deal, buildInitialForm(deal)), to: '', cc: '' }))
   const [savingDrive, setSavingDrive] = useState(false)
   const [sendingEmail, setSendingEmail] = useState(false)
+
+  const isQuote = docType === 'quote'
+  const docLabel = isQuote ? 'Quote' : 'Invoice'
+  const saveUrl = isQuote ? '/api/quote/save' : '/api/invoice/save'
+  const saveFolder = isQuote ? '1. Quote' : '3. Invoice'
 
   const total = useMemo(() => lineItemsTotal(items), [items])
 
@@ -50,10 +58,10 @@ export default function ProjectInvoiceModal({
   // Validate the invoice content before any Drive/Gmail write. Returns an error
   // message, or null when the invoice is well-formed.
   function validateInvoice(): string | null {
-    if (!form.invoiceNo.trim()) return 'Invoice # is required'
+    if (!form.invoiceNo.trim()) return `${docLabel} # is required`
     if (items.length === 0) return 'Add at least one line item'
     if (items.some((li) => !li.item.trim())) return 'Every line item needs an item / PN'
-    if (total <= 0) return 'Invoice total must be greater than 0'
+    if (total <= 0) return `${docLabel} total must be greater than 0`
     return null
   }
 
@@ -63,35 +71,35 @@ export default function ProjectInvoiceModal({
       toast.error(err)
       return
     }
-    const html = buildInvoiceHTML(form, items)
+    const html = buildInvoiceHTML(form, items, docType)
     const blob = new Blob([html], { type: 'text/html;charset=utf-8' })
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
-    a.download = invoiceFileName(form, deal.customer).replace(/\.[^./]+$/, '') + '.html'
+    a.download = invoiceFileName(form, deal.customer, docType).replace(/\.[^./]+$/, '') + '.html'
     document.body.appendChild(a)
     a.click()
     a.remove()
     URL.revokeObjectURL(url)
-    toast.success('Invoice downloaded', { description: a.download })
+    toast.success(`${docLabel} downloaded`, { description: a.download })
   }
 
   // Core Drive save — returns success, does NOT close the modal (so it can be
   // composed with send). Handlers below decide when to call onSaved().
   async function doSave(): Promise<boolean> {
     try {
-      const res = await fetch('/api/invoice/save', {
+      const res = await fetch(saveUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           dealId: deal.id,
-          fileName: invoiceFileName(form, deal.customer),
-          htmlContent: buildInvoiceHTML(form, items),
+          fileName: invoiceFileName(form, deal.customer, docType),
+          htmlContent: buildInvoiceHTML(form, items, docType),
         }),
       })
       const data = await res.json()
       if (!res.ok || data.success === false) throw new Error(data.error || 'Save failed')
-      toast.success('Invoice saved to Drive', { description: `${deal.id} · 3. Invoice` })
+      toast.success(`${docLabel} saved to Drive`, { description: `${deal.id} · ${saveFolder}` })
       return true
     } catch (e) {
       toast.error('Drive save failed', { description: e instanceof Error ? e.message : String(e) })
@@ -109,13 +117,13 @@ export default function ProjectInvoiceModal({
           cc: email.cc.trim(),
           subject: email.subject,
           emailBody: email.body,
-          fileName: invoiceFileName(form, deal.customer),
-          htmlContent: buildInvoiceHTML(form, items),
+          fileName: invoiceFileName(form, deal.customer, docType),
+          htmlContent: buildInvoiceHTML(form, items, docType),
         }),
       })
       const data = await res.json()
       if (!res.ok || data.success === false) throw new Error(data.error || 'Send failed')
-      toast.success('Invoice email sent', { description: `→ ${email.to}` })
+      toast.success(`${docLabel} email sent`, { description: `→ ${email.to}` })
       return true
     } catch (e) {
       toast.error('Email send failed', { description: e instanceof Error ? e.message : String(e) })
@@ -182,7 +190,7 @@ export default function ProjectInvoiceModal({
         {/* Header */}
         <div className="flex items-center justify-between border-b border-[#E2E8F0] px-6 py-4">
           <div>
-            <h2 className="text-base font-semibold text-[#111827]">Generate Invoice</h2>
+            <h2 className="text-base font-semibold text-[#111827]">Generate {docLabel}</h2>
             <p className="text-xs text-[#9CA3AF]">
               {deal.id} · {deal.customer}
             </p>
@@ -202,7 +210,7 @@ export default function ProjectInvoiceModal({
             <section>
               <p className={sectionTitleCls}>Invoice Info</p>
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                <Field label="Invoice #">
+                <Field label={`${docLabel} #`}>
                   <input className={inputCls} value={form.invoiceNo} onChange={(e) => setField('invoiceNo', e.target.value)} />
                 </Field>
                 <Field label="Invoice Date">
@@ -343,7 +351,7 @@ export default function ProjectInvoiceModal({
                 disabled={savingDrive || sendingEmail}
                 className="inline-flex items-center gap-2 rounded-lg bg-[#1d9e75] px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[#187a5a] disabled:opacity-50"
               >
-                {savingDrive ? <Spinner /> : '💾'} Save to “3. Invoice”
+                {savingDrive ? <Spinner /> : '💾'} Save to “{saveFolder}”
               </button>
               <button
                 onClick={sendEmail}
@@ -377,7 +385,7 @@ export default function ProjectInvoiceModal({
                   <span className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[#9CA3AF]">Preview</span>
                   <span className="text-xs font-medium text-[#111827]">{form.invoiceNo || '—'}</span>
                 </div>
-                <Preview form={form} items={items} total={total} />
+                <Preview form={form} items={items} total={total} docType={docType} />
               </div>
             </div>
           </div>
@@ -406,13 +414,14 @@ function Spinner({ dark }: { dark?: boolean }) {
   )
 }
 
-function Preview({ form, items, total }: { form: InvoiceForm; items: LineItem[]; total: number }) {
+function Preview({ form, items, total, docType = 'invoice' }: { form: InvoiceForm; items: LineItem[]; total: number; docType?: DocType }) {
   const totalQty = items.reduce((s, li) => s + li.qty, 0)
+  const isQuote = docType === 'quote'
   return (
     <div className="max-h-[70vh] overflow-y-auto p-5 text-[11px] leading-relaxed text-[#1a1a1a]">
-      <h1 className="mb-4 text-lg font-bold tracking-tight">Commercial Invoice</h1>
+      <h1 className="mb-4 text-lg font-bold tracking-tight">{isQuote ? 'Quotation' : 'Commercial Invoice'}</h1>
       <div className="mb-4 grid grid-cols-3 gap-2 rounded-md bg-[#F8F8F5] p-2.5">
-        <Meta label="Invoice #" value={form.invoiceNo || '—'} />
+        <Meta label={isQuote ? 'Quote #' : 'Invoice #'} value={form.invoiceNo || '—'} />
         <Meta label="Date" value={form.invoiceDate || '—'} />
         <Meta label="Terms" value={`${form.currency} · ${form.incoterms}`} />
       </div>

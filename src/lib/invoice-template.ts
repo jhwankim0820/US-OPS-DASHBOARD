@@ -159,7 +159,12 @@ export function escHtml(s: string): string {
 }
 
 /** Self-contained printable HTML document for Drive / email attachment. */
-export function buildInvoiceHTML(form: InvoiceForm, items: LineItem[]): string {
+export type DocType = 'invoice' | 'quote'
+const DOC_TITLE: Record<DocType, string> = { invoice: 'Commercial Invoice', quote: 'Quotation' }
+
+export function buildInvoiceHTML(form: InvoiceForm, items: LineItem[], docType: DocType = 'invoice'): string {
+  const docTitle = DOC_TITLE[docType]
+  const numberLabel = docType === 'quote' ? 'Quote #' : 'Invoice #'
   const total = lineItemsTotal(items)
   const totalQty = items.reduce((s, li) => s + li.qty, 0)
   const rows = items
@@ -177,7 +182,7 @@ export function buildInvoiceHTML(form: InvoiceForm, items: LineItem[]): string {
 
   return `<!DOCTYPE html>
 <html><head><meta charset="UTF-8">
-<title>Commercial Invoice ${escHtml(form.invoiceNo)}</title>
+<title>${docTitle} ${escHtml(form.invoiceNo)}</title>
 <style>
 body { font-family: Arial, sans-serif; font-size: 11px; color: #1a1a1a; margin: 0; padding: 32px; }
 h1 { font-size: 24px; margin-bottom: 20px; }
@@ -195,9 +200,9 @@ td { padding: 8px; border-bottom: 1px solid #f0f0f0; vertical-align: top; }
 .footer { margin-top: 24px; border-top: 1px solid #e5e5e0; padding-top: 12px; font-size: 9px; color: #aaa; line-height: 1.6; }
 .cert { font-size: 10px; color: #666; margin: 16px 0; }
 </style></head><body>
-<h1>Commercial Invoice</h1>
+<h1>${docTitle}</h1>
 <div class="meta">
-  <div class="meta-item"><div class="label">Invoice #</div><div class="value">${escHtml(form.invoiceNo)}</div></div>
+  <div class="meta-item"><div class="label">${numberLabel}</div><div class="value">${escHtml(form.invoiceNo)}</div></div>
   <div class="meta-item"><div class="label">Date</div><div class="value">${escHtml(form.invoiceDate)}</div></div>
   <div class="meta-item"><div class="label">Ship Date</div><div class="value">${escHtml(form.shipDate)}</div></div>
   <div class="meta-item"><div class="label">Currency / Incoterms</div><div class="value">${escHtml(form.currency)} · ${escHtml(form.incoterms)}</div></div>
@@ -224,6 +229,7 @@ td { padding: 8px; border-bottom: 1px solid #f0f0f0; vertical-align: top; }
 </body></html>`
 }
 
-export function invoiceFileName(form: InvoiceForm, customer: string): string {
-  return `Invoice_${form.invoiceNo}_${(customer || '').replace(/[^a-zA-Z0-9]/g, '_')}.html`
+export function invoiceFileName(form: InvoiceForm, customer: string, docType: DocType = 'invoice'): string {
+  const prefix = docType === 'quote' ? 'Quote' : 'Invoice'
+  return `${prefix}_${form.invoiceNo}_${(customer || '').replace(/[^a-zA-Z0-9]/g, '_')}.html`
 }

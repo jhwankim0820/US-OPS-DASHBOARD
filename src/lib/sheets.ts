@@ -3,7 +3,15 @@ import { unstable_cache } from 'next/cache'
 import { logAuditSafe } from '@/lib/audit'
 
 const SPREADSHEET_ID = process.env.GOOGLE_SPREADSHEET_ID!.replace(/^﻿/, '').trim()
-const RANGE = 'A2:R200'
+// A~R = original deal columns; S~W = workflow-stage columns written by the ops tool.
+const RANGE = 'A2:W200'
+
+// Ops-tool workflow stages tracked in the Deals tab (source of truth for progress).
+export type DealStage = 'quote' | 'po' | 'invoice' | 'ship' | 'tp'
+const STAGE_COL: Record<DealStage, string> = { quote: 'S', po: 'T', invoice: 'U', ship: 'V', tp: 'W' }
+const STAGE_HEADER: Record<DealStage, string> = { quote: 'Quote', po: 'PO', invoice: 'Invoice', ship: 'Ship', tp: 'TP' }
+// 0-indexed positions of the stage columns within a row (S=18 … W=22).
+const STAGE_IDX: Record<DealStage, number> = { quote: 18, po: 19, invoice: 20, ship: 21, tp: 22 }
 
 const US_TEAM = new Set([
   'alex.liu@furiosa.ai',
@@ -36,6 +44,19 @@ export interface SheetDeal {
   status: string
   region: string
   createdAt: Date
+  /** 1-based physical row number in the Deals tab (for stage write-back). */
+  rowNumber: number
+  /** Workflow-stage cells (S~W). Empty string = not done. Usually an ISO date. */
+  quoteAt: string
+  poAt: string
+  invoiceAt: string
+  shipAt: string
+}
+
+function isDealRow(r: string[]): boolean {
+  const owner = r[3]?.trim().toLowerCase() ?? ''
+  const customer = r[4]?.trim() ?? ''
+  return US_TEAM.has(owner) && customer !== ''
 }
 
 function getAuth() {
@@ -108,12 +129,9 @@ async function fetchDeals(): Promise<SheetDeal[]> {
   }
 
   return rows
-    .filter((r) => {
-      const owner = r[3]?.trim().toLowerCase() ?? ''
-      const customer = r[4]?.trim() ?? ''
-      return US_TEAM.has(owner) && customer !== ''
-    })
-    .map((r, i) => {
+    .map((r, idx) => ({ r, rowNumber: idx + 2 })) // A2 is physical row 2
+    .filter(({ r }) => isDealRow(r))
+    .map(({ r, rowNumber }, i) => {
       const [
         summary, , priority, owner, customer, npuModel, formFactor,
         systemQty, cardQty, deliveryPurpose, ,
@@ -150,8 +168,59 @@ async function fetchDeals(): Promise<SheetDeal[]> {
         status: inferStatus(poDate, etdDate, billingDate),
         region: mapRegion(salesParty ?? ''),
         createdAt: poDate ?? new Date(),
+        rowNumber,
+        quoteAt: r[STAGE_IDX.quote]?.trim() ?? '',
+        poAt: r[STAGE_IDX.po]?.trim() ?? '',
+        invoiceAt: r[STAGE_IDX.invoice]?.trim() ?? '',
+        shipAt: r[STAGE_IDX.ship]?.trim() ?? '',
       }
     })
+}
+
+/**
+ * Write a workflow-stage value into the Deals tab for a given synthetic dealId
+ * (SHT-00N). The id is positional over the filtered rows, so we re-read and
+ * replicate the same filter to resolve the physical row. Also ensures the S~W
+ * header labels exist. Returns false if the deal can't be located.
+ */
+export async function updateDealStage(dealId: string, stage: DealStage, value: string): Promise<boolean> {
+  const col = STAGE_COL[stage]
+  if (!col) throw new Error(`Unknown stage: ${stage}`)
+
+  const auth = getWriteAuth()
+  const sheetsApi = google.sheets({ version: 'v4', auth })
+
+  const res = await sheetsApi.spreadsheets.values.get({ spreadsheetId: SPREADSHEET_ID, range: RANGE })
+  const rows = (res.data.values ?? []) as string[][]
+
+  const matched = rows
+    .map((r, idx) => ({ r, rowNumber: idx + 2 }))
+    .filter(({ r }) => isDealRow(r))
+  const target = matched.find((_, i) => `SHT-${String(i + 1).padStart(3, '0')}` === dealId)
+  if (!target) return false
+
+  // Ensure the column header exists (idempotent), then write the value.
+  await sheetsApi.spreadsheets.values.update({
+    spreadsheetId: SPREADSHEET_ID,
+    range: `${col}1`,
+    valueInputOption: 'RAW',
+    requestBody: { values: [[STAGE_HEADER[stage]]] },
+  })
+  await sheetsApi.spreadsheets.values.update({
+    spreadsheetId: SPREADSHEET_ID,
+    range: `${col}${target.rowNumber}`,
+    valueInputOption: 'USER_ENTERED',
+    requestBody: { values: [[value]] },
+  })
+
+  await logAuditSafe({
+    action: `UPDATE_STAGE_${stage.toUpperCase()}`,
+    source: 'sheets',
+    dealId,
+    field: stage,
+    newValue: value,
+  })
+  return true
 }
 
 export const getDeals = unstable_cache(fetchDeals, ['sheets-deals'], { revalidate: 15 })
