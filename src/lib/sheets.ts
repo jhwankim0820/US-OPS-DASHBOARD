@@ -186,13 +186,34 @@ async function fetchDeals(): Promise<SheetDeal[]> {
 export async function updateDealStage(dealId: string, stage: DealStage, value: string): Promise<boolean> {
   const col = STAGE_COL[stage]
   if (!col) throw new Error(`Unknown stage: ${stage}`)
+  const colNumber = STAGE_IDX[stage] + 1 // 1-based (S=19 … W=23)
 
   const auth = getWriteAuth()
   const sheetsApi = google.sheets({ version: 'v4', auth })
 
-  const res = await sheetsApi.spreadsheets.values.get({ spreadsheetId: SPREADSHEET_ID, range: RANGE })
-  const rows = (res.data.values ?? []) as string[][]
+  // Resolve the deals sheet (the first sheet — same one getDeals reads) and its grid width.
+  const meta = await sheetsApi.spreadsheets.get({
+    spreadsheetId: SPREADSHEET_ID,
+    fields: 'sheets(properties(sheetId,title,gridProperties(columnCount)))',
+  })
+  const sheet0 = meta.data.sheets?.[0]?.properties
+  if (!sheet0?.title) throw new Error('Deals sheet not found')
+  const title = sheet0.title
+  const colCount = sheet0.gridProperties?.columnCount ?? 0
 
+  // Grow the grid if the stage column doesn't exist yet (sheet ships with A~S only).
+  if (colCount < colNumber) {
+    await sheetsApi.spreadsheets.batchUpdate({
+      spreadsheetId: SPREADSHEET_ID,
+      requestBody: {
+        requests: [{ appendDimension: { sheetId: sheet0.sheetId!, dimension: 'COLUMNS', length: colNumber - colCount } }],
+      },
+    })
+  }
+
+  // Resolve the physical row for the synthetic dealId (positional over filtered rows).
+  const res = await sheetsApi.spreadsheets.values.get({ spreadsheetId: SPREADSHEET_ID, range: `${title}!A2:W200` })
+  const rows = (res.data.values ?? []) as string[][]
   const matched = rows
     .map((r, idx) => ({ r, rowNumber: idx + 2 }))
     .filter(({ r }) => isDealRow(r))
@@ -202,13 +223,13 @@ export async function updateDealStage(dealId: string, stage: DealStage, value: s
   // Ensure the column header exists (idempotent), then write the value.
   await sheetsApi.spreadsheets.values.update({
     spreadsheetId: SPREADSHEET_ID,
-    range: `${col}1`,
+    range: `${title}!${col}1`,
     valueInputOption: 'RAW',
     requestBody: { values: [[STAGE_HEADER[stage]]] },
   })
   await sheetsApi.spreadsheets.values.update({
     spreadsheetId: SPREADSHEET_ID,
-    range: `${col}${target.rowNumber}`,
+    range: `${title}!${col}${target.rowNumber}`,
     valueInputOption: 'USER_ENTERED',
     requestBody: { values: [[value]] },
   })
