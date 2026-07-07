@@ -16,13 +16,30 @@ interface DocStatus {
 }
 
 // Session-level cache so navigating away and back doesn't re-fetch Drive.
-const docCache = new Map<string, DocStatus>()
+// Entries carry a timestamp so they can be treated as stale after a TTL.
+const DOC_TTL_MS = 5 * 60_000
+const docCache = new Map<string, { data: DocStatus; ts: number }>()
 
-type TypeFilter = 'All' | 'B2B' | 'Internal'
+const isFresh = (id: string) => {
+  const e = docCache.get(id)
+  return !!e && Date.now() - e.ts < DOC_TTL_MS
+}
+const docsFromCache = (): Record<string, DocStatus> =>
+  Object.fromEntries([...docCache.entries()].map(([k, v]) => [k, v.data]))
+
 type StatusFilter = 'All' | 'Waiting' | 'Delivered'
-type RegionFilter = 'All' | 'US' | 'APAC'
 
 const folderUrl = (id: string) => `https://drive.google.com/drive/folders/${id}`
+
+async function fetchDoc(dealId: string): Promise<DocStatus | null> {
+  try {
+    const res = await fetch(`/api/drive/deal-docs?dealId=${encodeURIComponent(dealId)}`)
+    if (!res.ok) return null
+    return (await res.json()) as DocStatus
+  } catch {
+    return null
+  }
+}
 
 function relTime(iso: string): string {
   const then = new Date(iso).getTime()
@@ -88,34 +105,37 @@ const PILL = 'inline-flex cursor-pointer items-center gap-1.5 rounded-full borde
 const PILL_ON = 'border-[#5dcaa5] bg-[#e1f5ee] font-medium text-[#0f6e56]'
 const PILL_OFF = 'border-[#E2E8F0] bg-[#FAFAFA] text-[#6B7280] hover:text-[#111827]'
 
+type SortKey = 'default' | 'customer' | 'revenue' | 'qty' | 'date'
+type SortDir = 'asc' | 'desc'
+const qtyOf = (d: ProjectDeal) => (d.cards ?? 0) + (d.servers ?? 0)
+
 export default function ProjectManagementClient({ deals }: { deals: ProjectDeal[] }) {
-  const [docs, setDocs] = useState<Record<string, DocStatus>>(() => Object.fromEntries(docCache))
-  const [loadingDocs, setLoadingDocs] = useState(() => deals.some((d) => !docCache.has(d.id)))
-  const [typeF, setTypeF] = useState<TypeFilter>('All')
+  const [docs, setDocs] = useState<Record<string, DocStatus>>(() => docsFromCache())
+  const [loadingDocs, setLoadingDocs] = useState(() => deals.some((d) => !isFresh(d.id)))
+  const [refreshingAll, setRefreshingAll] = useState(false)
+  const [refreshing, setRefreshing] = useState<Set<string>>(new Set())
+  const [catF, setCatF] = useState<string>('All')
   const [statusF, setStatusF] = useState<StatusFilter>('All')
-  const [regionF, setRegionF] = useState<RegionFilter>('All')
+  const [regionF, setRegionF] = useState<string>('All')
+  const [ownerF, setOwnerF] = useState<string>('All')
   const [search, setSearch] = useState('')
+  const [sortKey, setSortKey] = useState<SortKey>('default')
+  const [sortDir, setSortDir] = useState<SortDir>('asc')
   const [invoiceDeal, setInvoiceDeal] = useState<ProjectDeal | null>(null)
 
-  // Fetch Drive doc status for every deal in parallel on mount (session-cached).
+  // Fetch Drive doc status for every stale/missing deal in parallel on mount.
   useEffect(() => {
     let cancelled = false
-    const missing = deals.filter((d) => !docCache.has(d.id))
+    const missing = deals.filter((d) => !isFresh(d.id))
     if (missing.length === 0) return // loadingDocs already initialized to false
     Promise.all(
       missing.map(async (d) => {
-        try {
-          const res = await fetch(`/api/drive/deal-docs?dealId=${encodeURIComponent(d.id)}`)
-          if (!res.ok) return
-          const data: DocStatus = await res.json()
-          docCache.set(d.id, data)
-        } catch {
-          /* ignore per-deal failures */
-        }
+        const data = await fetchDoc(d.id)
+        if (data) docCache.set(d.id, { data, ts: Date.now() })
       }),
     ).then(() => {
       if (cancelled) return
-      setDocs(Object.fromEntries(docCache))
+      setDocs(docsFromCache())
       setLoadingDocs(false)
     })
     return () => {
@@ -123,56 +143,103 @@ export default function ProjectManagementClient({ deals }: { deals: ProjectDeal[
     }
   }, [deals])
 
-  function refreshDeal(dealId: string) {
-    fetch(`/api/drive/deal-docs?dealId=${encodeURIComponent(dealId)}`)
-      .then((r) => (r.ok ? r.json() : null))
-      .then((data: DocStatus | null) => {
-        if (!data) return
-        docCache.set(dealId, data)
-        setDocs(Object.fromEntries(docCache))
-      })
-      .catch(() => {})
+  async function refreshDeal(dealId: string) {
+    setRefreshing((s) => new Set(s).add(dealId))
+    const data = await fetchDoc(dealId)
+    if (data) {
+      docCache.set(dealId, { data, ts: Date.now() })
+      setDocs(docsFromCache())
+    }
+    setRefreshing((s) => {
+      const next = new Set(s)
+      next.delete(dealId)
+      return next
+    })
   }
 
-  // Counts for pills (each dimension independent over the full set).
-  const counts = useMemo(() => {
-    return {
-      typeAll: deals.length,
-      b2b: deals.filter((d) => d.category === 'B2B').length,
-      internal: deals.filter((d) => d.category === 'Internal').length,
-      statusAll: deals.length,
-      waiting: deals.filter((d) => d.status === 'Waiting for Delivery').length,
-      delivered: deals.filter((d) => d.status === 'Delivered').length,
-      regionAll: deals.length,
-      us: deals.filter((d) => d.region === 'US').length,
-      apac: deals.filter((d) => d.region === 'APAC').length,
-    }
-  }, [deals])
+  async function refreshAll() {
+    setRefreshingAll(true)
+    await Promise.all(
+      deals.map(async (d) => {
+        const data = await fetchDoc(d.id)
+        if (data) docCache.set(d.id, { data, ts: Date.now() })
+      }),
+    )
+    setDocs(docsFromCache())
+    setRefreshingAll(false)
+  }
+
+  // Distinct dimension values present in the data (for dynamic filter pills).
+  const categories = useMemo(() => [...new Set(deals.map((d) => d.category).filter(Boolean))], [deals])
+  const regions = useMemo(() => [...new Set(deals.map((d) => d.region).filter(Boolean))], [deals])
+  const owners = useMemo(() => [...new Set(deals.map((d) => d.owner).filter(Boolean))].sort(), [deals])
+
+  const countBy = (pred: (d: ProjectDeal) => boolean) => deals.filter(pred).length
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase()
-    return deals.filter((d) => {
-      if (typeF !== 'All' && d.category !== typeF) return false
+    const rows = deals.filter((d) => {
+      if (catF !== 'All' && d.category !== catF) return false
       if (statusF === 'Waiting' && d.status !== 'Waiting for Delivery') return false
       if (statusF === 'Delivered' && d.status !== 'Delivered') return false
       if (regionF !== 'All' && d.region !== regionF) return false
+      if (ownerF !== 'All' && d.owner !== ownerF) return false
       if (q && ![d.id, d.customer, d.owner].some((v) => v.toLowerCase().includes(q))) return false
       return true
     })
-  }, [deals, typeF, statusF, regionF, search])
+    if (sortKey !== 'default') {
+      const dir = sortDir === 'asc' ? 1 : -1
+      rows.sort((a, b) => {
+        switch (sortKey) {
+          case 'customer':
+            return dir * a.customer.localeCompare(b.customer)
+          case 'revenue':
+            return dir * ((a.revenue ?? 0) - (b.revenue ?? 0))
+          case 'qty':
+            return dir * (qtyOf(a) - qtyOf(b))
+          case 'date':
+            return dir * ((new Date(a.date).getTime() || 0) - (new Date(b.date).getTime() || 0))
+          default:
+            return 0
+        }
+      })
+    }
+    return rows
+  }, [deals, catF, statusF, regionF, ownerF, search, sortKey, sortDir])
+
+  function toggleSort(key: SortKey) {
+    if (sortKey === key) {
+      setSortDir((d) => (d === 'asc' ? 'desc' : 'asc'))
+    } else {
+      setSortKey(key)
+      setSortDir(key === 'revenue' || key === 'qty' || key === 'date' ? 'desc' : 'asc')
+    }
+  }
+
+  // Active filter summary
+  const activeFilters: { label: string; clear: () => void }[] = []
+  if (catF !== 'All') activeFilters.push({ label: `Type: ${catF}`, clear: () => setCatF('All') })
+  if (statusF !== 'All') activeFilters.push({ label: `Status: ${statusF}`, clear: () => setStatusF('All') })
+  if (regionF !== 'All') activeFilters.push({ label: `Region: ${regionF}`, clear: () => setRegionF('All') })
+  if (ownerF !== 'All') activeFilters.push({ label: `Owner: ${ownerF.split('@')[0]}`, clear: () => setOwnerF('All') })
+  if (search.trim()) activeFilters.push({ label: `Search: "${search.trim()}"`, clear: () => setSearch('') })
+  const clearAll = () => {
+    setCatF('All')
+    setStatusF('All')
+    setRegionF('All')
+    setOwnerF('All')
+    setSearch('')
+  }
 
   // Stat cards
   const totalProjects = deals.length
-  const inProgress = counts.waiting
-  const totalRevenue = deals
-    .filter((d) => d.category === 'B2B')
-    .reduce((s, d) => s + (d.revenue ?? 0), 0)
+  const inProgress = countBy((d) => d.status === 'Waiting for Delivery')
+  const totalRevenue = deals.filter((d) => d.category === 'B2B').reduce((s, d) => s + (d.revenue ?? 0), 0)
   const invoicePending = loadingDocs
     ? null
     : deals.filter((d) => d.category === 'B2B' && docs[d.id] && !docs[d.id].invoice).length
 
-  const fmtRev = (n: number) =>
-    n >= 1_000_000 ? `$${(n / 1_000_000).toFixed(2)}M` : `$${n.toLocaleString('en-US')}`
+  const fmtRev = (n: number) => (n >= 1_000_000 ? `$${(n / 1_000_000).toFixed(2)}M` : `$${n.toLocaleString('en-US')}`)
 
   return (
     <main className="min-h-screen bg-[#F8F9FA]">
@@ -215,23 +282,67 @@ export default function ProjectManagementClient({ deals }: { deals: ProjectDeal[
         {/* Filter pills */}
         <div className="mb-3 flex flex-col gap-2">
           <PillRow label="Type">
-            <Pill on={typeF === 'All'} onClick={() => setTypeF('All')}>All<Cnt n={counts.typeAll} /></Pill>
-            <Pill on={typeF === 'B2B'} onClick={() => setTypeF('B2B')}>B2B<Cnt n={counts.b2b} /></Pill>
-            <Pill on={typeF === 'Internal'} onClick={() => setTypeF('Internal')}>Internal<Cnt n={counts.internal} /></Pill>
+            <Pill on={catF === 'All'} onClick={() => setCatF('All')}>All<Cnt n={deals.length} /></Pill>
+            {categories.map((c) => (
+              <Pill key={c} on={catF === c} onClick={() => setCatF(c)}>
+                {c}
+                <Cnt n={countBy((d) => d.category === c)} />
+              </Pill>
+            ))}
           </PillRow>
           <PillRow label="Status">
-            <Pill on={statusF === 'All'} onClick={() => setStatusF('All')}>All<Cnt n={counts.statusAll} /></Pill>
-            <Pill on={statusF === 'Waiting'} onClick={() => setStatusF('Waiting')}>Waiting<Cnt n={counts.waiting} /></Pill>
-            <Pill on={statusF === 'Delivered'} onClick={() => setStatusF('Delivered')}>Delivered<Cnt n={counts.delivered} /></Pill>
+            <Pill on={statusF === 'All'} onClick={() => setStatusF('All')}>All<Cnt n={deals.length} /></Pill>
+            <Pill on={statusF === 'Waiting'} onClick={() => setStatusF('Waiting')}>Waiting<Cnt n={countBy((d) => d.status === 'Waiting for Delivery')} /></Pill>
+            <Pill on={statusF === 'Delivered'} onClick={() => setStatusF('Delivered')}>Delivered<Cnt n={countBy((d) => d.status === 'Delivered')} /></Pill>
           </PillRow>
           <PillRow label="Region">
-            <Pill on={regionF === 'All'} onClick={() => setRegionF('All')}>All<Cnt n={counts.regionAll} /></Pill>
-            <Pill on={regionF === 'US'} onClick={() => setRegionF('US')}>US<Cnt n={counts.us} /></Pill>
-            <Pill on={regionF === 'APAC'} onClick={() => setRegionF('APAC')}>APAC<Cnt n={counts.apac} /></Pill>
+            <Pill on={regionF === 'All'} onClick={() => setRegionF('All')}>All<Cnt n={deals.length} /></Pill>
+            {regions.map((r) => (
+              <Pill key={r} on={regionF === r} onClick={() => setRegionF(r)}>
+                {r}
+                <Cnt n={countBy((d) => d.region === r)} />
+              </Pill>
+            ))}
+          </PillRow>
+          <PillRow label="Owner">
+            <Pill on={ownerF === 'All'} onClick={() => setOwnerF('All')}>All<Cnt n={deals.length} /></Pill>
+            {owners.map((o) => (
+              <Pill key={o} on={ownerF === o} onClick={() => setOwnerF(o)}>
+                {o.split('@')[0]}
+                <Cnt n={countBy((d) => d.owner === o)} />
+              </Pill>
+            ))}
           </PillRow>
         </div>
 
-        <p className="mb-2.5 text-xs text-[#888]">{filtered.length} projects</p>
+        {/* Active filter summary + row count + refresh */}
+        <div className="mb-2.5 flex flex-wrap items-center gap-2">
+          <span className="text-xs text-[#888]">{filtered.length} projects</span>
+          {activeFilters.map((f) => (
+            <button
+              key={f.label}
+              onClick={f.clear}
+              className="inline-flex items-center gap-1 rounded-full border border-[#E2E8F0] bg-[#eef7f3] px-2 py-0.5 text-[11px] text-[#0f6e56] transition-colors hover:bg-[#dff0e8]"
+              title="Remove this filter"
+            >
+              {f.label}<span className="text-[#5dcaa5]">×</span>
+            </button>
+          ))}
+          {activeFilters.length > 0 && (
+            <button onClick={clearAll} className="text-[11px] font-medium text-[#993556] hover:underline">
+              Clear all
+            </button>
+          )}
+          <button
+            onClick={refreshAll}
+            disabled={refreshingAll}
+            className="ml-auto inline-flex items-center gap-1.5 rounded-md border border-[#E2E8F0] bg-white px-2.5 py-1 text-[11px] font-medium text-[#6B7280] transition-colors hover:text-[#111827] disabled:opacity-50"
+            title="Re-fetch document status from Drive for all projects"
+          >
+            <span className={refreshingAll ? 'inline-block animate-spin' : 'inline-block'}>⟳</span>
+            {refreshingAll ? 'Refreshing…' : 'Refresh docs'}
+          </button>
+        </div>
 
         {/* Table */}
         <div className="overflow-hidden rounded-xl border border-[#E2E8F0] bg-white">
@@ -241,21 +352,22 @@ export default function ProjectManagementClient({ deals }: { deals: ProjectDeal[
                 <tr className="border-b border-[#E2E8F0] bg-[#FAFAFA] text-left text-[11px] font-medium text-[#888]">
                   <th className="w-8 px-2.5 py-2.5"><input type="checkbox" className="h-3 w-3" /></th>
                   <th className="px-2.5 py-2.5">Deal ID</th>
-                  <th className="px-2.5 py-2.5">Customer</th>
+                  <SortTh label="Customer" active={sortKey === 'customer'} dir={sortDir} onClick={() => toggleSort('customer')} />
                   <th className="px-2.5 py-2.5">Status</th>
                   <th className="px-2.5 py-2.5">Category</th>
                   <th className="px-2.5 py-2.5">Region</th>
                   <th className="px-2.5 py-2.5">Owner</th>
-                  <th className="px-2.5 py-2.5 text-right">Revenue</th>
-                  <th className="px-2.5 py-2.5">Qty</th>
+                  <SortTh label="Revenue" active={sortKey === 'revenue'} dir={sortDir} onClick={() => toggleSort('revenue')} align="right" />
+                  <SortTh label="Qty" active={sortKey === 'qty'} dir={sortDir} onClick={() => toggleSort('qty')} />
                   <th className="px-2.5 py-2.5 text-center">Documents</th>
                   <th className="px-2.5 py-2.5">Latest Action</th>
-                  <th className="px-2.5 py-2.5">Date</th>
+                  <SortTh label="Date" active={sortKey === 'date'} dir={sortDir} onClick={() => toggleSort('date')} />
                 </tr>
               </thead>
               <tbody>
                 {filtered.map((d) => {
                   const doc = docs[d.id]
+                  const isRefreshing = refreshing.has(d.id)
                   return (
                     <tr key={d.id} className="border-b border-[#F0F0F0] last:border-0 hover:bg-[#FAFAFA]">
                       <td className="px-2.5 py-2.5"><input type="checkbox" className="h-3 w-3" /></td>
@@ -299,6 +411,14 @@ export default function ProjectManagementClient({ deals }: { deals: ProjectDeal[
                             <DocIcon label="QT" on={!!doc?.quote} folderId={doc?.folders.quote ?? null} />
                             <DocIcon label="PO" on={!!doc?.po} folderId={doc?.folders.po ?? null} />
                             <DocIcon label="INV" on={!!doc?.invoice} folderId={doc?.folders.invoice ?? null} />
+                            <button
+                              onClick={() => refreshDeal(d.id)}
+                              disabled={isRefreshing}
+                              title="Refresh this project's Drive documents"
+                              className="ml-0.5 self-center text-[12px] text-[#c4c4c4] transition-colors hover:text-[#1d9e75] disabled:opacity-60"
+                            >
+                              <span className={isRefreshing ? 'inline-block animate-spin' : 'inline-block'}>⟳</span>
+                            </button>
                           </div>
                         )}
                       </td>
@@ -390,6 +510,21 @@ function Pill({ on, onClick, children }: { on: boolean; onClick: () => void; chi
 
 function Cnt({ n }: { n: number }) {
   return <span className="text-[11px] opacity-75">{n}</span>
+}
+
+function SortTh({ label, active, dir, onClick, align = 'left' }: { label: string; active: boolean; dir: SortDir; onClick: () => void; align?: 'left' | 'right' }) {
+  return (
+    <th className={`px-2.5 py-2.5 ${align === 'right' ? 'text-right' : ''}`}>
+      <button
+        onClick={onClick}
+        className={`inline-flex items-center gap-1 transition-colors hover:text-[#111827] ${active ? 'text-[#111827]' : ''}`}
+        title={`Sort by ${label}`}
+      >
+        {label}
+        <span className={`text-[9px] ${active ? 'text-[#1d9e75]' : 'text-[#ccc]'}`}>{active ? (dir === 'asc' ? '▲' : '▼') : '↕'}</span>
+      </button>
+    </th>
+  )
 }
 
 function DocIcon({ label, on, folderId }: { label: string; on: boolean; folderId: string | null }) {

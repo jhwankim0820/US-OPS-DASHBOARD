@@ -47,8 +47,38 @@ export default function ProjectInvoiceModal({
     setItems((prev) => prev.map((li, idx) => (idx === i ? { ...li, ...patch } : li)))
   }
 
-  async function saveToDrive() {
-    setSavingDrive(true)
+  // Validate the invoice content before any Drive/Gmail write. Returns an error
+  // message, or null when the invoice is well-formed.
+  function validateInvoice(): string | null {
+    if (!form.invoiceNo.trim()) return 'Invoice # is required'
+    if (items.length === 0) return 'Add at least one line item'
+    if (items.some((li) => !li.item.trim())) return 'Every line item needs an item / PN'
+    if (total <= 0) return 'Invoice total must be greater than 0'
+    return null
+  }
+
+  function downloadInvoice() {
+    const err = validateInvoice()
+    if (err) {
+      toast.error(err)
+      return
+    }
+    const html = buildInvoiceHTML(form, items)
+    const blob = new Blob([html], { type: 'text/html;charset=utf-8' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = invoiceFileName(form, deal.customer).replace(/\.[^./]+$/, '') + '.html'
+    document.body.appendChild(a)
+    a.click()
+    a.remove()
+    URL.revokeObjectURL(url)
+    toast.success('Invoice downloaded', { description: a.download })
+  }
+
+  // Core Drive save — returns success, does NOT close the modal (so it can be
+  // composed with send). Handlers below decide when to call onSaved().
+  async function doSave(): Promise<boolean> {
     try {
       const res = await fetch('/api/invoice/save', {
         method: 'POST',
@@ -62,20 +92,14 @@ export default function ProjectInvoiceModal({
       const data = await res.json()
       if (!res.ok || data.success === false) throw new Error(data.error || 'Save failed')
       toast.success('Invoice saved to Drive', { description: `${deal.id} · 3. Invoice` })
-      onSaved()
+      return true
     } catch (e) {
       toast.error('Drive save failed', { description: e instanceof Error ? e.message : String(e) })
-    } finally {
-      setSavingDrive(false)
+      return false
     }
   }
 
-  async function sendEmail() {
-    if (!email.to.trim()) {
-      toast.error('Recipient email is required')
-      return
-    }
-    setSendingEmail(true)
+  async function doSend(): Promise<boolean> {
     try {
       const res = await fetch('/api/invoice/send', {
         method: 'POST',
@@ -92,11 +116,58 @@ export default function ProjectInvoiceModal({
       const data = await res.json()
       if (!res.ok || data.success === false) throw new Error(data.error || 'Send failed')
       toast.success('Invoice email sent', { description: `→ ${email.to}` })
+      return true
     } catch (e) {
       toast.error('Email send failed', { description: e instanceof Error ? e.message : String(e) })
-    } finally {
-      setSendingEmail(false)
+      return false
     }
+  }
+
+  async function saveToDrive() {
+    const err = validateInvoice()
+    if (err) {
+      toast.error(err)
+      return
+    }
+    setSavingDrive(true)
+    const ok = await doSave()
+    setSavingDrive(false)
+    if (ok) onSaved()
+  }
+
+  async function sendEmail() {
+    const err = validateInvoice()
+    if (err) {
+      toast.error(err)
+      return
+    }
+    if (!email.to.trim()) {
+      toast.error('Recipient email is required')
+      return
+    }
+    setSendingEmail(true)
+    await doSend()
+    setSendingEmail(false)
+  }
+
+  async function saveAndSend() {
+    const err = validateInvoice()
+    if (err) {
+      toast.error(err)
+      return
+    }
+    if (!email.to.trim()) {
+      toast.error('Recipient email is required')
+      return
+    }
+    setSavingDrive(true)
+    setSendingEmail(true)
+    const saved = await doSave()
+    let sent = false
+    if (saved) sent = await doSend()
+    setSavingDrive(false)
+    setSendingEmail(false)
+    if (saved && sent) onSaved()
   }
 
   return (
@@ -269,17 +340,31 @@ export default function ProjectInvoiceModal({
             <div className="flex flex-wrap gap-3">
               <button
                 onClick={saveToDrive}
-                disabled={savingDrive}
+                disabled={savingDrive || sendingEmail}
                 className="inline-flex items-center gap-2 rounded-lg bg-[#1d9e75] px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[#187a5a] disabled:opacity-50"
               >
                 {savingDrive ? <Spinner /> : '💾'} Save to “3. Invoice”
               </button>
               <button
                 onClick={sendEmail}
-                disabled={sendingEmail}
+                disabled={savingDrive || sendingEmail}
                 className="inline-flex items-center gap-2 rounded-lg border border-[#E2E8F0] bg-white px-4 py-2.5 text-sm font-medium text-[#111827] transition-colors hover:bg-[#F8F9FA] disabled:opacity-50"
               >
                 {sendingEmail ? <Spinner dark /> : '✉️'} Send via Gmail
+              </button>
+              <button
+                onClick={saveAndSend}
+                disabled={savingDrive || sendingEmail}
+                className="inline-flex items-center gap-2 rounded-lg bg-[#0f6e56] px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[#0b5744] disabled:opacity-50"
+              >
+                {savingDrive || sendingEmail ? <Spinner /> : '🚀'} Save &amp; Send
+              </button>
+              <button
+                onClick={downloadInvoice}
+                disabled={savingDrive || sendingEmail}
+                className="ml-auto inline-flex items-center gap-2 rounded-lg border border-[#E2E8F0] bg-white px-4 py-2.5 text-sm font-medium text-[#6B7280] transition-colors hover:text-[#111827] disabled:opacity-50"
+              >
+                ⬇️ Download
               </button>
             </div>
           </div>
