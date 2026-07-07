@@ -11,6 +11,7 @@ import {
   isInvoicePending,
 } from '@/lib/us-ops'
 import DashboardDealTable from '@/components/dashboard/DashboardDealTable'
+import RecentActivity from '@/components/dashboard/RecentActivity'
 
 function toISO(d: Date | string | null): string {
   if (!d) return ''
@@ -250,6 +251,12 @@ export default async function DashboardPage() {
         {/* Deal pipeline table */}
         <SectionTitle icon="☰">Deal Pipeline — US Ops Only</SectionTitle>
         <DashboardDealTable deals={deals} />
+
+        {/* Recent audit-log activity */}
+        <div className="mt-3">
+          <SectionTitle icon="🕘">Recent Activity</SectionTitle>
+          <RecentActivity />
+        </div>
       </div>
     </div>
   )
