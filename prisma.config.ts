@@ -10,6 +10,9 @@ export default defineConfig({
     seed: "tsx prisma/seed.ts",
   },
   datasource: {
-    url: process.env["DATABASE_URL"],
+    // Migrations run over a direct/session connection (5432), not the pgbouncer
+    // transaction pooler (6543) the app runtime uses — advisory locks and shadow-db
+    // operations aren't supported through transaction pooling.
+    url: process.env["DIRECT_URL"] ?? process.env["DATABASE_URL"],
   },
 });

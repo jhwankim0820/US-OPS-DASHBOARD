@@ -252,11 +252,8 @@ export default async function DashboardPage() {
         <SectionTitle icon="☰">Deal Pipeline — US Ops Only</SectionTitle>
         <DashboardDealTable deals={deals} />
 
-        {/* Recent audit-log activity */}
-        <div className="mt-3">
-          <SectionTitle icon="🕘">Recent Activity</SectionTitle>
-          <RecentActivity />
-        </div>
+        {/* Recent audit-log activity (Postgres; isolated so DB downtime can't 500 this page) */}
+        <RecentActivity />
       </div>
     </div>
   )

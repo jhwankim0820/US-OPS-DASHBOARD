@@ -1,4 +1,5 @@
 import { sheets } from './google-auth'
+import { logAuditSafe } from '@/lib/audit'
 
 const SHEET_ID = process.env.GOOGLE_SPREADSHEET_ID!.replace(/^﻿/, '').trim()
 
@@ -44,6 +45,13 @@ export async function appendInvoiceRow(data: {
     valueInputOption: 'USER_ENTERED',
     requestBody: { values: [row] },
   })
+
+  await logAuditSafe({
+    action: 'CREATE_INVOICE',
+    source: 'sheets',
+    dealId: data.dealId,
+    newValue: data.invoiceNumber,
+  })
 }
 
 export async function updateDealStatus(dealId: string, status: string) {
@@ -65,5 +73,13 @@ export async function updateDealStatus(dealId: string, status: string) {
     range: `Invoice & Tax!H${rowNumber}`,
     valueInputOption: 'USER_ENTERED',
     requestBody: { values: [[status]] },
+  })
+
+  await logAuditSafe({
+    action: 'UPDATE_INVOICE_STATUS',
+    source: 'sheets',
+    dealId,
+    field: 'paymentStatus',
+    newValue: status,
   })
 }

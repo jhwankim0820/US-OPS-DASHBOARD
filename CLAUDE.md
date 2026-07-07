@@ -60,6 +60,33 @@ src/
       DatePicker.tsx           # 날짜 선택기
 ```
 
+## 데이터 소스 (하이브리드)
+
+이 앱은 **두 개의 데이터 소스**를 함께 쓴다. 화면/작업마다 소스가 다르니 주의.
+
+| 화면 / 작업 | 소스 |
+|---|---|
+| `/` (대시보드), `/projects`, `/financials` — deal 데이터 읽기 | **Google Sheets** (`getDeals()` in `src/lib/sheets.ts`, `unstable_cache`) |
+| `/shipments`, `/projects/[dmdId]` — 배송/상세 읽기 | **Postgres** (Prisma) |
+| 배송 생성/상태 동기화 (`src/actions/shipments.ts`) | **Postgres** (Server Action, `$transaction`) |
+| 시트 배송 기록 (`addShipment`), 인보이스 (`appendInvoiceRow` / `updateDealStatus`) | **Google Sheets** |
+| 인보이스 문서/메일 (Drive/Gmail) | Google Drive / Gmail (부수효과) |
+
+- Sheets 인증: 서비스 계정 (`GOOGLE_SERVICE_ACCOUNT_JSON`), 스프레드시트는 `GOOGLE_SPREADSHEET_ID`. **서비스 계정 키는 서버에서만 사용, 절대 클라이언트로 노출 금지.**
+- Sheets의 deal 식별자는 행 기반 합성값(`SHT-001`)이고, Postgres deal은 `DMD-xx`로 서로 다르다.
+
+## 감사 로그 규칙 (필수)
+
+모든 데이터 쓰기는 `AuditLog`(Postgres)에 기록한다. 헬퍼: `src/lib/audit.ts`.
+
+1. **Postgres 쓰기** — 변경과 **동일 `prisma.$transaction` 안에서** `logAudit(tx, ...)` 호출 (원자적). 예: `src/actions/shipments.ts`.
+2. **Sheets 쓰기** — 시트는 트랜잭션이 없으므로, append/update **성공 직후** `logAuditSafe(...)` (best-effort, `source: 'sheets'`). 로그 실패는 삼켜서 시트 쓰기 자체는 성공시킨다.
+3. **`revenue` 필드는 변경 액션에서 제외** — 재무 수치는 변경 플로우 밖에서 관리.
+4. **미인증 사용자 쓰기 차단** — 인증 레이어 추가 시 각 쓰기 진입점에서 검증 (현재 `actor`는 `'system'` 고정).
+5. 새 쓰기 경로를 추가하면 **반드시 감사 로그를 함께 추가**한다.
+
+최근 활동은 대시보드(`/`) 하단 `RecentActivity` 컴포넌트가 표시한다. 이 컴포넌트는 Postgres를 읽지만 **try/catch로 격리**돼 있어, DB 장애 시에도 Sheets 기반 대시보드가 죽지 않는다.
+
 ## 데이터 모델
 
 **Deal** — 핵심 영업 단위
@@ -77,8 +104,9 @@ src/
 
 ## 빌드 주의사항
 
-- `src/generated/prisma`는 `.gitignore` 처리됨 → build 스크립트가 `prisma generate && next build`로 자동 생성
-- 스키마 변경 시 `prisma migrate dev` 후 커밋
-- 환경변수 `DATABASE_URL` 필수 (Supabase PostgreSQL)
+- `src/generated/prisma`는 `.gitignore` 처리됨 → build 스크립트가 자동 생성
+- **build 스크립트: `prisma migrate deploy && prisma generate && next build`** → 배포 시 미적용 마이그레이션이 자동 반영된다. 스키마 변경 시 로컬에서 `prisma migrate dev`로 마이그레이션 파일을 만들어 **커밋**하면 다음 배포에서 적용됨.
+- 환경변수: `DATABASE_URL`(앱 런타임, transaction pooler `6543` + `pgbouncer=true`), `DIRECT_URL`(마이그레이션용 session pooler `5432`). `prisma.config.ts`가 마이그레이션에 `DIRECT_URL`을 사용한다.
+- Sheets용: `GOOGLE_SERVICE_ACCOUNT_JSON`, `GOOGLE_SPREADSHEET_ID`. 배송 mock: `FEDEX_USE_MOCK=true`.
 
 @AGENTS.md
