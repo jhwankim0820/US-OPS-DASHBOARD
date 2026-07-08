@@ -5,6 +5,7 @@ FuriosaAI 미국 영업 운영 대시보드. Deal 파이프라인 현황, 재고
 ## 프로젝트 기본 정보
 
 - **프로덕션 URL:** https://us-ops-dashboard-five.vercel.app/
+- **로컬 작업 경로:** `C:\Users\jihwa\us-ops-dashboard` (이 폴더에서만 작업)
 - **GitHub 레포:** `jhwankim0820/US-OPS-DASHBOARD` (이 레포만 사용)
 - **Vercel 팀:** `us-operations`
 - **스택:** Next.js 16 (App Router), TypeScript, Prisma v7, PostgreSQL (Supabase), Tailwind CSS v4, Recharts
@@ -34,8 +35,8 @@ git push origin main   # → Vercel 자동 프로덕션 배포 트리거
 src/
   app/
     page.tsx                   # Dashboard 메인 (/)
-    deals/page.tsx             # Deals 목록
-    deals/[dmdId]/page.tsx     # Deal 상세
+    projects/page.tsx          # Project Management (deal 목록, Google Sheets)
+    projects/[dmdId]/page.tsx  # Deal 상세
     shipments/page.tsx         # Shipments
     financials/page.tsx        # Key Financials (분기별 P&L)
   components/
@@ -46,14 +47,13 @@ src/
       PocAllocationSection.tsx # 영업 담당자별 POC 칩 배포 계획
       DonutChart.tsx           # 공용 도넛 차트
     deals/
-      DealsTable.tsx           # Deal 목록 테이블
-      ShipmentForm.tsx         # 배송 등록 폼
-      TrackingCard.tsx         # 배송 추적 카드
+      ShipmentForm.tsx         # 배송 등록 폼 (projects/[dmdId]에서 사용)
+      TrackingCard.tsx         # 배송 추적 카드 (projects/[dmdId]에서 사용)
     shipments/
       ShipmentsTable.tsx       # 배송 목록 테이블
       ShipmentTracker.tsx      # 배송 추적기
     layout/
-      Navbar.tsx               # 상단 네비게이션 (Dashboard / Deals / Shipments / Key Financials)
+      Navbar.tsx               # 상단 네비게이션 (Dashboard / Project Management / Shipments / Key Financials)
     shared/
       FilterBar.tsx            # 상단 필터 (Status, Region, Owner, Date)
       MultiSelect.tsx          # 다중 선택 드롭다운
